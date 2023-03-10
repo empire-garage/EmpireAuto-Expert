@@ -1,5 +1,5 @@
 import 'package:empire_expert/common/jwt_interceptor.dart';
-import 'package:empire_expert/screens/home_page.dart';
+import 'package:empire_expert/screens/main_page.dart';
 import 'package:empire_expert/services/authen_firebase_services/authentication.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +25,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseAuth auth = FirebaseAuth.instance;
   late bool _loading = false;
 
-  String email = "expert1@empire.com";
+  String email = "";
 
-  String password = "111111";
+  String password = "";
 
   @override
   void initState() {
@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   _checkUserExist() async {
     var result = await getUserId();
     if (result != null) {
-      Get.off(() => const HomePage());
+      Get.off(() => const MainPage());
     }
   }
 
@@ -152,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   email: email,
                                                   password: password));
                                       if (message != "Unauthorized") {
-                                        Get.off(() => const HomePage());
+                                        Get.off(() => const MainPage());
                                       }
                                       setState(() {
                                         _loading = false;

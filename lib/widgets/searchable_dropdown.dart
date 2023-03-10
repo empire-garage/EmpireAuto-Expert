@@ -74,26 +74,26 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
           child: Row(
             children: [
               Expanded(
-                child: TextFormField(
+                child: TextField(
                   focusNode: _focusNode,
                   controller: _searchController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Không được bỏ trống dịch vụ";
-                    }
-                    return null;
-                  },
                   decoration: const InputDecoration(
                     hintText: 'Chọn dịch vụ',
                     border: InputBorder.none,
                     contentPadding:
                         EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
-                  onTapOutside: (event) {
-                    _handleTapOutside();
+                  onSubmitted: (value) {
                     setState(() {
                       _dropdownOpened = false;
+                      _searchQuery = value;
                     });
+                  },
+                  onTapOutside: (event) {
+                    _handleTapOutside();
+                    // setState(() {
+                    //   _dropdownOpened = false;
+                    // });
                   },
                   onTap: () {
                     setState(() {
