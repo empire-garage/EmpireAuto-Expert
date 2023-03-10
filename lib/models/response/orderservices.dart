@@ -1,6 +1,7 @@
 class OrderServicesResponseModel {
   int id;
   int status;
+  String? code;
   Car car;
   HealthCarRecord? healthCarRecord;
   Order order;
@@ -11,6 +12,7 @@ class OrderServicesResponseModel {
     required this.status,
     required this.car,
     this.healthCarRecord,
+    this.code,
     required this.order,
     this.orderServiceDetails,
   });
@@ -19,6 +21,7 @@ class OrderServicesResponseModel {
     return OrderServicesResponseModel(
       id: json['id'],
       status: json['status'],
+      code: json['code'],
       car: Car.fromJson(json['car']),
       healthCarRecord: json['healthCarRecord'] != null
           ? HealthCarRecord.fromJson(json['healthCarRecord'])
@@ -35,12 +38,14 @@ class OrderServicesResponseModel {
 class OrderServiceOfExpertModel {
   int id;
   int? status;
+  String? code;
   Car car;
   Order order;
 
   OrderServiceOfExpertModel({
     required this.id,
     this.status,
+    this.code,
     required this.car,
     required this.order,
   });
@@ -49,6 +54,7 @@ class OrderServiceOfExpertModel {
     return OrderServiceOfExpertModel(
       id: json['id'],
       status: json['status'],
+      code: json['code'],
       car: Car.fromJson(json['car']),
       order: Order.fromJson(json['order']),
     );

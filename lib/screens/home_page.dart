@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                                           style: AppStyles.header600(
                                             fontsize: 16.sp,
                                           )),
-                                      Text("ORD${_model[index].id}",
+                                      Text("${_model[index].code}",
                                           style: AppStyles.text400(
                                               fontsize: 12.sp)),
                                       Text(

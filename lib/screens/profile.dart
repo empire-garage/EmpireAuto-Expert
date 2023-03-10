@@ -1,5 +1,6 @@
 import 'package:empire_expert/models/response/user.dart';
 import 'package:empire_expert/screens/welcome_screen.dart';
+import 'package:empire_expert/services/authen_firebase_services/authentication.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -172,6 +173,8 @@ class _ProfileState extends State<Profile> {
                   ),
                   InkWell(
                     onTap: () async {
+                      await AppAuthentication().logout();
+                      // ignore: use_build_context_synchronously
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (BuildContext context) =>
                             const WelcomeScreen(),
