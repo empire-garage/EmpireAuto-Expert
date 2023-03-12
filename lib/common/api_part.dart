@@ -1,5 +1,3 @@
 class APIPath {
-  static String path =
-      "https://empire-api.azurewebsites.net/api/v1";
+  static String path = "https://dev-empire-api.azurewebsites.net/api/v1";
 }
-

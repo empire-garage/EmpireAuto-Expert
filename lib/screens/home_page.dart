@@ -28,6 +28,9 @@ class _HomePageState extends State<HomePage> {
     if (response == null) throw Exception("Get order serivce fail");
     setState(() {
       _model = response;
+      _model.sort(
+        (a, b) => a.order.updatedAt.compareTo(b.order.updatedAt),
+      );
       _loading = false;
     });
   }
