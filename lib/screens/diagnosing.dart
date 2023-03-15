@@ -2,6 +2,7 @@ import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/request/send_diagnosing_request_model.dart'
     as send_diagnosing;
 import 'package:empire_expert/models/response/orderservices.dart';
+import 'package:empire_expert/services/item_service/item_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:empire_expert/widgets/loading.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +78,7 @@ class OrderDetail extends StatefulWidget {
 
 class _OrderDetailState extends State<OrderDetail> {
   double _sum = 0;
+  bool _loading = true;
 
   List<ItemResponseModel> options = [
     ItemResponseModel(
@@ -111,6 +113,16 @@ class _OrderDetailState extends State<OrderDetail> {
   @override
   void initState() {
     super.initState();
+    _getOption();
+  }
+
+  _getOption() async {
+    var result = await ItemService().fetchListItem();
+    if (result == null) throw Exception("Error when get Item");
+    setState(() {
+      options = result;
+      _loading = false;
+    });
   }
 
   void _deleteItem(ItemResponseModel selectedItem) {
@@ -194,205 +206,213 @@ class _OrderDetailState extends State<OrderDetail> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Column(
-        children: <Widget>[
-          CustomerInfo(
-            orderService: widget.order,
-          ),
-          SizedBox(
-            height: 50.h,
-            child: Center(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Tình trạng xe",
-                  style: TextStyle(
-                    fontFamily: 'SFProDisplay',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.blackTextColor,
-                  ),
+    return _loading
+        ? const CircularProgressIndicator()
+        : Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Column(
+              children: <Widget>[
+                CustomerInfo(
+                  orderService: widget.order,
                 ),
-              ),
-            ),
-          ),
-          TextFormField(
-            maxLines: 2,
-            focusNode: _focusNode,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Không được bỏ trống tình trạng xe";
-              }
-              return null;
-            },
-            onTapOutside: (event) {
-              _handleTapOutside();
-            },
-            controller: _textController,
-            onChanged: (value) {
-              model.healthCarRecord.symptom = value;
-            },
-            decoration: const InputDecoration(
-              hintText: "Ghi chú tình trạng xe",
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4))),
-            ),
-          ),
-          SizedBox(
-            height: 50.h,
-            child: Center(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Gợi ý dịch vụ",
-                  style: TextStyle(
-                    fontFamily: 'SFProDisplay',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.blackTextColor,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _listSuggestService.toSet().length,
-            itemBuilder: (context, index) {
-              var item = _listSuggestService.toSet().toList()[index];
-              return Padding(
-                padding: EdgeInsets.only(bottom: 15.h),
-                child: Slidable(
-                  startActionPane:
-                      ActionPane(motion: const StretchMotion(), children: [
-                    SlidableAction(
-                      onPressed: (context) {
-                        _deleteItemAll(item.id);
-                      },
-                      backgroundColor: AppColors.errorIcon,
-                      icon: Icons.delete_forever,
-                      label: 'Xóa hết',
-                    ),
-                    SlidableAction(
-                      onPressed: (context) {
-                        _deleteItem(item);
-                      },
-                      backgroundColor: AppColors.errorIcon,
-                      icon: Icons.delete_sweep,
-                      label: 'Xóa 1',
-                    )
-                  ]),
-                  endActionPane:
-                      ActionPane(motion: const StretchMotion(), children: [
-                    SlidableAction(
-                      onPressed: (context) {
-                        _addMoreItem(item);
-                      },
-                      backgroundColor: AppColors.blue600,
-                      icon: Icons.add,
-                      label: 'Thêm 1',
-                    )
-                  ]),
-                  child: Container(
-                      height: 50.h,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(4),
+                SizedBox(
+                  height: 50.h,
+                  child: Center(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Tình trạng xe",
+                        style: TextStyle(
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.blackTextColor,
+                        ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.w),
-                            child: Text(
-                              item.name,
-                              style: AppStyles.header600(fontsize: 14.sp),
-                            ),
-                          ),
-                          Text(
-                            item.prices!.first.price.toString(),
-                            style: AppStyles.text400(fontsize: 14.sp),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.w),
-                            child: Text(
-                              'x ${_listSuggestService.where((element) => element == item).length}',
-                              style: AppStyles.header600(fontsize: 14.sp),
-                            ),
-                          ),
-                        ],
-                      )),
-                ),
-              );
-            },
-          ),
-          SearchableDropdown(options: options, onSelectedItem: _onCallBack),
-          if (_sum != 0)
-            Padding(
-              padding: EdgeInsets.only(top: 20.h),
-              child: Row(
-                children: [
-                  Text(
-                    "Tổng cộng",
-                    style: TextStyle(
-                      fontFamily: 'SFProDisplay',
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
                     ),
                   ),
-                  const Spacer(),
-                  Text(
-                    _sum.toString(),
-                    style: TextStyle(
-                      fontFamily: 'SFProDisplay',
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
+                ),
+                TextFormField(
+                  maxLines: 2,
+                  focusNode: _focusNode,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Không được bỏ trống tình trạng xe";
+                    }
+                    return null;
+                  },
+                  onTapOutside: (event) {
+                    _handleTapOutside();
+                  },
+                  controller: _textController,
+                  onChanged: (value) {
+                    model.healthCarRecord.symptom = value;
+                    print(model.healthCarRecord.symptom);
+                  },
+                  decoration: const InputDecoration(
+                    hintText: "Ghi chú tình trạng xe",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(4))),
+                  ),
+                ),
+                SizedBox(
+                  height: 50.h,
+                  child: Center(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Gợi ý dịch vụ",
+                        style: TextStyle(
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.blackTextColor,
+                        ),
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ),
-          SizedBox(height: 30.h),
-          Center(
-            child: SizedBox(
-              width: double.infinity,
-              height: 52.h,
-              child: ElevatedButton(
-                onPressed: () async {
-                  var result = await _sendDiagnosing(model);
-                  if (result == true) {
-                    Get.back();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.buttonColor,
-                  fixedSize: Size.fromHeight(50.w),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(36),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _listSuggestService.toSet().length,
+                  itemBuilder: (context, index) {
+                    var item = _listSuggestService.toSet().toList()[index];
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 15.h),
+                      child: Slidable(
+                        startActionPane: ActionPane(
+                            motion: const StretchMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (context) {
+                                  _deleteItemAll(item.id);
+                                },
+                                backgroundColor: AppColors.errorIcon,
+                                icon: Icons.delete_forever,
+                                label: 'Xóa hết',
+                              ),
+                              SlidableAction(
+                                onPressed: (context) {
+                                  _deleteItem(item);
+                                },
+                                backgroundColor: AppColors.errorIcon,
+                                icon: Icons.delete_sweep,
+                                label: 'Xóa 1',
+                              )
+                            ]),
+                        endActionPane: ActionPane(
+                            motion: const StretchMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (context) {
+                                  _addMoreItem(item);
+                                },
+                                backgroundColor: AppColors.blue600,
+                                icon: Icons.add,
+                                label: 'Thêm 1',
+                              )
+                            ]),
+                        child: Container(
+                            height: 50.h,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 10.w),
+                                  child: Text(
+                                    item.name,
+                                    style: AppStyles.header600(fontsize: 14.sp),
+                                  ),
+                                ),
+                                Text(
+                                  item.prices!.first.price.toString(),
+                                  style: AppStyles.text400(fontsize: 14.sp),
+                                ),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 10.w),
+                                  child: Text(
+                                    'x ${_listSuggestService.where((element) => element == item).length}',
+                                    style: AppStyles.header600(fontsize: 14.sp),
+                                  ),
+                                ),
+                              ],
+                            )),
+                      ),
+                    );
+                  },
+                ),
+                SearchableDropdown(
+                    options: options, onSelectedItem: _onCallBack),
+                if (_sum != 0)
+                  Padding(
+                    padding: EdgeInsets.only(top: 20.h),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Tổng cộng",
+                          style: TextStyle(
+                            fontFamily: 'SFProDisplay',
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          _sum.toString(),
+                          style: TextStyle(
+                            fontFamily: 'SFProDisplay',
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                SizedBox(height: 30.h),
+                Center(
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 52.h,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        var result = await _sendDiagnosing(model);
+                        if (result == true) {
+                          Get.back();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.buttonColor,
+                        fixedSize: Size.fromHeight(50.w),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(36),
+                        ),
+                      ),
+                      child: Text(
+                        'Gửi gợi ý',
+                        style: TextStyle(
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                child: Text(
-                  'Gửi gợi ý',
-                  style: TextStyle(
-                    fontFamily: 'SFProDisplay',
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
+                SizedBox(
+                  height: 30.h,
                 ),
-              ),
+              ],
             ),
-          ),
-          SizedBox(
-            height: 30.h,
-          ),
-        ],
-      ),
-    );
+          );
   }
 }
 

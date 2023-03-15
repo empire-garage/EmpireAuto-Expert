@@ -32,10 +32,10 @@
               "client_type": 3
             },
             {
-              "client_id": "120247352484-e9im42igmviq089i0s51p4pkkak2bjnn.apps.googleusercontent.com",
+              "client_id": "120247352484-btcggcit9ms4o3gtrr8ugjh6jj0a25n8.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.empiregarageMobile"
+                "bundle_id": "com.example.empireExpert"
               }
             }
           ]
@@ -92,10 +92,10 @@
               "client_type": 3
             },
             {
-              "client_id": "120247352484-e9im42igmviq089i0s51p4pkkak2bjnn.apps.googleusercontent.com",
+              "client_id": "120247352484-btcggcit9ms4o3gtrr8ugjh6jj0a25n8.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.empiregarageMobile"
+                "bundle_id": "com.example.empireExpert"
               }
             }
           ]

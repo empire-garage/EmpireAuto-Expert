@@ -2,12 +2,13 @@ import 'package:empire_expert/common/colors.dart';
 import 'package:empire_expert/common/jwt_interceptor.dart';
 import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/response/orderservices.dart';
-import 'package:empire_expert/screens/diagnosing.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+
+import 'order_detail.dart';
 
 class CarWishList extends StatefulWidget {
   const CarWishList({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class _CarWishListState extends State<CarWishList> {
   _fetchData() async {
     var expertId = await getUserId();
     if (expertId == null) throw Exception("User id not found");
-    var response = await OrderServices().getOrderServiceOfExpert(expertId);
+    var response = await OrderServices().getDoingOrderServiceOfExpert(expertId);
     if (!mounted) return;
     if (response == null) throw Exception("Get order serivce fail");
     setState(() {
@@ -83,18 +84,18 @@ class _CarWishListState extends State<CarWishList> {
                               children: [
                                 SlidableAction(
                                   onPressed: (context) {
-                                    Get.to(() => DiagnosingPage(
+                                    Get.to(() => OrderDetailPage(
                                           orderServiceId: _model[index].id,
                                         ));
                                   },
                                   backgroundColor: AppColors.blue600,
                                   icon: Icons.settings_suggest,
-                                  label: 'Chẩn đoán',
+                                  label: 'Chi tiết',
                                 )
                               ]),
                           child: GestureDetector(
                             onTap: () {
-                              Get.to(() => DiagnosingPage(
+                              Get.to(() => OrderDetailPage(
                                     orderServiceId: _model[index].id,
                                   ));
                             },
@@ -121,7 +122,7 @@ class _CarWishListState extends State<CarWishList> {
                                           style: AppStyles.header600(
                                             fontsize: 16.sp,
                                           )),
-                                      Text("ORD${_model[index].id}",
+                                      Text("${_model[index].code}",
                                           style: AppStyles.text400(
                                               fontsize: 12.sp)),
                                       Text(

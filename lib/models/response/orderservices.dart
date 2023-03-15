@@ -86,13 +86,13 @@ class Car {
 
 class HealthCarRecord {
   int id;
-  String symptom;
+  String? symptom;
   String createdAt;
   String updatedAt;
 
   HealthCarRecord({
     required this.id,
-    required this.symptom,
+    this.symptom,
     required this.createdAt,
     required this.updatedAt,
   });
