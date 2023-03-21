@@ -2,9 +2,11 @@ import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/request/send_diagnosing_request_model.dart'
     as send_diagnosing;
 import 'package:empire_expert/models/response/orderservices.dart';
+import 'package:empire_expert/models/tag.dart';
 import 'package:empire_expert/services/item_service/item_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:empire_expert/widgets/loading.dart';
+import 'package:empire_expert/widgets/tag_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -80,6 +82,7 @@ class _OrderDetailState extends State<OrderDetail> {
   double _sum = 0;
   bool _loading = true;
 
+  List<Tag> _tags = [];
   List<ItemResponseModel> options = [
     ItemResponseModel(
       id: 1,
@@ -221,7 +224,7 @@ class _OrderDetailState extends State<OrderDetail> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Tình trạng xe",
+                        "Triệu chứng",
                         style: TextStyle(
                           fontFamily: 'SFProDisplay',
                           fontSize: 14.sp,
@@ -233,11 +236,12 @@ class _OrderDetailState extends State<OrderDetail> {
                   ),
                 ),
                 TextFormField(
+                  maxLength: 200,
                   maxLines: 2,
                   focusNode: _focusNode,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Không được bỏ trống tình trạng xe";
+                      return "Không được bỏ trống triệu chứng xe";
                     }
                     return null;
                   },
@@ -250,10 +254,35 @@ class _OrderDetailState extends State<OrderDetail> {
                     print(model.healthCarRecord.symptom);
                   },
                   decoration: const InputDecoration(
-                    hintText: "Ghi chú tình trạng xe",
+                    hintText: "Ghi chú triệu chứng xe",
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(4))),
                   ),
+                ),
+                SizedBox(
+                  height: 30.h,
+                  child: Center(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Kết quả phân tích",
+                        style: TextStyle(
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.blackTextColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                TagEditor(
+                  tags: _tags,
+                  onChanged: (tags) {
+                    setState(() {
+                      _tags = tags;
+                    });
+                  },
                 ),
                 SizedBox(
                   height: 50.h,
@@ -330,10 +359,10 @@ class _OrderDetailState extends State<OrderDetail> {
                                     style: AppStyles.header600(fontsize: 14.sp),
                                   ),
                                 ),
-                                Text(
-                                  item.prices!.first.price.toString(),
-                                  style: AppStyles.text400(fontsize: 14.sp),
-                                ),
+                                // Text(
+                                //   item.prices!.first.price.toString(),
+                                //   style: AppStyles.text400(fontsize: 14.sp),
+                                // ),
                                 Padding(
                                   padding:
                                       EdgeInsets.symmetric(horizontal: 10.w),
@@ -350,33 +379,33 @@ class _OrderDetailState extends State<OrderDetail> {
                 ),
                 SearchableDropdown(
                     options: options, onSelectedItem: _onCallBack),
-                if (_sum != 0)
-                  Padding(
-                    padding: EdgeInsets.only(top: 20.h),
-                    child: Row(
-                      children: [
-                        Text(
-                          "Tổng cộng",
-                          style: TextStyle(
-                            fontFamily: 'SFProDisplay',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          _sum.toString(),
-                          style: TextStyle(
-                            fontFamily: 'SFProDisplay',
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                // if (_sum != 0)
+                //   Padding(
+                //     padding: EdgeInsets.only(top: 20.h),
+                //     child: Row(
+                //       children: [
+                //         Text(
+                //           "Tổng cộng",
+                //           style: TextStyle(
+                //             fontFamily: 'SFProDisplay',
+                //             fontSize: 16.sp,
+                //             fontWeight: FontWeight.w600,
+                //             color: Colors.black,
+                //           ),
+                //         ),
+                //         const Spacer(),
+                //         Text(
+                //           _sum.toString(),
+                //           style: TextStyle(
+                //             fontFamily: 'SFProDisplay',
+                //             fontSize: 16.sp,
+                //             fontWeight: FontWeight.w600,
+                //             color: Colors.black,
+                //           ),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
                 SizedBox(height: 30.h),
                 Center(
                   child: SizedBox(
