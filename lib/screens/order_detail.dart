@@ -202,102 +202,102 @@ class _OrderDetailState extends State<OrderDetail> {
                               color: AppColors.blackTextColor,
                             ),
                           ),
-                          const Spacer(),
-                          Text(
-                            _listOrderServiceDetails[index].price.toString(),
-                            style: TextStyle(
-                              fontFamily: 'SFProDisplay',
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.blackTextColor,
-                            ),
-                          ),
+                          // const Spacer(),
+                          // Text(
+                          //   _listOrderServiceDetails[index].price.toString(),
+                          //   style: TextStyle(
+                          //     fontFamily: 'SFProDisplay',
+                          //     fontSize: 12.sp,
+                          //     fontWeight: FontWeight.w400,
+                          //     color: AppColors.blackTextColor,
+                          //   ),
+                          // ),
                         ],
                       ),
                     );
                   },
                   itemCount: _listOrderServiceDetails.length,
                 ),
-                const Divider(
-                  thickness: 1,
-                  color: AppColors.searchBarColor,
-                ),
-                SizedBox(height: 15.h),
-                Row(
-                  children: [
-                    Text(
-                      "Tổng tạm tính",
-                      style: TextStyle(
-                        fontFamily: 'SFProDisplay',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.blackTextColor,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      sum.toString(),
-                      style: TextStyle(
-                        fontFamily: 'SFProDisplay',
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.blackTextColor,
-                      ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Phí đặt lịch",
-                        style: TextStyle(
-                          fontFamily: 'SFProDisplay',
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.red,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        prepaid.toString(),
-                        style: TextStyle(
-                          fontFamily: 'SFProDisplay',
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Tổng cộng",
-                        style: TextStyle(
-                          fontFamily: 'SFProDisplay',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        sumAfter.toString(),
-                        style: TextStyle(
-                          fontFamily: 'SFProDisplay',
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                // const Divider(
+                //   thickness: 1,
+                //   color: AppColors.searchBarColor,
+                // ),
+                // SizedBox(height: 15.h),
+                // Row(
+                //   children: [
+                //     Text(
+                //       "Tổng tạm tính",
+                //       style: TextStyle(
+                //         fontFamily: 'SFProDisplay',
+                //         fontSize: 16.sp,
+                //         fontWeight: FontWeight.w600,
+                //         color: AppColors.blackTextColor,
+                //       ),
+                //     ),
+                //     const Spacer(),
+                //     Text(
+                //       sum.toString(),
+                //       style: TextStyle(
+                //         fontFamily: 'SFProDisplay',
+                //         fontSize: 16.sp,
+                //         fontWeight: FontWeight.w600,
+                //         color: AppColors.blackTextColor,
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // Padding(
+                //   padding: const EdgeInsets.only(top: 20),
+                //   child: Row(
+                //     children: [
+                //       Text(
+                //         "Phí đặt lịch",
+                //         style: TextStyle(
+                //           fontFamily: 'SFProDisplay',
+                //           fontSize: 12.sp,
+                //           fontWeight: FontWeight.w500,
+                //           color: Colors.red,
+                //         ),
+                //       ),
+                //       const Spacer(),
+                //       Text(
+                //         prepaid.toString(),
+                //         style: TextStyle(
+                //           fontFamily: 'SFProDisplay',
+                //           fontSize: 12.sp,
+                //           fontWeight: FontWeight.w500,
+                //           color: Colors.red,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // Padding(
+                //   padding: const EdgeInsets.only(top: 20),
+                //   child: Row(
+                //     children: [
+                //       Text(
+                //         "Tổng cộng",
+                //         style: TextStyle(
+                //           fontFamily: 'SFProDisplay',
+                //           fontSize: 16.sp,
+                //           fontWeight: FontWeight.w600,
+                //           color: Colors.black,
+                //         ),
+                //       ),
+                //       const Spacer(),
+                //       Text(
+                //         sumAfter.toString(),
+                //         style: TextStyle(
+                //           fontFamily: 'SFProDisplay',
+                //           fontSize: 16.sp,
+                //           fontWeight: FontWeight.w600,
+                //           color: Colors.black,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 SizedBox(
                   height: 30.h,
                 ),

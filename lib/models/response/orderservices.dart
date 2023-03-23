@@ -87,22 +87,16 @@ class Car {
 class HealthCarRecord {
   int id;
   String? symptom;
-  String createdAt;
-  String updatedAt;
 
   HealthCarRecord({
     required this.id,
     this.symptom,
-    required this.createdAt,
-    required this.updatedAt,
   });
 
   factory HealthCarRecord.fromJson(Map<String, dynamic> json) {
     return HealthCarRecord(
       id: json['id'],
       symptom: json['symptom'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
     );
   }
 }
