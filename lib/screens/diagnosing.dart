@@ -1,20 +1,16 @@
 import 'package:empire_expert/common/style.dart';
-import 'package:empire_expert/models/request/send_diagnosing_request_model.dart'
-    as send_diagnosing;
 import 'package:empire_expert/models/response/orderservices.dart';
-import 'package:empire_expert/models/tag.dart';
+import 'package:empire_expert/models/response/problem.dart';
 import 'package:empire_expert/services/item_service/item_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:empire_expert/widgets/loading.dart';
 import 'package:empire_expert/widgets/tag_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/route_manager.dart';
 
 import '../../common/colors.dart';
 import '../models/response/item.dart';
-import '../widgets/searchable_dropdown.dart';
 
 class DiagnosingPage extends StatefulWidget {
   final int orderServiceId;
@@ -79,10 +75,11 @@ class OrderDetail extends StatefulWidget {
 }
 
 class _OrderDetailState extends State<OrderDetail> {
-  double _sum = 0;
+  // double _sum = 0;
   bool _loading = true;
 
-  List<Tag> _tags = [];
+  List<ProblemModel> _tags = [];
+  // final List<HealthCarRecordProblem> _healthCarRecordProblems = [];
   List<ItemResponseModel> options = [
     ItemResponseModel(
       id: 1,
@@ -104,14 +101,10 @@ class _OrderDetailState extends State<OrderDetail> {
     )
   ];
 
-  final List<ItemResponseModel> _listSuggestService = [];
+  // final List<ItemResponseModel> _listSuggestService = [];
   final _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-
-  send_diagnosing.SendDiagnosingModel model =
-      send_diagnosing.SendDiagnosingModel(
-          healthCarRecord: send_diagnosing.HealthCarRecord(symptom: ""),
-          orderServiceDetails: []);
+  String symptom = "";
 
   @override
   void initState() {
@@ -128,58 +121,58 @@ class _OrderDetailState extends State<OrderDetail> {
     });
   }
 
-  void _deleteItem(ItemResponseModel selectedItem) {
-    setState(() {
-      _listSuggestService.remove(selectedItem);
-      _sum -= options
-          .where((element) => element.id == selectedItem.id)
-          .first
-          .prices!
-          .first
-          .price as double;
-    });
-  }
+  // void _deleteItem(ItemResponseModel selectedItem) {
+  //   setState(() {
+  //     _listSuggestService.remove(selectedItem);
+  //     _sum -= options
+  //         .where((element) => element.id == selectedItem.id)
+  //         .first
+  //         .prices!
+  //         .first
+  //         .price as double;
+  //   });
+  // }
 
-  void _deleteItemAll(int selectedItem) {
-    setState(() {
-      int count = _listSuggestService
-          .where((element) => element.id == selectedItem)
-          .length;
-      _sum -= count *
-          (options
-              .where((element) => element.id == selectedItem)
-              .first
-              .prices!
-              .first
-              .price as double);
-      _listSuggestService.removeWhere((element) => element.id == selectedItem);
-    });
-  }
+  // void _deleteItemAll(int selectedItem) {
+  //   setState(() {
+  //     int count = _listSuggestService
+  //         .where((element) => element.id == selectedItem)
+  //         .length;
+  //     _sum -= count *
+  //         (options
+  //             .where((element) => element.id == selectedItem)
+  //             .first
+  //             .prices!
+  //             .first
+  //             .price as double);
+  //     _listSuggestService.removeWhere((element) => element.id == selectedItem);
+  //   });
+  // }
 
-  void _addMoreItem(ItemResponseModel selectedItem) {
-    setState(() {
-      _listSuggestService.add(selectedItem);
-      _sum += options
-          .where((element) => element.id == selectedItem.id)
-          .first
-          .prices!
-          .first
-          .price as double;
-    });
-  }
+  // void _addMoreItem(ItemResponseModel selectedItem) {
+  //   setState(() {
+  //     _listSuggestService.add(selectedItem);
+  //     _sum += options
+  //         .where((element) => element.id == selectedItem.id)
+  //         .first
+  //         .prices!
+  //         .first
+  //         .price as double;
+  //   });
+  // }
 
-  void _onCallBack(int int) {
-    setState(() {
-      _listSuggestService
-          .add(options.where((element) => element.id == int).first);
-      _sum += options
-          .where((element) => element.id == int)
-          .first
-          .prices!
-          .first
-          .price as double;
-    });
-  }
+  // void _onCallBack(int int) {
+  //   setState(() {
+  //     _listSuggestService
+  //         .add(options.where((element) => element.id == int).first);
+  //     _sum += options
+  //         .where((element) => element.id == int)
+  //         .first
+  //         .prices!
+  //         .first
+  //         .price as double;
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -194,18 +187,64 @@ class _OrderDetailState extends State<OrderDetail> {
     }
   }
 
-  Future<bool> _sendDiagnosing(
-      send_diagnosing.SendDiagnosingModel model) async {
-    for (var item in _listSuggestService) {
-      send_diagnosing.OrderServiceDetails detail =
-          send_diagnosing.OrderServiceDetails(
-              itemId: item.id, price: item.prices!.first.price as double);
-      model.orderServiceDetails.add(detail);
+  Future<bool> _sendDiagnosing() async {
+    List<int> problemIds = [];
+    for (var problem in _tags) {
+      problemIds.add(problem.id);
     }
-    var response = await OrderServices().diagnose(widget.order.id, model);
-    if (response == 500) throw Exception("Error when diagnosing");
+    var response =
+        await OrderServices().diagnose(widget.order.id, symptom, problemIds);
+    if (response != 204) return false;
     return true;
   }
+
+  String? _validateSymptom;
+  String? _validateProblem;
+
+  bool _validate(String symptom, List<ProblemModel> tags) {
+    if (symptom.isEmpty) {
+      setState(() {
+        _validateSymptom = "Không được bỏ trống triệu chứng xe";
+      });
+      return false;
+    }
+    if (_tags.isEmpty) {
+      setState(() {
+        _validateProblem = "Không được bỏ trống kết quả phân tích";
+      });
+      return false;
+    }
+    return true;
+  }
+
+  // Future<bool> _sendDiagnosing2() async {
+  //   List<HealthCarRecordProblem> problems = [
+  //     HealthCarRecordProblem(
+  //       problemId: 1,
+  //       healthCarRecordProblemCatalogues: [
+  //         HealthCarRecordProblemCatalogue(
+  //           name: "Lốp",
+  //           healthCarRecordProblemCatalogueItems: [
+  //             HealthCarRecordProblemCatalogueItem(itemId: 1),
+  //             HealthCarRecordProblemCatalogueItem(itemId: 2),
+  //           ],
+  //         ),
+  //         HealthCarRecordProblemCatalogue(
+  //           name: "Ruột",
+  //           healthCarRecordProblemCatalogueItems: [
+  //             HealthCarRecordProblemCatalogueItem(itemId: 3),
+  //             HealthCarRecordProblemCatalogueItem(itemId: 4),
+  //           ],
+  //         )
+  //       ],
+  //     )
+  //   ];
+  //   var response = await OrderServices()
+  //       .diagnose2(widget.order.id, "Xe hư lốp và ruột", problems);
+  //   if (response == 500) throw Exception("Error when diagnosing");
+  //   if (response != 204) return false;
+  //   return true;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -250,8 +289,10 @@ class _OrderDetailState extends State<OrderDetail> {
                   },
                   controller: _textController,
                   onChanged: (value) {
-                    model.healthCarRecord.symptom = value;
-                    print(model.healthCarRecord.symptom);
+                    setState(() {
+                      symptom = value;
+                      _validateSymptom = null;
+                    });
                   },
                   decoration: const InputDecoration(
                     hintText: "Ghi chú triệu chứng xe",
@@ -259,6 +300,13 @@ class _OrderDetailState extends State<OrderDetail> {
                         borderRadius: BorderRadius.all(Radius.circular(4))),
                   ),
                 ),
+                _validateSymptom != null
+                    ? Text(
+                        _validateSymptom!,
+                        style: AppStyles.text400(
+                            fontsize: 12.sp, color: AppColors.errorIcon),
+                      )
+                    : Container(),
                 SizedBox(
                   height: 30.h,
                   child: Center(
@@ -278,134 +326,157 @@ class _OrderDetailState extends State<OrderDetail> {
                 ),
                 TagEditor(
                   tags: _tags,
+                  car: widget.order.car,
                   onChanged: (tags) {
                     setState(() {
                       _tags = tags;
+                      _validateProblem = null;
                     });
                   },
                 ),
-                SizedBox(
-                  height: 50.h,
-                  child: Center(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Gợi ý dịch vụ",
-                        style: TextStyle(
-                          fontFamily: 'SFProDisplay',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.blackTextColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _listSuggestService.toSet().length,
-                  itemBuilder: (context, index) {
-                    var item = _listSuggestService.toSet().toList()[index];
-                    return Padding(
-                      padding: EdgeInsets.only(bottom: 15.h),
-                      child: Slidable(
-                        startActionPane: ActionPane(
-                            motion: const StretchMotion(),
-                            children: [
-                              SlidableAction(
-                                onPressed: (context) {
-                                  _deleteItemAll(item.id);
-                                },
-                                backgroundColor: AppColors.errorIcon,
-                                icon: Icons.delete_forever,
-                                label: 'Xóa hết',
-                              ),
-                              SlidableAction(
-                                onPressed: (context) {
-                                  _deleteItem(item);
-                                },
-                                backgroundColor: AppColors.errorIcon,
-                                icon: Icons.delete_sweep,
-                                label: 'Xóa 1',
-                              )
-                            ]),
-                        endActionPane: ActionPane(
-                            motion: const StretchMotion(),
-                            children: [
-                              SlidableAction(
-                                onPressed: (context) {
-                                  _addMoreItem(item);
-                                },
-                                backgroundColor: AppColors.blue600,
-                                icon: Icons.add,
-                                label: 'Thêm 1',
-                              )
-                            ]),
-                        child: Container(
-                            height: 50.h,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 10.w),
-                                  child: Text(
-                                    item.name,
-                                    style: AppStyles.header600(fontsize: 14.sp),
-                                  ),
-                                ),
-                                // Text(
-                                //   item.prices!.first.price.toString(),
-                                //   style: AppStyles.text400(fontsize: 14.sp),
-                                // ),
-                                Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 10.w),
-                                  child: Text(
-                                    'x ${_listSuggestService.where((element) => element == item).length}',
-                                    style: AppStyles.header600(fontsize: 14.sp),
-                                  ),
-                                ),
-                              ],
-                            )),
-                      ),
-                    );
-                  },
-                ),
-                SearchableDropdown(
-                    options: options, onSelectedItem: _onCallBack),
-                // if (_sum != 0)
-                //   Padding(
-                //     padding: EdgeInsets.only(top: 20.h),
-                //     child: Row(
-                //       children: [
-                //         Text(
-                //           "Tổng cộng",
-                //           style: TextStyle(
-                //             fontFamily: 'SFProDisplay',
-                //             fontSize: 16.sp,
-                //             fontWeight: FontWeight.w600,
-                //             color: Colors.black,
-                //           ),
+                _validateProblem != null
+                    ? Text(
+                        _validateProblem!,
+                        style: AppStyles.text400(
+                            fontsize: 12.sp, color: AppColors.errorIcon),
+                      )
+                    : Container(),
+                // SizedBox(
+                //   height: 50.h,
+                //   child: Center(
+                //     child: Align(
+                //       alignment: Alignment.centerLeft,
+                //       child: Text(
+                //         "Gợi ý dịch vụ",
+                //         style: TextStyle(
+                //           fontFamily: 'SFProDisplay',
+                //           fontSize: 14.sp,
+                //           fontWeight: FontWeight.w600,
+                //           color: AppColors.blackTextColor,
                 //         ),
-                //         const Spacer(),
-                //         Text(
-                //           _sum.toString(),
-                //           style: TextStyle(
-                //             fontFamily: 'SFProDisplay',
-                //             fontSize: 16.sp,
-                //             fontWeight: FontWeight.w600,
-                //             color: Colors.black,
-                //           ),
-                //         ),
-                //       ],
+                //       ),
                 //     ),
                 //   ),
+                // ),
+                // ListView.builder(
+                //   shrinkWrap: true,
+                //   physics: const NeverScrollableScrollPhysics(),
+                //   itemCount: _listSuggestService.toSet().length,
+                //   itemBuilder: (context, index) {
+                //     var item = _listSuggestService.toSet().toList()[index];
+                //     return Padding(
+                //       padding: EdgeInsets.only(bottom: 15.h),
+                //       child: Slidable(
+                //         startActionPane: ActionPane(
+                //             motion: const StretchMotion(),
+                //             children: [
+                //               SlidableAction(
+                //                 onPressed: (context) {
+                //                   _deleteItemAll(item.id);
+                //                 },
+                //                 backgroundColor: AppColors.errorIcon,
+                //                 icon: Icons.delete_forever,
+                //                 label: 'Xóa hết',
+                //               ),
+                //               SlidableAction(
+                //                 onPressed: (context) {
+                //                   _deleteItem(item);
+                //                 },
+                //                 backgroundColor: AppColors.errorIcon,
+                //                 icon: Icons.delete_sweep,
+                //                 label: 'Xóa 1',
+                //               )
+                //             ]),
+                //         endActionPane: ActionPane(
+                //             motion: const StretchMotion(),
+                //             children: [
+                //               SlidableAction(
+                //                 onPressed: (context) {
+                //                   _addMoreItem(item);
+                //                 },
+                //                 backgroundColor: AppColors.blue600,
+                //                 icon: Icons.add,
+                //                 label: 'Thêm 1',
+                //               )
+                //             ]),
+                //         child: Container(
+                //             height: 50.h,
+                //             decoration: BoxDecoration(
+                //               border: Border.all(color: Colors.grey),
+                //               borderRadius: BorderRadius.circular(4),
+                //             ),
+                //             child: Row(
+                //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //               children: [
+                //                 Padding(
+                //                   padding:
+                //                       EdgeInsets.symmetric(horizontal: 10.w),
+                //                   child: Text(
+                //                     item.name,
+                //                     style: AppStyles.header600(fontsize: 14.sp),
+                //                   ),
+                //                 ),
+                //                 // Text(
+                //                 //   item.prices!.first.price.toString(),
+                //                 //   style: AppStyles.text400(fontsize: 14.sp),
+                //                 // ),
+                //                 Padding(
+                //                   padding:
+                //                       EdgeInsets.symmetric(horizontal: 10.w),
+                //                   child: Text(
+                //                     'x ${_listSuggestService.where((element) => element == item).length}',
+                //                     style: AppStyles.header600(fontsize: 14.sp),
+                //                   ),
+                //                 ),
+                //               ],
+                //             )),
+                //       ),
+                //     );
+                //   },
+                // ),
+                // SearchableDropdown(
+                //     options: options, onSelectedItem: _onCallBack),
+                // // if (_sum != 0)
+                // //   Padding(
+                // //     padding: EdgeInsets.only(top: 20.h),
+                // //     child: Row(
+                // //       children: [
+                // //         Text(
+                // //           "Tổng cộng",
+                // //           style: TextStyle(
+                // //             fontFamily: 'SFProDisplay',
+                // //             fontSize: 16.sp,
+                // //             fontWeight: FontWeight.w600,
+                // //             color: Colors.black,
+                // //           ),
+                // //         ),
+                // //         const Spacer(),
+                // //         Text(
+                // //           _sum.toString(),
+                // //           style: TextStyle(
+                // //             fontFamily: 'SFProDisplay',
+                // //             fontSize: 16.sp,
+                // //             fontWeight: FontWeight.w600,
+                // //             color: Colors.black,
+                // //           ),
+                // //         ),
+                // //       ],
+                // //     ),
+                // //   ),
+                // SizedBox(height: 30.h),
+                // Container(
+                //   height: 40.h,
+                //   decoration: BoxDecoration(
+                //       borderRadius: const BorderRadius.all(Radius.circular(8)),
+                //       border: Border.all(color: AppColors.blueTextColor)),
+                //   child: Center(
+                //     child: Text(
+                //       "Thêm kết quả phân tích",
+                //       style: AppStyles.text400(
+                //           fontsize: 12.sp, color: AppColors.blueTextColor),
+                //     ),
+                //   ),
+                // ),
                 SizedBox(height: 30.h),
                 Center(
                   child: SizedBox(
@@ -413,7 +484,8 @@ class _OrderDetailState extends State<OrderDetail> {
                     height: 52.h,
                     child: ElevatedButton(
                       onPressed: () async {
-                        var result = await _sendDiagnosing(model);
+                        if (_validate(symptom, _tags) == false) return;
+                        var result = await _sendDiagnosing();
                         if (result == true) {
                           Get.back();
                         }

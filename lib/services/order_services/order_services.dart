@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:empire_expert/models/request/send_diagnosing_request_model.dart';
+import 'package:empire_expert/models/health_car_record_problem.dart';
 
 import '../../common/api_part.dart';
 import '../../common/jwt_interceptor.dart';
@@ -85,9 +85,34 @@ class OrderServices {
     return response;
   }
 
-  Future<int> diagnose(int id, SendDiagnosingModel model) async {
+  Future<int> diagnose(int id, String symptom, List<int> problemIds) async {
+    String apiUrl =
+        "${APIPath.path}/order-services/$id/diagnose?symptom=$symptom";
+    try {
+      var response = await makeHttpRequest(
+        apiUrl,
+        method: 'PUT',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: json.encode(problemIds),
+      );
+      return response.statusCode;
+    } catch (e) {
+      log(e.toString());
+    }
+    return 500;
+  }
+
+  Future<int> diagnose2(
+      int id, String symptom, List<HealthCarRecordProblem> models) async {
     String apiUrl = "${APIPath.path}/order-services/$id/diagnosed-result";
-    var data = jsonEncode(model.toJson());
+    List<Map<String, dynamic>> jsonList = healthCarRecordProblemsToJson(models);
+    String jsonString = json.encode(jsonList);
+    var data = jsonEncode(<String, dynamic>{
+      'symptom': symptom,
+      'healthCarRecordProblems': jsonList
+    });
     try {
       var response = await makeHttpRequest(
         apiUrl,

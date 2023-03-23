@@ -1,44 +1,39 @@
-import 'package:empire_expert/models/response/orderservices.dart';
 import 'package:empire_expert/models/response/problem.dart';
 import 'package:empire_expert/services/diagnose_services/diagnose_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class TagEditor extends StatefulWidget {
+class CataLougeInput extends StatefulWidget {
   final List<ProblemModel> tags;
   final void Function(List<ProblemModel>) onChanged;
-  final Car car;
 
-  const TagEditor(
-      {super.key,
-      required this.tags,
-      required this.onChanged,
-      required this.car});
+  const CataLougeInput(
+      {super.key, required this.tags, required this.onChanged});
 
   @override
-  _TagEditorState createState() => _TagEditorState();
+  _CataLougeInputState createState() => _CataLougeInputState();
 }
 
-class _TagEditorState extends State<TagEditor> {
+class _CataLougeInputState extends State<CataLougeInput> {
   final TextEditingController _controller = TextEditingController();
   List<ProblemModel> _selectedTags = [];
   List<ProblemModel> _suggestedTags = [];
-  List<ProblemModel> _initSuggestTags = [];
-  bool _loading = true;
+  final List<ProblemModel> _initSuggestTags = [];
+  final bool _loading = true;
 
-  _fetchInitSuggestTag() async {
-    var result = await DiagnoseService().getListProblem(widget.car);
-    setState(() {
-      _initSuggestTags = result;
-      _loading = false;
-    });
-    return result;
-  }
+  // _fetchInitSuggestTag() async {
+  //   var result = await DiagnoseService().getListProblem();
+  //   setState(() {
+  //     _initSuggestTags = result;
+  //     _loading = false;
+  //   });
+  //   return result;
+  // }
 
   @override
   void initState() {
     super.initState();
-    _fetchInitSuggestTag();
+    // _fetchInitSuggestTag();
     _selectedTags = widget.tags;
   }
 
@@ -52,8 +47,8 @@ class _TagEditorState extends State<TagEditor> {
               TextFormField(
                 controller: _controller,
                 decoration: const InputDecoration(
-                  labelText: 'Kết quả',
-                  hintText: 'Nhập kết quả...',
+                  labelText: 'Danh mục',
+                  hintText: 'Nhập danh mục...',
                 ),
                 onChanged: (value) async {
                   setState(() {
@@ -106,7 +101,7 @@ class _TagEditorState extends State<TagEditor> {
               ),
               if (_suggestedTags.isNotEmpty)
                 SizedBox(
-                  height: 300.0,
+                  height: 100.0,
                   child: ListView.builder(
                     itemCount: _suggestedTags.length,
                     itemBuilder: (context, index) {
