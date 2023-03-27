@@ -2,6 +2,7 @@ class OrderServicesResponseModel {
   int id;
   int status;
   String? code;
+  String? receivingStatus;
   Car car;
   HealthCarRecord? healthCarRecord;
   Order order;
@@ -13,6 +14,7 @@ class OrderServicesResponseModel {
     required this.car,
     this.healthCarRecord,
     this.code,
+    this.receivingStatus,
     required this.order,
     this.orderServiceDetails,
   });
@@ -22,6 +24,7 @@ class OrderServicesResponseModel {
       id: json['id'],
       status: json['status'],
       code: json['code'],
+      receivingStatus: json['receivingStatus'],
       car: Car.fromJson(json['car']),
       healthCarRecord: json['healthCarRecord'] != null
           ? HealthCarRecord.fromJson(json['healthCarRecord'])

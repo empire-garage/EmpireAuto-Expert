@@ -257,6 +257,30 @@ class _OrderDetailState extends State<OrderDetail> {
                 CustomerInfo(
                   orderService: widget.order,
                 ),
+                ListTile(
+                  contentPadding: EdgeInsets.symmetric(vertical: 10.h),
+                  title: Text(
+                    'Khách báo tình trạng xe',
+                    style: TextStyle(
+                      fontFamily: 'SFProDisplay',
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.blackTextColor,
+                    ),
+                  ),
+                  subtitle: Padding(
+                    padding: EdgeInsets.only(top: 5.h),
+                    child: Text(
+                      '${widget.order.receivingStatus}',
+                      style: TextStyle(
+                        fontFamily: 'SFProDisplay',
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.lightTextColor,
+                      ),
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 50.h,
                   child: Center(
