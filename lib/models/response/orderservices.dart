@@ -207,6 +207,7 @@ class Item {
   String? description;
   String? photo;
   Category? category;
+  Problem? problem;
 
   Item(
       {this.id,
@@ -226,6 +227,8 @@ class Item {
     photo = json['photo'];
     category =
         json['category'] != null ? Category.fromJson(json['category']) : null;
+    problem =
+        json['problem'] != null ? Problem.fromJson(json['problem']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -240,6 +243,21 @@ class Item {
       data['category'] = category!.toJson();
     }
     return data;
+  }
+}
+
+class Problem {
+  int? id;
+  String? name;
+
+  Problem({
+    this.id,
+    this.name,
+  });
+
+  Problem.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
   }
 }
 
