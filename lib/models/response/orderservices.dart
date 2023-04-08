@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class OrderServicesResponseModel {
   int id;
   int status;
@@ -176,15 +178,23 @@ class OrderServiceDetails {
   int? id;
   int? price;
   bool? isConfirmed;
+  bool? done;
+  String? note;
+  bool showNote = false;
+  TextEditingController controller = TextEditingController();
   Item? item;
 
-  OrderServiceDetails({this.id, this.price, this.isConfirmed, this.item});
+  OrderServiceDetails(
+      {this.id, this.price, this.isConfirmed, this.item, this.done, this.note});
 
   OrderServiceDetails.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     price = json['price'];
     isConfirmed = json['isConfirmed'];
+    done = json['done'];
+    note = json['note'];
     item = json['item'] != null ? Item.fromJson(json['item']) : null;
+    showNote = json['note'] != null ? true : false;
   }
 
   Map<String, dynamic> toJson() {
@@ -192,6 +202,8 @@ class OrderServiceDetails {
     data['id'] = id;
     data['price'] = price;
     data['isConfirmed'] = isConfirmed;
+    data['done'] = done;
+    data['note'] = note;
     if (item != null) {
       data['item'] = item!.toJson();
     }

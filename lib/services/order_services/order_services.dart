@@ -128,4 +128,27 @@ class OrderServices {
     }
     return 500;
   }
+
+  Future<int> updateExpertTask(OrderServiceDetails orderServiceDetails) async {
+    String apiUrl =
+        "${APIPath.path}/order-service-details/${orderServiceDetails.id}";
+    var data = jsonEncode(<String, dynamic>{
+      'done': orderServiceDetails.done,
+      'note': orderServiceDetails.note
+    });
+    try {
+      var response = await makeHttpRequest(
+        apiUrl,
+        method: 'PUT',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: data,
+      );
+      return response.statusCode;
+    } catch (e) {
+      log(e.toString());
+    }
+    return 500;
+  }
 }

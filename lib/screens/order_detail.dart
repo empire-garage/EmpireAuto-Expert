@@ -106,9 +106,15 @@ class _OrderDetailState extends State<OrderDetail> {
     }
   }
 
+  _updateExpertTask(OrderServiceDetails orderServiceDetails) async {
+    var result = await OrderServices().updateExpertTask(orderServiceDetails);
+    if (result == 500) throw Exception("Lỗi hệ thống");
+  }
+
   final List<ItemResponseModel> _listSuggestService = [];
   final _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  final FocusNode _noteFocusNode = FocusNode();
 
   send_diagnosing.SendDiagnosingModel model =
       send_diagnosing.SendDiagnosingModel(
@@ -151,12 +157,25 @@ class _OrderDetailState extends State<OrderDetail> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Tóm tắt đơn hàng",
+                    "Những dịch vụ đã thanh toán",
                     style: TextStyle(
                       fontFamily: 'SFProDisplay',
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.blackTextColor,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 5.h),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Đánh dấu hoàn thành sau khi hoàn tất công việc",
+                    style: TextStyle(
+                      fontFamily: 'SFProDisplay',
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.lightTextColor,
                     ),
                   ),
                 ),
@@ -167,75 +186,173 @@ class _OrderDetailState extends State<OrderDetail> {
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: EdgeInsets.symmetric(vertical: 8.h),
-                      child: Row(
-                        children: [
-                          Text(
-                            count.toString(),
-                            style: TextStyle(
-                              fontFamily: 'SFProDisplay',
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.blackTextColor,
-                            ),
-                          ),
-                          Text(
-                            "x",
-                            style: TextStyle(
-                              fontFamily: 'SFProDisplay',
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.blackTextColor,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 20.w,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _listOrderServiceDetails[index]
-                                    .item!
-                                    .name
-                                    .toString(),
-                                style: TextStyle(
-                                  fontFamily: 'SFProDisplay',
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.blackTextColor,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 250.w,
-                                child: Text(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                            color: AppColors.lightGrey,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15.r)),
+                            boxShadow: const [
+                              BoxShadow(
+                                  offset: Offset(0, 5),
+                                  blurRadius: 10,
+                                  color: AppColors.grey400,
+                                  blurStyle: BlurStyle.outer)
+                            ]),
+                        child: Column(
+                          children: [
+                            InkWell(
+                              onTap: () async {
+                                setState(() {
+                                  var done =
+                                      _listOrderServiceDetails[index].done ??
+                                          false;
+                                  _listOrderServiceDetails[index].done = !done;
+                                });
+                                await _updateExpertTask(
+                                    _listOrderServiceDetails[index]);
+                              },
+                              onLongPress: () {
+                                setState(() {
+                                  var showNote =
+                                      _listOrderServiceDetails[index].showNote;
+                                  _listOrderServiceDetails[index].showNote =
+                                      !showNote;
+                                });
+                              },
+                              child: ListTile(
+                                title: Text(
                                   _listOrderServiceDetails[index]
                                       .item!
-                                      .problem!
                                       .name
                                       .toString(),
                                   style: TextStyle(
                                     fontFamily: 'SFProDisplay',
                                     fontSize: 12.sp,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.grey600,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.blackTextColor,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
                                 ),
+                                subtitle: SizedBox(
+                                  width: 250.w,
+                                  child: Text(
+                                    _listOrderServiceDetails[index]
+                                        .item!
+                                        .problem!
+                                        .name
+                                        .toString(),
+                                    style: TextStyle(
+                                      fontFamily: 'SFProDisplay',
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors.grey600,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                                trailing:
+                                    _listOrderServiceDetails[index].done != true
+                                        ? const Icon(Icons.circle_outlined)
+                                        : const Icon(
+                                            Icons.check_circle,
+                                            color: AppColors.blue600,
+                                          ),
                               ),
-                            ],
-                          ),
-                          // const Spacer(),
-                          // Text(
-                          //   _listOrderServiceDetails[index].price.toString(),
-                          //   style: TextStyle(
-                          //     fontFamily: 'SFProDisplay',
-                          //     fontSize: 12.sp,
-                          //     fontWeight: FontWeight.w400,
-                          //     color: AppColors.blackTextColor,
-                          //   ),
-                          // ),
-                        ],
+                            ),
+                            !_listOrderServiceDetails[index].showNote
+                                ? Container()
+                                : const Divider(),
+                            !_listOrderServiceDetails[index].showNote
+                                ? Container()
+                                : _listOrderServiceDetails[index].note != null
+                                    ? ListTile(
+                                        title: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Ghi chú',
+                                              style: TextStyle(
+                                                fontFamily: 'SFProDisplay',
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppColors.blackTextColor,
+                                              ),
+                                            ),
+                                            InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    _listOrderServiceDetails[
+                                                                index]
+                                                            .controller
+                                                            .text =
+                                                        _listOrderServiceDetails[
+                                                                index]
+                                                            .note
+                                                            .toString();
+                                                    _listOrderServiceDetails[
+                                                            index]
+                                                        .note = null;
+                                                  });
+                                                },
+                                                child: const Icon(
+                                                    Icons.edit_note)),
+                                          ],
+                                        ),
+                                        subtitle: Padding(
+                                          padding: EdgeInsets.only(top: 5.h),
+                                          child: Text(
+                                            _listOrderServiceDetails[index]
+                                                    .note ??
+                                                "",
+                                            style: AppStyles.text400(
+                                                fontsize: 12.sp,
+                                                color: AppColors.grey600),
+                                          ),
+                                        ),
+                                      )
+                                    : Container(
+                                        margin: const EdgeInsets.only(
+                                            left: 16, right: 16, bottom: 16),
+                                        child: TextField(
+                                          controller:
+                                              _listOrderServiceDetails[index]
+                                                  .controller,
+                                          focusNode: _noteFocusNode,
+                                          onChanged: (value) {
+                                            _listOrderServiceDetails[index]
+                                                .note = value;
+                                          },
+                                          onTapOutside: (event) async {
+                                            _noteFocusNode.unfocus();
+                                            _listOrderServiceDetails[index]
+                                                    .note =
+                                                _listOrderServiceDetails[index]
+                                                        .controller
+                                                        .text
+                                                        .trim()
+                                                        .isNotEmpty
+                                                    ? _listOrderServiceDetails[
+                                                            index]
+                                                        .controller
+                                                        .text
+                                                    : null;
+                                            setState(() {});
+                                            await _updateExpertTask(
+                                                _listOrderServiceDetails[
+                                                    index]);
+                                          },
+                                          decoration: InputDecoration(
+                                            hintText: 'Ghi chú',
+                                            hintStyle: AppStyles.text400(
+                                                fontsize: 12.sp,
+                                                color: AppColors.grey600),
+                                          ),
+                                          maxLines: 3,
+                                        ),
+                                      ),
+                          ],
+                        ),
                       ),
                     );
                   },
