@@ -1,6 +1,7 @@
 import 'package:empire_expert/common/jwt_interceptor.dart';
 import 'package:empire_expert/screens/main_page.dart';
 import 'package:empire_expert/services/authen_firebase_services/authentication.dart';
+import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +10,9 @@ import 'package:get/route_manager.dart';
 
 import '../common/colors.dart';
 import '../models/request/sign_in_request_model.dart';
+
+// ignore: depend_on_referenced_packages
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -40,6 +44,12 @@ class _LoginScreenState extends State<LoginScreen> {
     if (result != null) {
       Get.off(() => const MainPage());
     }
+  }
+
+  _getBrands() async {
+    var json = await BrandService().getBrandsJson();
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('brands', json);
   }
 
   @override
@@ -152,6 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   email: email,
                                                   password: password));
                                       if (message != "Unauthorized") {
+                                        await _getBrands();
                                         Get.off(() => const MainPage());
                                       }
                                       setState(() {

@@ -2,6 +2,7 @@ import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/request/send_diagnosing_request_model.dart'
     as send_diagnosing;
 import 'package:empire_expert/models/response/orderservices.dart';
+import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:empire_expert/widgets/loading.dart';
 import 'package:flutter/material.dart';
@@ -548,11 +549,29 @@ class _CustomerInfoState extends State<CustomerInfo> {
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: Image.asset(
-            "assets/image/icon-logo/bmw-car-icon.png",
-            height: 50.h,
-            width: 50.w,
-          ),
+          leading: FutureBuilder(
+              future: BrandService().getPhoto(widget.orderService.car.carBrand),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Image.network(
+                    snapshot.data.toString(),
+                    height: 50.h,
+                    width: 50.w,
+                  );
+                } else if (snapshot.hasError) {
+                  return Image.asset(
+                    "assets/image/icon-logo/bmw-car-icon.png",
+                    height: 50.h,
+                    width: 50.w,
+                  );
+                } else {
+                  return Image.asset(
+                    "assets/image/icon-logo/bmw-car-icon.png",
+                    height: 50.h,
+                    width: 50.w,
+                  );
+                }
+              }),
           title: Text(
             widget.orderService.car.carLisenceNo,
             style: TextStyle(

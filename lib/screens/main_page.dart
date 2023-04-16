@@ -66,7 +66,7 @@ class _MainPageState extends State<MainPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              FontAwesomeIcons.compass,
+                              FontAwesomeIcons.listCheck,
                               size: 24,
                               color: currentTab == 1
                                   ? AppColors.buttonColor
@@ -98,7 +98,7 @@ class _MainPageState extends State<MainPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              FontAwesomeIcons.fileLines,
+                              FontAwesomeIcons.screwdriverWrench,
                               size: 24,
                               color: currentTab == 2
                                   ? AppColors.buttonColor
@@ -130,7 +130,7 @@ class _MainPageState extends State<MainPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              FontAwesomeIcons.user,
+                              FontAwesomeIcons.userGear,
                               size: 24,
                               color: currentTab == 3
                                   ? AppColors.buttonColor

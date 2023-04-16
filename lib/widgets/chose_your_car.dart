@@ -1,3 +1,4 @@
+import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/widgets/loading.dart';
 import 'package:empire_expert/common/jwt_interceptor.dart';
 import 'package:empire_expert/models/response/booking.dart';
@@ -204,11 +205,29 @@ class _CarChipState extends State<CarChip> {
               bottomRight: Radius.circular(10)),
         ),
         child: ListTile(
-          leading: Image.asset(
-            "assets/image/icon-logo/bmw-car-icon.png",
-            height: 50.h,
-            width: 50.w,
-          ),
+          leading: FutureBuilder(
+              future: BrandService().getPhoto(widget.car.carBrand),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Image.network(
+                    snapshot.data.toString(),
+                    height: 50.h,
+                    width: 50.w,
+                  );
+                } else if (snapshot.hasError) {
+                  return Image.asset(
+                    "assets/image/icon-logo/bmw-car-icon.png",
+                    height: 50.h,
+                    width: 50.w,
+                  );
+                } else {
+                  return Image.asset(
+                    "assets/image/icon-logo/bmw-car-icon.png",
+                    height: 50.h,
+                    width: 50.w,
+                  );
+                }
+              }),
           title: Text(
             widget.car.carBrand,
             style: TextStyle(

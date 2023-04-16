@@ -1,6 +1,7 @@
 import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/response/orderservices.dart';
 import 'package:empire_expert/models/response/problem.dart';
+import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/item_service/item_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:empire_expert/widgets/loading.dart';
@@ -253,6 +254,7 @@ class _OrderDetailState extends State<OrderDetail> {
         : Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 CustomerInfo(
                   orderService: widget.order,
@@ -281,6 +283,29 @@ class _OrderDetailState extends State<OrderDetail> {
                     ),
                   ),
                 ),
+                Text(
+                  'Vấn đề tái sửa chữa',
+                  style: AppStyles.header600(
+                      fontsize: 14.sp, color: AppColors.blackTextColor),
+                ),
+                ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: widget.order.considerProblems.length,
+                    itemBuilder: (context, index) {
+                      var data = widget.order.considerProblems[index];
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.h),
+                        child: Text(
+                          data.name,
+                          style: TextStyle(
+                            fontFamily: 'SFProDisplay',
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.lightTextColor,
+                          ),
+                        ),
+                      );
+                    }),
                 SizedBox(
                   height: 50.h,
                   child: Center(
@@ -610,11 +635,29 @@ class _CustomerInfoState extends State<CustomerInfo> {
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: Image.asset(
-            "assets/image/icon-logo/bmw-car-icon.png",
-            height: 50.h,
-            width: 50.w,
-          ),
+          leading: FutureBuilder(
+              future: BrandService().getPhoto(widget.orderService.car.carBrand),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Image.network(
+                    snapshot.data.toString(),
+                    height: 50.h,
+                    width: 50.w,
+                  );
+                } else if (snapshot.hasError) {
+                  return Image.asset(
+                    "assets/image/icon-logo/bmw-car-icon.png",
+                    height: 50.h,
+                    width: 50.w,
+                  );
+                } else {
+                  return Image.asset(
+                    "assets/image/icon-logo/bmw-car-icon.png",
+                    height: 50.h,
+                    width: 50.w,
+                  );
+                }
+              }),
           title: Text(
             widget.orderService.car.carLisenceNo,
             style: TextStyle(

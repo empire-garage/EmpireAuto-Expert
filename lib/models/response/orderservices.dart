@@ -9,6 +9,7 @@ class OrderServicesResponseModel {
   HealthCarRecord? healthCarRecord;
   Order order;
   List<OrderServiceDetails>? orderServiceDetails;
+  List<ConsiderProblem> considerProblems = [];
 
   OrderServicesResponseModel({
     required this.id,
@@ -19,25 +20,48 @@ class OrderServicesResponseModel {
     this.receivingStatus,
     required this.order,
     this.orderServiceDetails,
+    required this.considerProblems,
   });
 
   factory OrderServicesResponseModel.fromJson(Map<String, dynamic> json) {
     return OrderServicesResponseModel(
+        id: json['id'],
+        status: json['status'],
+        code: json['code'],
+        receivingStatus: json['receivingStatus'],
+        car: Car.fromJson(json['car']),
+        healthCarRecord: json['healthCarRecord'] != null
+            ? HealthCarRecord.fromJson(json['healthCarRecord'])
+            : null,
+        order: Order.fromJson(json['order']),
+        orderServiceDetails: json['orderServiceDetails'] != null
+            ? List<OrderServiceDetails>.from(json['orderServiceDetails']
+                .map((x) => OrderServiceDetails.fromJson(x)))
+            : null,
+        considerProblems: json['considerProblems'] != null
+            ? List<ConsiderProblem>.from(json['considerProblems']
+                .map((x) => ConsiderProblem.fromJson(x)))
+            : []);
+  }
+}
+
+class ConsiderProblem {
+  int id;
+  String name;
+
+  ConsiderProblem({required this.id, required this.name});
+
+  factory ConsiderProblem.fromJson(Map<String, dynamic> json) {
+    return ConsiderProblem(
       id: json['id'],
-      status: json['status'],
-      code: json['code'],
-      receivingStatus: json['receivingStatus'],
-      car: Car.fromJson(json['car']),
-      healthCarRecord: json['healthCarRecord'] != null
-          ? HealthCarRecord.fromJson(json['healthCarRecord'])
-          : null,
-      order: Order.fromJson(json['order']),
-      orderServiceDetails: json['orderServiceDetails'] != null
-          ? List<OrderServiceDetails>.from(json['orderServiceDetails']
-              .map((x) => OrderServiceDetails.fromJson(x)))
-          : null,
+      name: json['name'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+      };
 }
 
 class OrderServiceOfExpertModel {
@@ -159,17 +183,17 @@ class User {
 
 class Transaction {
   int total;
-  int paymentMethod;
+  // int paymentMethod;
 
   Transaction({
     required this.total,
-    required this.paymentMethod,
+    // required this.paymentMethod,
   });
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
     return Transaction(
       total: json['total'],
-      paymentMethod: json['paymentMethod'],
+      // paymentMethod: json['paymentMethod'],
     );
   }
 }
