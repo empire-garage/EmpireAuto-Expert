@@ -50,8 +50,9 @@ class _DiagnosingPageState extends State<DiagnosingPage> {
             appBar: AppBar(
               backgroundColor: AppColors.white100,
               iconTheme: const IconThemeData(color: AppColors.blackTextColor),
+              centerTitle: true,
               title: Text(
-                "${_order.car.carBrand} ${_order.car.carModel} ${_order.car.carLisenceNo}",
+                _order.car.carLisenceNo,
                 style: AppStyles.header600(fontsize: 16.sp),
               ),
             ),

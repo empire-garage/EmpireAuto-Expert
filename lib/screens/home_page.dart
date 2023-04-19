@@ -141,7 +141,7 @@ class _HomePageState extends State<HomePage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                          '${_model[index].car.carBrand} ${_model[index].car.carModel} ${_model[index].car.carLisenceNo}',
+                                          _model[index].car.carLisenceNo,
                                           style: AppStyles.header600(
                                             fontsize: 16.sp,
                                           )),
