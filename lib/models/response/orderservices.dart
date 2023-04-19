@@ -204,7 +204,7 @@ class OrderServiceDetails {
   bool? isConfirmed;
   bool? done;
   String? note;
-  bool showNote = false;
+  bool showNote = true;
   TextEditingController controller = TextEditingController();
   Item? item;
 
@@ -218,7 +218,7 @@ class OrderServiceDetails {
     done = json['done'];
     note = json['note'];
     item = json['item'] != null ? Item.fromJson(json['item']) : null;
-    showNote = json['note'] != null ? true : false;
+    showNote = true;
   }
 
   Map<String, dynamic> toJson() {

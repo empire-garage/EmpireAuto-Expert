@@ -283,11 +283,13 @@ class _OrderDetailState extends State<OrderDetail> {
                     ),
                   ),
                 ),
-                Text(
-                  'Vấn đề tái sửa chữa',
-                  style: AppStyles.header600(
-                      fontsize: 14.sp, color: AppColors.blackTextColor),
-                ),
+                widget.order.considerProblems.isNotEmpty
+                    ? Text(
+                        'Vấn đề tái sửa chữa',
+                        style: AppStyles.header600(
+                            fontsize: 14.sp, color: AppColors.blackTextColor),
+                      )
+                    : Container(),
                 ListView.builder(
                     shrinkWrap: true,
                     itemCount: widget.order.considerProblems.length,
@@ -306,6 +308,41 @@ class _OrderDetailState extends State<OrderDetail> {
                         ),
                       );
                     }),
+
+                SizedBox(
+                  height: 30.h,
+                  child: Center(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Kết quả phân tích",
+                        style: TextStyle(
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.blackTextColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                TagEditor(
+                  tags: _tags,
+                  car: widget.order.car,
+                  onChanged: (tags) {
+                    setState(() {
+                      _tags = tags;
+                      _validateProblem = null;
+                    });
+                  },
+                ),
+                _validateProblem != null
+                    ? Text(
+                        _validateProblem!,
+                        style: AppStyles.text400(
+                            fontsize: 12.sp, color: AppColors.errorIcon),
+                      )
+                    : Container(),
                 SizedBox(
                   height: 50.h,
                   child: Center(
@@ -352,40 +389,6 @@ class _OrderDetailState extends State<OrderDetail> {
                 _validateSymptom != null
                     ? Text(
                         _validateSymptom!,
-                        style: AppStyles.text400(
-                            fontsize: 12.sp, color: AppColors.errorIcon),
-                      )
-                    : Container(),
-                SizedBox(
-                  height: 30.h,
-                  child: Center(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Kết quả phân tích",
-                        style: TextStyle(
-                          fontFamily: 'SFProDisplay',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.blackTextColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                TagEditor(
-                  tags: _tags,
-                  car: widget.order.car,
-                  onChanged: (tags) {
-                    setState(() {
-                      _tags = tags;
-                      _validateProblem = null;
-                    });
-                  },
-                ),
-                _validateProblem != null
-                    ? Text(
-                        _validateProblem!,
                         style: AppStyles.text400(
                             fontsize: 12.sp, color: AppColors.errorIcon),
                       )
