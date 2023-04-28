@@ -4,6 +4,7 @@ import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/response/orderservices.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
+import 'package:empire_expert/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -21,6 +22,7 @@ class CarWishList extends StatefulWidget {
 class _CarWishListState extends State<CarWishList> {
   bool _loading = true;
   late List<OrderServiceOfExpertModel> _model;
+  List<OrderServiceOfExpertModel> rawData = [];
 
   _fetchData() async {
     var expertId = await getUserId();
@@ -29,8 +31,20 @@ class _CarWishListState extends State<CarWishList> {
     if (!mounted) return;
     if (response == null) throw Exception("Get order serivce fail");
     setState(() {
+      rawData = response;
       _model = response;
       _loading = false;
+    });
+  }
+
+  _filterData(String value) {
+    setState(() {
+      _model = rawData.where((element) => 
+      element.code.toString().toLowerCase().contains(value.toLowerCase()) ||
+      element.order.createdAt.toString().toLowerCase().contains(value.toLowerCase()) ||
+      element.car.carBrand.toString().toLowerCase().contains(value.toLowerCase()) ||
+      element.car.carLisenceNo.toString().toLowerCase().contains(value.toLowerCase())
+      ).toList();
     });
   }
 
@@ -62,6 +76,13 @@ class _CarWishListState extends State<CarWishList> {
               // centerTitle: true,
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
+              bottom: AppBar(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                title: SearchBar(search: (value) {
+                  _filterData(value);
+                },),
+              ),
             ),
             body: RefreshIndicator(
               onRefresh: refresh,

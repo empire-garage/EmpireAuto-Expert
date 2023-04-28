@@ -5,6 +5,7 @@ import 'package:empire_expert/models/response/orderservices.dart';
 import 'package:empire_expert/screens/diagnosing.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
+import 'package:empire_expert/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -20,6 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool _loading = true;
   late List<OrderServiceOfExpertModel> _model;
+  List<OrderServiceOfExpertModel> rawData = [];
 
   _fetchData() async {
     var expertId = await getUserId();
@@ -28,11 +30,23 @@ class _HomePageState extends State<HomePage> {
     if (!mounted) return;
     if (response == null) throw Exception("Get order serivce fail");
     setState(() {
+      rawData = response;
       _model = response;
       _model.sort(
         (a, b) => a.order.updatedAt.compareTo(b.order.updatedAt),
       );
       _loading = false;
+    });
+  }
+
+  _filterData(String value) {
+    setState(() {
+      _model = rawData.where((element) => 
+      element.code.toString().toLowerCase().contains(value.toLowerCase()) ||
+      element.order.createdAt.toString().toLowerCase().contains(value.toLowerCase()) ||
+      element.car.carBrand.toString().toLowerCase().contains(value.toLowerCase()) ||
+      element.car.carLisenceNo.toString().toLowerCase().contains(value.toLowerCase())
+      ).toList();
     });
   }
 
@@ -59,6 +73,13 @@ class _HomePageState extends State<HomePage> {
               title: Text(
                 "Danh mục kiểm tra",
                 style: AppStyles.header600(fontsize: 16.sp),
+              ),
+              bottom: AppBar(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                title: SearchBar(search: (value) {
+                  _filterData(value);
+                },),
               ),
               automaticallyImplyLeading: false,
               // centerTitle: true,
@@ -140,8 +161,7 @@ class _HomePageState extends State<HomePage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                          _model[index].car.carLisenceNo,
+                                      Text(_model[index].car.carLisenceNo,
                                           style: AppStyles.header600(
                                             fontsize: 16.sp,
                                           )),
