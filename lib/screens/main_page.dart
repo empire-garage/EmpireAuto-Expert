@@ -1,3 +1,4 @@
+import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -37,113 +38,107 @@ class _MainPageState extends State<MainPage> {
         shape: const CircularNotchedRectangle(),
         notchMargin: 10,
         child: SizedBox(
-          height: 80.h,
-          child: SizedBox(
-            height: 60.h,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                //left tab bar icon
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          height: 65.sp,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              MaterialButton(
+                onPressed: () {
+                  setState(() {
+                    currentScreen = const HomePage();
+                    currentTab = 1;
+                  });
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      width: 20.w,
+                    Icon(
+                      FontAwesomeIcons.listCheck,
+                      size: 24,
+                      color: currentTab == 1
+                          ? AppColors.buttonColor
+                          : AppColors.grey400,
                     ),
                     SizedBox(
-                      width: 60.w,
-                      height: 60.h,
-                      child: MaterialButton(
-                        minWidth: 60.w,
-                        height: 60.h,
-                        onPressed: () {
-                          setState(() {
-                            currentScreen = const HomePage();
-                            currentTab = 1;
-                          });
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.listCheck,
-                              size: 24,
-                              color: currentTab == 1
-                                  ? AppColors.buttonColor
-                                  : AppColors.grey400,
-                            ),
-                          ],
-                        ),
-                      ),
+                      height: 5.sp,
                     ),
-                    SizedBox(
-                      width: 10.w,
-                    ),
-                    SizedBox(
-                      height: 60.h,
-                      width: 60.w,
-                    ),
-                    SizedBox(
-                      width: 60.w,
-                      height: 60.h,
-                      child: MaterialButton(
-                        minWidth: 15.w,
-                        onPressed: () {
-                          setState(() {
-                            currentScreen = const CarWishList();
-                            currentTab = 2;
-                          });
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.screwdriverWrench,
-                              size: 24,
-                              color: currentTab == 2
-                                  ? AppColors.buttonColor
-                                  : AppColors.grey400,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10.w,
-                    ),
-                    SizedBox(
-                      height: 60.h,
-                      width: 60.w,
-                    ),
-                    SizedBox(
-                      height: 60.h,
-                      width: 60.w,
-                      child: MaterialButton(
-                        minWidth: 60.w,
-                        onPressed: () {
-                          setState(() {
-                            currentScreen = const Profile();
-                            currentTab = 3;
-                          });
-                        },
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.userGear,
-                              size: 24,
-                              color: currentTab == 3
-                                  ? AppColors.buttonColor
-                                  : AppColors.grey400,
-                            ),
-                          ],
-                        ),
+                    Text(
+                      "Chẩn đoán",
+                      style: AppStyles.header600(
+                        fontsize: 10,
+                        color: currentTab == 1
+                            ? AppColors.buttonColor
+                            : AppColors.grey400,
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  setState(() {
+                    currentScreen = const CarWishList();
+                    currentTab = 2;
+                  });
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      FontAwesomeIcons.screwdriverWrench,
+                      size: 24,
+                      color: currentTab == 2
+                          ? AppColors.buttonColor
+                          : AppColors.grey400,
+                    ),
+                    SizedBox(
+                      height: 5.sp,
+                    ),
+                    Text(
+                      "Sửa chữa",
+                      style: AppStyles.header600(
+                        fontsize: 10,
+                        color: currentTab == 2
+                            ? AppColors.buttonColor
+                            : AppColors.grey400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  setState(() {
+                    currentScreen = const Profile();
+                    currentTab = 3;
+                  });
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      FontAwesomeIcons.userGear,
+                      size: 24,
+                      color: currentTab == 3
+                          ? AppColors.buttonColor
+                          : AppColors.grey400,
+                    ),
+                    SizedBox(
+                      height: 5.sp,
+                    ),
+                    Text(
+                      "Tài khoản",
+                      style: AppStyles.header600(
+                        fontsize: 10,
+                        color: currentTab == 3
+                            ? AppColors.buttonColor
+                            : AppColors.grey400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
