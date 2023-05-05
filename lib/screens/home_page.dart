@@ -41,12 +41,25 @@ class _HomePageState extends State<HomePage> {
 
   _filterData(String value) {
     setState(() {
-      _model = rawData.where((element) => 
-      element.code.toString().toLowerCase().contains(value.toLowerCase()) ||
-      element.order.createdAt.toString().toLowerCase().contains(value.toLowerCase()) ||
-      element.car.carBrand.toString().toLowerCase().contains(value.toLowerCase()) ||
-      element.car.carLisenceNo.toString().toLowerCase().contains(value.toLowerCase())
-      ).toList();
+      _model = rawData
+          .where((element) =>
+              element.code
+                  .toString()
+                  .toLowerCase()
+                  .contains(value.toLowerCase()) ||
+              element.order.createdAt
+                  .toString()
+                  .toLowerCase()
+                  .contains(value.toLowerCase()) ||
+              element.car.carBrand
+                  .toString()
+                  .toLowerCase()
+                  .contains(value.toLowerCase()) ||
+              element.car.carLisenceNo
+                  .toString()
+                  .toLowerCase()
+                  .contains(value.toLowerCase()))
+          .toList();
     });
   }
 
@@ -70,118 +83,155 @@ class _HomePageState extends State<HomePage> {
         : Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
-              title: Text(
-                "Danh mục kiểm tra",
-                style: AppStyles.header600(fontsize: 16.sp),
-              ),
+              toolbarHeight: 100.sp,
+              title: Image.asset('assets/image/app-logo/expert_logo.png',
+                  height: 50.sp),
+              actions: [
+                Center(
+                  child: Container(
+                      margin: EdgeInsets.all(15.sp),
+                      height: 42.sp,
+                      width: 42.sp,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade200),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(30))),
+                      child: const Icon(
+                        Icons.notifications_none_outlined,
+                        color: Colors.black,
+                      )),
+                )
+              ],
               bottom: AppBar(
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
-                title: SearchBar(search: (value) {
-                  _filterData(value);
-                },),
+                title: SearchBar(
+                  search: (value) {
+                    _filterData(value);
+                  },
+                ),
               ),
               automaticallyImplyLeading: false,
               // centerTitle: true,
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
             ),
-            body: RefreshIndicator(
-              onRefresh: refresh,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                child: ListView.builder(
-                    itemCount: _model.length,
-                    itemBuilder: (context, index) => Slidable(
-                          startActionPane: ActionPane(
-                              motion: const StretchMotion(),
-                              children: [
-                                SlidableAction(
-                                  onPressed: (context) {},
-                                  backgroundColor: AppColors.errorIcon,
-                                  icon: Icons.cancel,
-                                  label: 'Hủy',
-                                )
-                              ]),
-                          endActionPane: ActionPane(
-                              motion: const StretchMotion(),
-                              children: [
-                                SlidableAction(
-                                  onPressed: (context) {
-                                    Get.to(() => DiagnosingPage(
-                                          orderServiceId: _model[index].id,
-                                        ));
-                                  },
-                                  backgroundColor: AppColors.blue600,
-                                  icon: Icons.settings_suggest,
-                                  label: 'Chẩn đoán',
-                                )
-                              ]),
-                          child: GestureDetector(
-                            onTap: () {
-                              Get.to(() => DiagnosingPage(
-                                    orderServiceId: _model[index].id,
-                                  ));
-                            },
-                            child: DecoratedBox(
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(16)),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 8.h),
-                                child: ListTile(
-                                  contentPadding: EdgeInsets.zero,
-                                  leading: FutureBuilder(
-                                      future: BrandService()
-                                          .getPhoto(_model[index].car.carBrand),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.hasData) {
-                                          return Image.network(
-                                            snapshot.data.toString(),
-                                            height: 50.h,
-                                            width: 50.w,
-                                          );
-                                        } else if (snapshot.hasError) {
-                                          return Image.asset(
-                                            "assets/image/icon-logo/bmw-car-icon.png",
-                                            height: 50.h,
-                                            width: 50.w,
-                                          );
-                                        } else {
-                                          return Image.asset(
-                                            "assets/image/icon-logo/bmw-car-icon.png",
-                                            height: 50.h,
-                                            width: 50.w,
-                                          );
-                                        }
-                                      }),
-                                  title: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(_model[index].car.carLisenceNo,
-                                          style: AppStyles.header600(
-                                            fontsize: 16.sp,
-                                          )),
-                                      Text("${_model[index].code}",
-                                          style: AppStyles.text400(
-                                              fontsize: 12.sp)),
-                                      Text(
-                                          _model[index]
-                                              .order
-                                              .createdAt
-                                              .substring(0, 10),
-                                          style: AppStyles.text400(
-                                              fontsize: 12.sp)),
-                                    ],
+            body: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.w),
+              child: ListView(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15.sp, horizontal: 5.sp),
+                    child: Text(
+                      "Danh mục cần kiểm tra",
+                      style: AppStyles.header600(fontsize: 14.sp),
+                    ),
+                  ),
+                  RefreshIndicator(
+                    onRefresh: refresh,
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _model.length,
+                        itemBuilder: (context, index) => Slidable(
+                              startActionPane: ActionPane(
+                                  motion: const StretchMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      onPressed: (context) {},
+                                      backgroundColor: AppColors.errorIcon,
+                                      icon: Icons.cancel,
+                                      label: 'Hủy',
+                                    )
+                                  ]),
+                              endActionPane: ActionPane(
+                                  motion: const StretchMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      onPressed: (context) {
+                                        Get.to(() => DiagnosingPage(
+                                              orderServiceId: _model[index].id,
+                                            ));
+                                      },
+                                      backgroundColor: AppColors.blue600,
+                                      icon: Icons.settings_suggest,
+                                      label: 'Chẩn đoán',
+                                    )
+                                  ]),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Get.to(() => DiagnosingPage(
+                                        orderServiceId: _model[index].id,
+                                      ));
+                                },
+                                child: DecoratedBox(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(16)),
+                                  ),
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 10.h),
+                                    child: ListTile(
+                                      // contentPadding: EdgeInsets.zero,
+                                      leading: FutureBuilder(
+                                          future: BrandService().getPhoto(
+                                              _model[index].car.carBrand),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              return Image.network(
+                                                snapshot.data.toString(),
+                                                height: 50.h,
+                                                width: 50.w,
+                                              );
+                                            } else if (snapshot.hasError) {
+                                              return Image.asset(
+                                                "assets/image/icon-logo/bmw-car-icon.png",
+                                                height: 50.h,
+                                                width: 50.w,
+                                              );
+                                            } else {
+                                              return Image.asset(
+                                                "assets/image/icon-logo/bmw-car-icon.png",
+                                                height: 50.h,
+                                                width: 50.w,
+                                              );
+                                            }
+                                          }),
+                                      title: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              "${_model[index].car.carBrand} ${_model[index].car.carModel}",
+                                              style: AppStyles.text400(
+                                                  fontsize: 12.sp, color: Colors.grey.shade500)),
+                                          SizedBox(
+                                            height: 5.sp,
+                                          ),
+                                          Text(_model[index].car.carLisenceNo,
+                                              style: AppStyles.header600(
+                                                fontsize: 16.sp,
+                                              )),
+                                          SizedBox(
+                                            height: 5.sp,
+                                          ),
+                                          Text("${_model[index].code}",
+                                              style: AppStyles.text400(
+                                                  fontsize: 12.sp, color: Colors.grey.shade500)),
+                                        ],
+                                      ),
+                                      trailing: const Icon(
+                                        Icons.navigate_next,
+                                        color: Colors.black,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                        )),
+                            )),
+                  ),
+                ],
               ),
             ),
           );

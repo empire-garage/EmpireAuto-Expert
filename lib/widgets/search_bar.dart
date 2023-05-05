@@ -16,15 +16,19 @@ class _SearchBarState extends State<SearchBar> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SizedBox(
-        width: 340.w,
-        height: 50.w,
+      child: Container(
+        width: 335.w,
+        height: 50.h,
+        decoration: const BoxDecoration(
+          color: Color(0xffeaeaed),
+          borderRadius:  BorderRadius.all(Radius.circular(16)),
+        ),
         child: TextField(
           // focusNode: primaryFocus,
           onChanged: (value) => widget.search(value),
           decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(26.r)),
+            border: const OutlineInputBorder(
+              borderSide: BorderSide.none
             ),
             hintStyle: TextStyle(
               fontFamily: 'Roboto',
@@ -32,7 +36,7 @@ class _SearchBarState extends State<SearchBar> {
               fontWeight: FontWeight.w400,
               color: AppColors.lightTextColor,
             ),
-            hintText: 'Tìm kiếm',
+            hintText: 'Tìm kiếm...',
             prefixIcon: Icon(
               Icons.search,
               size: 20.sp,
