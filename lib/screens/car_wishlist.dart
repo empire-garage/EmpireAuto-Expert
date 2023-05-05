@@ -39,12 +39,25 @@ class _CarWishListState extends State<CarWishList> {
 
   _filterData(String value) {
     setState(() {
-      _model = rawData.where((element) => 
-      element.code.toString().toLowerCase().contains(value.toLowerCase()) ||
-      element.order.createdAt.toString().toLowerCase().contains(value.toLowerCase()) ||
-      element.car.carBrand.toString().toLowerCase().contains(value.toLowerCase()) ||
-      element.car.carLisenceNo.toString().toLowerCase().contains(value.toLowerCase())
-      ).toList();
+      _model = rawData
+          .where((element) =>
+              element.code
+                  .toString()
+                  .toLowerCase()
+                  .contains(value.toLowerCase()) ||
+              element.order.createdAt
+                  .toString()
+                  .toLowerCase()
+                  .contains(value.toLowerCase()) ||
+              element.car.carBrand
+                  .toString()
+                  .toLowerCase()
+                  .contains(value.toLowerCase()) ||
+              element.car.carLisenceNo
+                  .toString()
+                  .toLowerCase()
+                  .contains(value.toLowerCase()))
+          .toList();
     });
   }
 
@@ -68,26 +81,32 @@ class _CarWishListState extends State<CarWishList> {
         : Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(
-              title: Text(
-                "Danh mục sửa chữa",
-                style: AppStyles.header600(fontsize: 16.sp),
+              toolbarHeight: 100.sp,
+              title: Padding(
+                padding: EdgeInsets.only(top: 40.sp, bottom: 15.sp, left: 5.sp),
+                child: Text(
+                  "Danh mục sửa chữa",
+                  style: AppStyles.header600(fontsize: 20.sp),
+                ),
+              ),
+              bottom: AppBar(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                title: SearchBar(
+                  search: (value) {
+                    _filterData(value);
+                  },
+                ),
               ),
               automaticallyImplyLeading: false,
               // centerTitle: true,
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
-              bottom: AppBar(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                title: SearchBar(search: (value) {
-                  _filterData(value);
-                },),
-              ),
             ),
-            body: RefreshIndicator(
-              onRefresh: refresh,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
+            body: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.sp),
+              child: RefreshIndicator(
+                onRefresh: refresh,
                 child: ListView.builder(
                     itemCount: _model.length,
                     itemBuilder: (context, index) => Slidable(
@@ -130,7 +149,7 @@ class _CarWishListState extends State<CarWishList> {
                               child: Padding(
                                 padding: EdgeInsets.symmetric(vertical: 8.h),
                                 child: ListTile(
-                                  contentPadding: EdgeInsets.zero,
+                                  // contentPadding: EdgeInsets.zero,
                                   leading: FutureBuilder(
                                       future: BrandService()
                                           .getPhoto(_model[index].car.carBrand),
@@ -156,25 +175,32 @@ class _CarWishListState extends State<CarWishList> {
                                         }
                                       }),
                                   title: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                          _model[index].car.carLisenceNo,
+                                          "${_model[index].car.carBrand} ${_model[index].car.carModel}",
+                                          style: AppStyles.text400(
+                                              fontsize: 10.sp,
+                                              color: Colors.grey.shade500)),
+                                      SizedBox(
+                                        height: 5.sp,
+                                      ),
+                                      Text(_model[index].car.carLisenceNo,
                                           style: AppStyles.header600(
-                                            fontsize: 16.sp,
+                                            fontsize: 12.sp,
                                           )),
+                                      SizedBox(
+                                        height: 5.sp,
+                                      ),
                                       Text("${_model[index].code}",
                                           style: AppStyles.text400(
-                                              fontsize: 12.sp)),
-                                      Text(
-                                          _model[index]
-                                              .order
-                                              .createdAt
-                                              .substring(0, 10),
-                                          style: AppStyles.text400(
-                                              fontsize: 12.sp)),
+                                              fontsize: 10.sp,
+                                              color: Colors.grey.shade500)),
                                     ],
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.navigate_next,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),

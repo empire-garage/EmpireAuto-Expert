@@ -84,22 +84,28 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: Colors.white,
             appBar: AppBar(
               toolbarHeight: 100.sp,
-              title: Image.asset('assets/image/app-logo/expert_logo.png',
-                  height: 50.sp),
+              title: Padding(
+                padding: EdgeInsets.only(top: 20.sp),
+                child: Image.asset('assets/image/app-logo/expert_logo.png',
+                    height: 50.sp),
+              ),
               actions: [
                 Center(
-                  child: Container(
-                      margin: EdgeInsets.all(15.sp),
-                      height: 42.sp,
-                      width: 42.sp,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade200),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(30))),
-                      child: const Icon(
-                        Icons.notifications_none_outlined,
-                        color: Colors.black,
-                      )),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 20.sp),
+                    child: Container(
+                        margin: EdgeInsets.all(15.sp),
+                        height: 42.sp,
+                        width: 42.sp,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade200),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(30))),
+                        child: const Icon(
+                          Icons.notifications_none_outlined,
+                          color: Colors.black,
+                        )),
+                  ),
                 )
               ],
               bottom: AppBar(
@@ -205,20 +211,20 @@ class _HomePageState extends State<HomePage> {
                                           Text(
                                               "${_model[index].car.carBrand} ${_model[index].car.carModel}",
                                               style: AppStyles.text400(
-                                                  fontsize: 12.sp, color: Colors.grey.shade500)),
+                                                  fontsize: 10.sp, color: Colors.grey.shade500)),
                                           SizedBox(
                                             height: 5.sp,
                                           ),
                                           Text(_model[index].car.carLisenceNo,
                                               style: AppStyles.header600(
-                                                fontsize: 16.sp,
+                                                fontsize: 12.sp,
                                               )),
                                           SizedBox(
                                             height: 5.sp,
                                           ),
                                           Text("${_model[index].code}",
                                               style: AppStyles.text400(
-                                                  fontsize: 12.sp, color: Colors.grey.shade500)),
+                                                  fontsize: 10.sp, color: Colors.grey.shade500)),
                                         ],
                                       ),
                                       trailing: const Icon(
