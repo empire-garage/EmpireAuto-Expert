@@ -123,7 +123,7 @@ class _ProfileState extends State<Profile> {
                             style: TextStyle(
                                 fontSize: 24.sp,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'SFProDisplay',
+                                fontFamily: 'Roboto',
                                 color: AppColors.blackTextColor),
                           ),
                   ),
@@ -156,7 +156,7 @@ class _ProfileState extends State<Profile> {
                           style: TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.w600,
-                              fontFamily: 'SFProDisplay',
+                              fontFamily: 'Roboto',
                               color: AppColors.blackTextColor),
                         ),
                         const Spacer(),
@@ -195,7 +195,7 @@ class _ProfileState extends State<Profile> {
                           style: TextStyle(
                               fontSize: 18.sp,
                               fontWeight: FontWeight.w600,
-                              fontFamily: 'SFProDisplay',
+                              fontFamily: 'Roboto',
                               color: Colors.red),
                         ),
                         const Spacer(),

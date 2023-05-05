@@ -61,7 +61,7 @@ class _NotificationPageState extends State<NotificationPage> {
         centerTitle: true,
         title: const Text('Thông báo',
             style: TextStyle(
-              fontFamily: 'SFProDisplay',
+              fontFamily: 'Roboto',
               fontWeight: FontWeight.w600,
               fontSize: 16,
               color: Colors.black,
@@ -90,7 +90,7 @@ class _NotificationPageState extends State<NotificationPage> {
               title: const Text(
                 'Bạn đã đặt dịch vụ thành công',
                 style: TextStyle(
-                    fontFamily: 'SFProDisplay',
+                    fontFamily: 'Roboto',
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
               ),
@@ -102,13 +102,13 @@ class _NotificationPageState extends State<NotificationPage> {
                     SizedBox(height: 5),
                     Text("Đặt dịch vụ thành công vào lúc Thứ 2, 07/01/2023",
                         style: TextStyle(
-                            fontFamily: 'SFProDisplay',
+                            fontFamily: 'Roboto',
                             fontSize: 12,
                             fontWeight: FontWeight.w400)),
                     SizedBox(height: 10),
                     Text("8:30, 01/01/2023",
                         style: TextStyle(
-                            fontFamily: 'SFProDisplay',
+                            fontFamily: 'Roboto',
                             fontSize: 12,
                             fontWeight: FontWeight.w400)),
                   ],

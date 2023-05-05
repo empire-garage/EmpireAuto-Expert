@@ -42,7 +42,7 @@ class DepositBottomSheet extends StatelessWidget {
                   Text(
                     "Tại sao phải trả phí đặt chỗ ? ",
                     style: TextStyle(
-                      fontFamily: 'SFProDisplay',
+                      fontFamily: 'Roboto',
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.blackTextColor,
@@ -67,7 +67,7 @@ class DepositBottomSheet extends StatelessWidget {
                           " đã xuất hiện, đôi khi do vô tình, nhiều khi do cố ý (xen thêm vào những câu hài hước hay thông tục)",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: 'SFProDisplay',
+                            fontFamily: 'Roboto',
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w400,
                             color: AppColors.lightTextColor,
@@ -94,7 +94,7 @@ class DepositBottomSheet extends StatelessWidget {
                             child: Text(
                               'Tôi đã hiểu',
                               style: TextStyle(
-                                fontFamily: 'SFProDisplay',
+                                fontFamily: 'Roboto',
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w600,
                               ),

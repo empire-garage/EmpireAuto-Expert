@@ -109,7 +109,7 @@ class _ChoseYourCarState extends State<ChoseYourCar> {
                     Text(
                       "Phương tiện",
                       style: TextStyle(
-                        fontFamily: 'SFProDisplay',
+                        fontFamily: 'Roboto',
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
                         color: AppColors.blackTextColor,
@@ -127,7 +127,7 @@ class _ChoseYourCarState extends State<ChoseYourCar> {
                       child: Text(
                         "Thêm mới",
                         style: TextStyle(
-                          fontFamily: 'SFProDisplay',
+                          fontFamily: 'Roboto',
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w500,
                           color: AppColors.blueTextColor,
@@ -231,7 +231,7 @@ class _CarChipState extends State<CarChip> {
           title: Text(
             widget.car.carBrand,
             style: TextStyle(
-              fontFamily: 'SFProDisplay',
+              fontFamily: 'Roboto',
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,
               color: AppColors.lightTextColor,
@@ -245,7 +245,7 @@ class _CarChipState extends State<CarChip> {
                 Text(
                   widget.car.carLisenceNo,
                   style: TextStyle(
-                    fontFamily: 'SFProDisplay',
+                    fontFamily: 'Roboto',
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
                     color: AppColors.blackTextColor,
@@ -257,7 +257,7 @@ class _CarChipState extends State<CarChip> {
                 Text(
                   widget.car.carModel,
                   style: TextStyle(
-                    fontFamily: 'SFProDisplay',
+                    fontFamily: 'Roboto',
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w500,
                     color: AppColors.lightTextColor,

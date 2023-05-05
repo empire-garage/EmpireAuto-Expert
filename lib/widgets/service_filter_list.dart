@@ -51,7 +51,7 @@ class ServiceFilterList extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'SFProDisplay'),
+                          fontFamily: 'Roboto'),
                     ),
                   )),
             ),
@@ -81,7 +81,7 @@ class ServiceFilterList extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'SFProDisplay'),
+                          fontFamily: 'Roboto'),
                     ),
                   )),
             ),
@@ -111,7 +111,7 @@ class ServiceFilterList extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'SFProDisplay'),
+                          fontFamily: 'Roboto'),
                     ),
                   )),
             ),
@@ -141,7 +141,7 @@ class ServiceFilterList extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
-                          fontFamily: 'SFProDisplay'),
+                          fontFamily: 'Roboto'),
                     ),
                   )),
             ),

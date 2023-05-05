@@ -49,7 +49,7 @@ class _CountdownTimerState extends State<CountdownTimer> {
   Widget build(BuildContext context) {
     return Text('$_seconds',
         style: const TextStyle(
-          fontFamily: 'SFProDisplay',
+          fontFamily: 'Roboto',
           fontWeight: FontWeight.w400,
           fontSize: 14,
           color: AppColors.lightTextColor,

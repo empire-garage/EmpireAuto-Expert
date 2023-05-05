@@ -56,7 +56,7 @@ class BookingFailed extends StatelessWidget {
                   Text(
                     "Đặt lịch thất bại",
                     style: TextStyle(
-                      fontFamily: 'SFProDisplay',
+                      fontFamily: 'Roboto',
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.blackTextColor,
@@ -72,7 +72,7 @@ class BookingFailed extends StatelessWidget {
                         "Đặt lịch thất bại. Vui lòng thử lại",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'SFProDisplay',
+                          fontFamily: 'Roboto',
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
                           color: AppColors.lightTextColor,
@@ -101,7 +101,7 @@ class BookingFailed extends StatelessWidget {
                           child: Text(
                             'Thử lại',
                             style: TextStyle(
-                              fontFamily: 'SFProDisplay',
+                              fontFamily: 'Roboto',
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w600,
                             ),

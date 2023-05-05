@@ -27,7 +27,7 @@ class _SearchBarState extends State<SearchBar> {
               borderRadius: BorderRadius.all(Radius.circular(26.r)),
             ),
             hintStyle: TextStyle(
-              fontFamily: 'SFProDisplay',
+              fontFamily: 'Roboto',
               fontSize: 14.sp,
               fontWeight: FontWeight.w400,
               color: AppColors.lightTextColor,

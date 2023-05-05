@@ -76,19 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 28.sp,
                           fontWeight: FontWeight.w600,
                           color: AppColors.blackTextColor,
-                          fontFamily: 'SFProDisplay'),
-                    ),
-                    SizedBox(
-                      height: 50.h,
-                    ),
-                    Text(
-                      "Vui lòng nhập thông tin đăng nhập của bạn để tiếp tục",
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.lightTextColor,
-                        fontFamily: 'SFProDisplay',
-                      ),
+                          fontFamily: 'Roboto'),
                     ),
                     SizedBox(
                       height: 30.h,
@@ -180,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Text(
                                     'Đăng nhập',
                                     style: TextStyle(
-                                      fontFamily: 'SFProDisplay',
+                                      fontFamily: 'Roboto',
                                       fontSize: 17.sp,
                                       fontWeight: FontWeight.w600,
                                     ),

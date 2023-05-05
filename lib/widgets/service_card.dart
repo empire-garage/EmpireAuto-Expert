@@ -65,7 +65,7 @@ class _SerivceCardState extends State<SerivceCard> {
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 14,
-                      fontFamily: 'SFProDisplay',
+                      fontFamily: 'Roboto',
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -79,7 +79,7 @@ class _SerivceCardState extends State<SerivceCard> {
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 16,
-                fontFamily: 'SFProDisplay',
+                fontFamily: 'Roboto',
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -95,7 +95,7 @@ class _SerivceCardState extends State<SerivceCard> {
                   style: const TextStyle(
                     color: Colors.green,
                     fontSize: 14,
-                    fontFamily: 'SFProDisplay',
+                    fontFamily: 'Roboto',
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -115,7 +115,7 @@ class _SerivceCardState extends State<SerivceCard> {
                     style: const TextStyle(
                       color: Colors.black,
                       fontSize: 14,
-                      fontFamily: 'SFProDisplay',
+                      fontFamily: 'Roboto',
                       fontWeight: FontWeight.w600,
                     ),
                     children: const [
@@ -124,7 +124,7 @@ class _SerivceCardState extends State<SerivceCard> {
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 14,
-                      fontFamily: 'SFProDisplay',
+                      fontFamily: 'Roboto',
                       fontWeight: FontWeight.w400,
                     ),
                   )

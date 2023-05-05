@@ -58,7 +58,7 @@ class ZaloBottomSheet extends StatelessWidget {
                   Text(
                     "Truy cập Zalo",
                     style: TextStyle(
-                      fontFamily: 'SFProDisplay',
+                      fontFamily: 'Roboto',
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.blackTextColor,
@@ -73,7 +73,7 @@ class ZaloBottomSheet extends StatelessWidget {
                       child: Text(
                         "Chuyển đến ứng dụng Zalo để được trao đổi",
                         style: TextStyle(
-                          fontFamily: 'SFProDisplay',
+                          fontFamily: 'Roboto',
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
                           color: AppColors.lightTextColor,
@@ -85,7 +85,7 @@ class ZaloBottomSheet extends StatelessWidget {
                     child: Text(
                       "trực tiếp với Empire Garage",
                       style: TextStyle(
-                        fontFamily: 'SFProDisplay',
+                        fontFamily: 'Roboto',
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w400,
                         color: AppColors.lightTextColor,
@@ -124,7 +124,7 @@ class ZaloBottomSheet extends StatelessWidget {
                             child: Text(
                               'Chuyển đến Zalo',
                               style: TextStyle(
-                                fontFamily: 'SFProDisplay',
+                                fontFamily: 'Roboto',
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w600,
                               ),

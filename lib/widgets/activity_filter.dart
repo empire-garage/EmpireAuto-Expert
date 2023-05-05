@@ -77,7 +77,7 @@ class FilterChip extends StatelessWidget {
         style: TextStyle(
             fontSize: 12.sp,
             fontWeight: FontWeight.w500,
-            fontFamily: 'SFProDisplay'),
+            fontFamily: 'Roboto'),
       ),
     );
   }

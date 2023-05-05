@@ -161,7 +161,7 @@ class _OrderDetailState extends State<OrderDetail> {
                   child: Text(
                     "Những dịch vụ đã thanh toán",
                     style: TextStyle(
-                      fontFamily: 'SFProDisplay',
+                      fontFamily: 'Roboto',
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.blackTextColor,
@@ -174,7 +174,7 @@ class _OrderDetailState extends State<OrderDetail> {
                   child: Text(
                     "Đánh dấu hoàn thành sau khi hoàn tất công việc",
                     style: TextStyle(
-                      fontFamily: 'SFProDisplay',
+                      fontFamily: 'Roboto',
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400,
                       color: AppColors.lightTextColor,
@@ -228,7 +228,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                       .name
                                       .toString(),
                                   style: TextStyle(
-                                    fontFamily: 'SFProDisplay',
+                                    fontFamily: 'Roboto',
                                     fontSize: 12.sp,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.blackTextColor,
@@ -243,7 +243,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                         .name
                                         .toString(),
                                     style: TextStyle(
-                                      fontFamily: 'SFProDisplay',
+                                      fontFamily: 'Roboto',
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w400,
                                       color: AppColors.grey600,
@@ -275,7 +275,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                             Text(
                                               'Ghi chú',
                                               style: TextStyle(
-                                                fontFamily: 'SFProDisplay',
+                                                fontFamily: 'Roboto',
                                                 fontSize: 12.sp,
                                                 fontWeight: FontWeight.w600,
                                                 color: AppColors.blackTextColor,
@@ -370,7 +370,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 //     Text(
                 //       "Tổng tạm tính",
                 //       style: TextStyle(
-                //         fontFamily: 'SFProDisplay',
+                //         fontFamily: 'Roboto',
                 //         fontSize: 16.sp,
                 //         fontWeight: FontWeight.w600,
                 //         color: AppColors.blackTextColor,
@@ -380,7 +380,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 //     Text(
                 //       sum.toString(),
                 //       style: TextStyle(
-                //         fontFamily: 'SFProDisplay',
+                //         fontFamily: 'Roboto',
                 //         fontSize: 16.sp,
                 //         fontWeight: FontWeight.w600,
                 //         color: AppColors.blackTextColor,
@@ -395,7 +395,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 //       Text(
                 //         "Phí đặt lịch",
                 //         style: TextStyle(
-                //           fontFamily: 'SFProDisplay',
+                //           fontFamily: 'Roboto',
                 //           fontSize: 12.sp,
                 //           fontWeight: FontWeight.w500,
                 //           color: Colors.red,
@@ -405,7 +405,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 //       Text(
                 //         prepaid.toString(),
                 //         style: TextStyle(
-                //           fontFamily: 'SFProDisplay',
+                //           fontFamily: 'Roboto',
                 //           fontSize: 12.sp,
                 //           fontWeight: FontWeight.w500,
                 //           color: Colors.red,
@@ -421,7 +421,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 //       Text(
                 //         "Tổng cộng",
                 //         style: TextStyle(
-                //           fontFamily: 'SFProDisplay',
+                //           fontFamily: 'Roboto',
                 //           fontSize: 16.sp,
                 //           fontWeight: FontWeight.w600,
                 //           color: Colors.black,
@@ -431,7 +431,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 //       Text(
                 //         sumAfter.toString(),
                 //         style: TextStyle(
-                //           fontFamily: 'SFProDisplay',
+                //           fontFamily: 'Roboto',
                 //           fontSize: 16.sp,
                 //           fontWeight: FontWeight.w600,
                 //           color: Colors.black,
@@ -464,7 +464,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       child: Text(
                         'Hoàn thành',
                         style: TextStyle(
-                          fontFamily: 'SFProDisplay',
+                          fontFamily: 'Roboto',
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
                         ),
@@ -505,7 +505,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
             "Thông tin khách hàng",
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'SFProDisplay',
+              fontFamily: 'Roboto',
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.blueTextColor,
@@ -524,7 +524,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
           title: Text(
             widget.orderService.order.user.fullname,
             style: TextStyle(
-              fontFamily: 'SFProDisplay',
+              fontFamily: 'Roboto',
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.blackTextColor,
@@ -538,7 +538,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
                 Text(
                   widget.orderService.order.user.phone,
                   style: TextStyle(
-                    fontFamily: 'SFProDisplay',
+                    fontFamily: 'Roboto',
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w400,
                     color: AppColors.lightTextColor,
@@ -576,7 +576,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
           title: Text(
             widget.orderService.car.carLisenceNo,
             style: TextStyle(
-              fontFamily: 'SFProDisplay',
+              fontFamily: 'Roboto',
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.blackTextColor,
@@ -585,7 +585,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
           subtitle: Text(
             "${widget.orderService.car.carBrand} ${widget.orderService.car.carModel}",
             style: TextStyle(
-              fontFamily: 'SFProDisplay',
+              fontFamily: 'Roboto',
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,
               color: AppColors.lightTextColor,

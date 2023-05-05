@@ -44,7 +44,7 @@ class ChosePaymentMethod extends StatelessWidget {
                       Text(
                         "Phương thức thanh toán",
                         style: TextStyle(
-                          fontFamily: 'SFProDisplay',
+                          fontFamily: 'Roboto',
                           fontSize: 15.sp,
                           fontWeight: FontWeight.w600,
                           color: AppColors.blackTextColor,
@@ -56,7 +56,7 @@ class ChosePaymentMethod extends StatelessWidget {
                         child: Text(
                           "Thêm mới",
                           style: TextStyle(
-                            fontFamily: 'SFProDisplay',
+                            fontFamily: 'Roboto',
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
                             color: AppColors.blueTextColor,
@@ -96,7 +96,7 @@ class ChosePaymentMethod extends StatelessWidget {
                             Text(
                               "Paypal",
                               style: TextStyle(
-                                fontFamily: 'SFProDisplay',
+                                fontFamily: 'Roboto',
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.blackTextColor,
@@ -111,7 +111,7 @@ class ChosePaymentMethod extends StatelessWidget {
                       subtitle: Text(
                         "1.000.000",
                         style: TextStyle(
-                          fontFamily: 'SFProDisplay',
+                          fontFamily: 'Roboto',
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w500,
                           color: AppColors.lightTextColor,
@@ -162,7 +162,7 @@ class ChosePaymentMethod extends StatelessWidget {
                             Text(
                               "Paypal",
                               style: TextStyle(
-                                fontFamily: 'SFProDisplay',
+                                fontFamily: 'Roboto',
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.blackTextColor,
@@ -177,7 +177,7 @@ class ChosePaymentMethod extends StatelessWidget {
                       subtitle: Text(
                         "1.000.000",
                         style: TextStyle(
-                          fontFamily: 'SFProDisplay',
+                          fontFamily: 'Roboto',
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w500,
                           color: AppColors.lightTextColor,
@@ -228,7 +228,7 @@ class ChosePaymentMethod extends StatelessWidget {
                             Text(
                               "Paypal",
                               style: TextStyle(
-                                fontFamily: 'SFProDisplay',
+                                fontFamily: 'Roboto',
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.blackTextColor,
@@ -243,7 +243,7 @@ class ChosePaymentMethod extends StatelessWidget {
                       subtitle: Text(
                         "1.000.000",
                         style: TextStyle(
-                          fontFamily: 'SFProDisplay',
+                          fontFamily: 'Roboto',
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w500,
                           color: AppColors.lightTextColor,
@@ -279,7 +279,7 @@ class ChosePaymentMethod extends StatelessWidget {
                           child: Text(
                             'Xác nhận',
                             style: TextStyle(
-                              fontFamily: 'SFProDisplay',
+                              fontFamily: 'Roboto',
                               fontSize: 17.sp,
                               fontWeight: FontWeight.w600,
                             ),

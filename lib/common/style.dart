@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppStyles {
-  static String fontFamily = 'SFProDisplay';
+  static String fontFamily = 'Roboto';
 
   static TextStyle text400(
       {double fontsize = 22,

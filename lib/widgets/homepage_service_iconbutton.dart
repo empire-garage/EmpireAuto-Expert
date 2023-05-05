@@ -38,7 +38,7 @@ class HomePageServiceIconButton extends StatelessWidget {
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.blackTextColor,
-                  fontFamily: 'SFProDisplay'),
+                  fontFamily: 'Roboto'),
             ),
           ]),
           SizedBox(
@@ -66,7 +66,7 @@ class HomePageServiceIconButton extends StatelessWidget {
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.blackTextColor,
-                  fontFamily: 'SFProDisplay'),
+                  fontFamily: 'Roboto'),
             ),
           ]),
           SizedBox(
@@ -94,7 +94,7 @@ class HomePageServiceIconButton extends StatelessWidget {
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.blackTextColor,
-                  fontFamily: 'SFProDisplay'),
+                  fontFamily: 'Roboto'),
             ),
           ]),
           SizedBox(
@@ -122,7 +122,7 @@ class HomePageServiceIconButton extends StatelessWidget {
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.blackTextColor,
-                  fontFamily: 'SFProDisplay'),
+                  fontFamily: 'Roboto'),
             ),
           ]),
           SizedBox(
@@ -150,7 +150,7 @@ class HomePageServiceIconButton extends StatelessWidget {
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.blackTextColor,
-                  fontFamily: 'SFProDisplay'),
+                  fontFamily: 'Roboto'),
             ),
           ]),
           SizedBox(
@@ -178,7 +178,7 @@ class HomePageServiceIconButton extends StatelessWidget {
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w600,
                   color: AppColors.blackTextColor,
-                  fontFamily: 'SFProDisplay'),
+                  fontFamily: 'Roboto'),
             ),
           ]),
         ],

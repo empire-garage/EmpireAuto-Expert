@@ -265,7 +265,7 @@ class _OrderDetailState extends State<OrderDetail> {
                   title: Text(
                     'Khách báo tình trạng xe',
                     style: TextStyle(
-                      fontFamily: 'SFProDisplay',
+                      fontFamily: 'Roboto',
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColors.blackTextColor,
@@ -276,7 +276,7 @@ class _OrderDetailState extends State<OrderDetail> {
                     child: Text(
                       '${widget.order.receivingStatus}',
                       style: TextStyle(
-                        fontFamily: 'SFProDisplay',
+                        fontFamily: 'Roboto',
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500,
                         color: AppColors.lightTextColor,
@@ -301,7 +301,7 @@ class _OrderDetailState extends State<OrderDetail> {
                         child: Text(
                           data.name,
                           style: TextStyle(
-                            fontFamily: 'SFProDisplay',
+                            fontFamily: 'Roboto',
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
                             color: AppColors.lightTextColor,
@@ -318,7 +318,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       child: Text(
                         "Kết quả phân tích",
                         style: TextStyle(
-                          fontFamily: 'SFProDisplay',
+                          fontFamily: 'Roboto',
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
                           color: AppColors.blackTextColor,
@@ -352,7 +352,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       child: Text(
                         "Triệu chứng",
                         style: TextStyle(
-                          fontFamily: 'SFProDisplay',
+                          fontFamily: 'Roboto',
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
                           color: AppColors.blackTextColor,
@@ -402,7 +402,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 //       child: Text(
                 //         "Gợi ý dịch vụ",
                 //         style: TextStyle(
-                //           fontFamily: 'SFProDisplay',
+                //           fontFamily: 'Roboto',
                 //           fontSize: 14.sp,
                 //           fontWeight: FontWeight.w600,
                 //           color: AppColors.blackTextColor,
@@ -497,7 +497,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 // //         Text(
                 // //           "Tổng cộng",
                 // //           style: TextStyle(
-                // //             fontFamily: 'SFProDisplay',
+                // //             fontFamily: 'Roboto',
                 // //             fontSize: 16.sp,
                 // //             fontWeight: FontWeight.w600,
                 // //             color: Colors.black,
@@ -507,7 +507,7 @@ class _OrderDetailState extends State<OrderDetail> {
                 // //         Text(
                 // //           _sum.toString(),
                 // //           style: TextStyle(
-                // //             fontFamily: 'SFProDisplay',
+                // //             fontFamily: 'Roboto',
                 // //             fontSize: 16.sp,
                 // //             fontWeight: FontWeight.w600,
                 // //             color: Colors.black,
@@ -553,7 +553,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       child: Text(
                         'Gửi gợi ý',
                         style: TextStyle(
-                          fontFamily: 'SFProDisplay',
+                          fontFamily: 'Roboto',
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
                         ),
@@ -594,7 +594,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
             "Thông tin khách hàng",
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'SFProDisplay',
+              fontFamily: 'Roboto',
               fontSize: 12.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.blueTextColor,
@@ -613,7 +613,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
           title: Text(
             widget.orderService.order.user.fullname,
             style: TextStyle(
-              fontFamily: 'SFProDisplay',
+              fontFamily: 'Roboto',
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.blackTextColor,
@@ -627,7 +627,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
                 Text(
                   widget.orderService.order.user.phone,
                   style: TextStyle(
-                    fontFamily: 'SFProDisplay',
+                    fontFamily: 'Roboto',
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w400,
                     color: AppColors.lightTextColor,
@@ -665,7 +665,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
           title: Text(
             widget.orderService.car.carLisenceNo,
             style: TextStyle(
-              fontFamily: 'SFProDisplay',
+              fontFamily: 'Roboto',
               fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: AppColors.blackTextColor,
@@ -674,7 +674,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
           subtitle: Text(
             "${widget.orderService.car.carBrand} ${widget.orderService.car.carModel}",
             style: TextStyle(
-              fontFamily: 'SFProDisplay',
+              fontFamily: 'Roboto',
               fontSize: 12.sp,
               fontWeight: FontWeight.w500,
               color: AppColors.lightTextColor,
