@@ -1,4 +1,5 @@
 import 'package:empire_expert/common/jwt_interceptor.dart';
+import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/screens/main_page.dart';
 import 'package:empire_expert/services/authen_firebase_services/authentication.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
@@ -28,8 +29,10 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController textEditingController = TextEditingController();
   final FirebaseAuth auth = FirebaseAuth.instance;
   late bool _loading = false;
-
+  bool _obscureText = true;
   String email = "";
+  final FocusNode _passwordFocusNode = FocusNode();
+  Color _suffixIconColor = Colors.grey.shade500;
 
   String password = "";
 
@@ -37,6 +40,19 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     _checkUserExist();
     super.initState();
+    _passwordFocusNode.addListener(() {
+      setState(() {
+        _suffixIconColor = _passwordFocusNode.hasFocus
+            ? AppColors.blue600
+            : Colors.grey.shade500;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _passwordFocusNode.dispose();
+    super.dispose();
   }
 
   _checkUserExist() async {
@@ -68,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: 52.h,
+                      height: 100.h,
                     ),
                     Text(
                       "Đăng nhập",
@@ -81,10 +97,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       height: 30.h,
                     ),
+                    Text(
+                      "Email",
+                      style: AppStyles.header600(fontsize: 12.sp),
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
                     Row(
                       children: [
                         Expanded(
                             child: TextFormField(
+                          enabled: !_loading,
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value!.isEmpty) {
@@ -97,41 +121,86 @@ class _LoginScreenState extends State<LoginScreen> {
                               email = value;
                             });
                           },
-                          decoration: const InputDecoration(
-                            hintText: "Nhập email của bạn",
+                          cursorColor: AppColors.blue600,
+                          decoration: InputDecoration(
+                            hintText: "Nhập email",
+                            hintStyle: AppStyles.text400(
+                                fontsize: 12.sp, color: Colors.grey.shade500),
+                            focusedBorder: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(16)),
+                                borderSide: BorderSide(
+                                    color: AppColors.blue600, width: 2)),
+                            border: OutlineInputBorder(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(16)),
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade200)),
                           ),
                         )),
                       ],
                     ),
-                    if (email.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: TextFormField(
-                              obscureText: true,
-                              keyboardType: TextInputType.visiblePassword,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Password không được để trống !';
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    Text(
+                      "Mật khẩu",
+                      style: AppStyles.header600(fontsize: 12.sp),
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: TextFormField(
+                          enabled: !_loading,
+                          obscureText: _obscureText,
+                          focusNode: _passwordFocusNode,
+                          keyboardType: TextInputType.visiblePassword,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Mật khẩu không được để trống !';
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            setState(() {
+                              password = value;
+                            });
+                          },
+                          cursorColor: AppColors.blue600,
+                          decoration: InputDecoration(
+                            hintText: "Nhập mật khẩu",
+                            hintStyle: AppStyles.text400(
+                                fontsize: 12.sp, color: Colors.grey.shade500),
+                            focusedBorder: const OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(16)),
+                                borderSide: BorderSide(
+                                    color: AppColors.blue600, width: 2)),
+                            border: OutlineInputBorder(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(16)),
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade200)),
+                            suffixIcon: IconButton(
+                              icon: Icon(_obscureText
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined),
+                              color: _suffixIconColor,
+                              onPressed: () {
                                 setState(() {
-                                  password = value;
+                                  _obscureText = !_obscureText;
                                 });
                               },
-                              decoration: const InputDecoration(
-                                hintText: "Password",
-                              ),
-                            )),
-                          ],
-                        ),
-                      ),
+                            ),
+                          ),
+                        )),
+                      ],
+                    ),
                     SizedBox(
-                      height: 50.h,
+                      height: 30.h,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -160,16 +229,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.buttonColor,
-                                    fixedSize: Size.fromHeight(50.w),
+                                    fixedSize: Size.fromHeight(55.sp),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(28),
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
                                   ),
                                   child: Text(
                                     'Đăng nhập',
                                     style: TextStyle(
                                       fontFamily: 'Roboto',
-                                      fontSize: 17.sp,
+                                      fontSize: 16.sp,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -178,9 +247,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onPressed: () async {},
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.buttonColor,
-                                    fixedSize: Size.fromHeight(50.w),
+                                    fixedSize: Size.fromHeight(55.w),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(28),
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
                                   ),
                                   child: const SpinKitThreeBounce(
