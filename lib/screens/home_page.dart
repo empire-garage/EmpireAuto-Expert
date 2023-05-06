@@ -127,7 +127,8 @@ class _HomePageState extends State<HomePage> {
               child: ListView(
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(vertical: 15.sp, horizontal: 5.sp),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 15.sp, horizontal: 5.sp),
                     child: Text(
                       "Danh mục cần kiểm tra",
                       style: AppStyles.header600(fontsize: 14.sp),
@@ -165,9 +166,17 @@ class _HomePageState extends State<HomePage> {
                                   ]),
                               child: GestureDetector(
                                 onTap: () {
-                                  Get.to(() => DiagnosingPage(
-                                        orderServiceId: _model[index].id,
-                                      ));
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) => DiagnosingPage(
+                                      orderServiceId: _model[index].id,
+                                    ),
+                                    isScrollControlled: true,
+                                    useSafeArea: true 
+                                  );
+                                  // Get.to(() => DiagnosingPage(
+                                  //       orderServiceId: _model[index].id,
+                                  //     ));
                                 },
                                 child: DecoratedBox(
                                   decoration: const BoxDecoration(
@@ -211,7 +220,8 @@ class _HomePageState extends State<HomePage> {
                                           Text(
                                               "${_model[index].car.carBrand} ${_model[index].car.carModel}",
                                               style: AppStyles.text400(
-                                                  fontsize: 10.sp, color: Colors.grey.shade500)),
+                                                  fontsize: 10.sp,
+                                                  color: Colors.grey.shade500)),
                                           SizedBox(
                                             height: 5.sp,
                                           ),
@@ -224,7 +234,8 @@ class _HomePageState extends State<HomePage> {
                                           ),
                                           Text("${_model[index].code}",
                                               style: AppStyles.text400(
-                                                  fontsize: 10.sp, color: Colors.grey.shade500)),
+                                                  fontsize: 10.sp,
+                                                  color: Colors.grey.shade500)),
                                         ],
                                       ),
                                       trailing: const Icon(
