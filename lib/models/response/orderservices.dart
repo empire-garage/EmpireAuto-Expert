@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 class OrderServicesResponseModel {
@@ -204,12 +205,14 @@ class OrderServiceDetails {
   bool? isConfirmed;
   bool? done;
   String? note;
+  List<String> images = [];
   bool showNote = true;
   TextEditingController controller = TextEditingController();
+  FocusNode noteFocusNode = FocusNode();
   Item? item;
 
   OrderServiceDetails(
-      {this.id, this.price, this.isConfirmed, this.item, this.done, this.note});
+      {this.id, this.price, this.isConfirmed, this.item, this.done, this.note, required this.images});
 
   OrderServiceDetails.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -218,6 +221,7 @@ class OrderServiceDetails {
     done = json['done'];
     note = json['note'];
     item = json['item'] != null ? Item.fromJson(json['item']) : null;
+    images = json['images'] != null ? List<String>.from(json['images'].map((image) => image['img'])) : [];
     showNote = true;
   }
 

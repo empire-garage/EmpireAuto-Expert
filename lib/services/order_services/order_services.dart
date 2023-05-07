@@ -134,7 +134,8 @@ class OrderServices {
         "${APIPath.path}/order-service-details/${orderServiceDetails.id}";
     var data = jsonEncode(<String, dynamic>{
       'done': orderServiceDetails.done,
-      'note': orderServiceDetails.note
+      'note': orderServiceDetails.note,
+      'images': orderServiceDetails.images.map((url) => {'img': url}).toList(),
     });
     try {
       var response = await makeHttpRequest(
