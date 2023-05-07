@@ -20,7 +20,7 @@ class _SearchBarState extends State<SearchBar> {
         width: 335.w,
         height: 50.h,
         decoration: const BoxDecoration(
-          color: Color(0xffeaeaed),
+          color: Color(0xfff5f5f5),
           borderRadius:  BorderRadius.all(Radius.circular(16)),
         ),
         child: TextField(

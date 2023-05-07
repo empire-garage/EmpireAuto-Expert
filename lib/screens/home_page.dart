@@ -124,20 +124,21 @@ class _HomePageState extends State<HomePage> {
             ),
             body: Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.w),
-              child: ListView(
-                children: [
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 15.sp, horizontal: 5.sp),
-                    child: Text(
-                      "Danh mục cần kiểm tra",
-                      style: AppStyles.header600(fontsize: 14.sp),
+              child: RefreshIndicator(
+                onRefresh: refresh,
+                child: ListView(
+                  children: [
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 15.sp, horizontal: 5.sp),
+                      child: Text(
+                        "Danh mục cần kiểm tra",
+                        style: AppStyles.header600(fontsize: 14.sp),
+                      ),
                     ),
-                  ),
-                  RefreshIndicator(
-                    onRefresh: refresh,
-                    child: ListView.builder(
+                    ListView.builder(
                         shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: _model.length,
                         itemBuilder: (context, index) => Slidable(
                               startActionPane: ActionPane(
@@ -247,8 +248,8 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                             )),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );

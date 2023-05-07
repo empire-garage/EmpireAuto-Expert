@@ -1,8 +1,10 @@
 import 'package:empire_expert/common/jwt_interceptor.dart';
 import 'package:empire_expert/common/style.dart';
+import 'package:empire_expert/models/request/sign_in_request_model.dart';
 import 'package:empire_expert/screens/main_page.dart';
 import 'package:empire_expert/services/authen_firebase_services/authentication.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
+import 'package:empire_expert/widgets/screen_loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,7 +12,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/route_manager.dart';
 
 import '../common/colors.dart';
-import '../models/request/sign_in_request_model.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
@@ -213,6 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       setState(() {
                                         _loading = true;
                                       });
+                                      showDialog(context: context, builder: (context) => const ScreenLoading());
                                       var message = await AppAuthentication()
                                           .signInWithEmailPassword(
                                               SignInRequestModel(
@@ -220,7 +222,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   password: password));
                                       if (message != "Unauthorized") {
                                         await _getBrands();
+                                        Get.back();
                                         Get.off(() => const MainPage());
+                                      } else {
+                                        Get.back();
                                       }
                                       setState(() {
                                         _loading = false;

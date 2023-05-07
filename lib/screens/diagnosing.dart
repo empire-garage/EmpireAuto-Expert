@@ -1,14 +1,17 @@
 import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/response/orderservices.dart';
 import 'package:empire_expert/models/response/problem.dart';
+import 'package:empire_expert/screens/main_page.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/item_service/item_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
+import 'package:empire_expert/widgets/bottom_pop_up.dart';
 import 'package:empire_expert/widgets/loading.dart';
+import 'package:empire_expert/widgets/screen_loading.dart';
 import 'package:empire_expert/widgets/tag_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
 
 import '../../common/colors.dart';
 import '../models/response/item.dart';
@@ -56,7 +59,7 @@ class _DiagnosingPageState extends State<DiagnosingPage> {
                     onTap: () => Get.back(),
                     child: const Icon(Icons.keyboard_arrow_down)),
               ),
-              backgroundColor: AppColors.white100,
+              backgroundColor: Colors.white,
               iconTheme: const IconThemeData(color: AppColors.blackTextColor),
               centerTitle: true,
               title: Padding(
@@ -67,6 +70,7 @@ class _DiagnosingPageState extends State<DiagnosingPage> {
                 ),
               ),
             ),
+            backgroundColor: Colors.white,
             body: ListView(children: [
               OrderDetail(
                 key: _childKey,
@@ -329,8 +333,11 @@ class _OrderDetailState extends State<OrderDetail> {
                         _validateSymptom = null;
                       });
                     },
-                    decoration:
-                        AppStyles.textbox12(hintText: "Nhập triệu chứng xe")),
+                    decoration: AppStyles.textbox12(
+                        hintText: "Nhập triệu chứng xe",
+                        hintTextColor: _validateSymptom != null
+                            ? Colors.red
+                            : Colors.grey.shade500)),
                 _validateSymptom != null
                     ? Text(
                         _validateSymptom!,
@@ -345,10 +352,48 @@ class _OrderDetailState extends State<OrderDetail> {
 
   void sendDiagnose() async {
     if (_validate(symptom, _tags) == false) return;
-    var result = await _sendDiagnosing();
-    if (result == true) {
-      Get.back();
-    }
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => BottomPopup(
+          image: 'assets/image/app-logo/launcher.png',
+          title: "Gửi chẩn đoán",
+          body:
+              "Kiểm tra kĩ càng trước khi gửi chẩn đoán, quá trình này sẽ không được hoàn tác",
+          buttonTitle: "Gửi chẩn đoán",
+          action: () async {
+            showDialog(context: context, builder: (context) => const ScreenLoading(),);
+            var result = await _sendDiagnosing();
+            Get.back();
+            if (result == true) {
+              // ignore: use_build_context_synchronously
+              Get.replace(showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => BottomPopup(
+                      image: 'assets/image/icon-logo/successfull-icon.png',
+                      title: "Gửi chuẩn đoán thành công",
+                      body: "Đã gửi chuẩn đoán thành công đến chủ xe",
+                      buttonTitle: "Trở về",
+                      action: () => Get.offAll(const MainPage()),
+                    ),
+                  ));
+            } else {
+              // ignore: use_build_context_synchronously
+              Get.replace(showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => BottomPopup(
+                      image: 'assets/image/icon-logo/failed-icon.png',
+                      title: "Gửi chuẩn đoán thất bại",
+                      body: "Có sự cố khi gửi chẩn đoán",
+                      buttonTitle: "Trở về",
+                      action: () => Get.back(),
+                    ),
+                  ));
+            }
+          }),
+    );
   }
 }
 
