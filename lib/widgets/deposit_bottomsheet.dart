@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 import '../common/colors.dart';
 
@@ -83,7 +84,7 @@ class DepositBottomSheet extends StatelessWidget {
                         child: Container(
                           margin: const EdgeInsets.only(left: 20, right: 20),
                           child: ElevatedButton(
-                            onPressed: () => Navigator.pop(context, 'Xác nhận'),
+                            onPressed: () => Get.back(),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.buttonColor,
                               fixedSize: Size.fromHeight(50.w),

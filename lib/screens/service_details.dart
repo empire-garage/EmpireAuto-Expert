@@ -6,6 +6,7 @@ import 'package:empire_expert/services/item_service/item_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
 
@@ -79,7 +80,7 @@ class _ServiceDetailsState extends State<ServiceDetails> {
                                   )),
                               child: IconButton(
                                   onPressed: () {
-                                    Navigator.pop(context);
+                                    Get.back();
                                   },
                                   icon: const Icon(
                                     Icons.arrow_back_outlined,

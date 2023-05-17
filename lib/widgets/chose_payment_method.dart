@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 import '../common/colors.dart';
 
@@ -268,7 +269,7 @@ class ChosePaymentMethod extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () => Navigator.pop(context, 'Xác nhận'),
+                          onPressed: () => Get.back(),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.buttonColor,
                             fixedSize: Size.fromHeight(50.w),

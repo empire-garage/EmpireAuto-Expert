@@ -5,6 +5,7 @@ import 'package:empire_expert/models/response/booking.dart';
 import 'package:empire_expert/services/car_service/car_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 import '../common/colors.dart';
 
@@ -51,7 +52,7 @@ class _ChoseYourCarState extends State<ChoseYourCar> {
       _selectedCar = selectedCar;
       widget.onSelected(selectedCar);
     });
-    Navigator.of(context).pop();
+    Get.back();
   }
 
   void _onCarSelectedv2(int selectedCar) {
@@ -118,11 +119,6 @@ class _ChoseYourCarState extends State<ChoseYourCar> {
                     const Spacer(),
                     TextButton(
                       onPressed: () {
-                        // Navigator.of(context).push(MaterialPageRoute(
-                        //   builder: (BuildContext context) => AddNewCar(
-                        //     onAddCar: _onCallBack,
-                        //   ),
-                        // ));
                       },
                       child: Text(
                         "Thêm mới",

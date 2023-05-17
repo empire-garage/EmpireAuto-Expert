@@ -67,6 +67,11 @@ class _CarWishListState extends State<CarWishList> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future refresh() {
     return _fetchData();
   }

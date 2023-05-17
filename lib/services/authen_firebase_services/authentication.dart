@@ -40,15 +40,6 @@ class AppAuthentication {
         _verificationId = verificationId;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('verification_id', _verificationId);
-        // ignore: use_build_context_synchronously
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(
-        //       builder: (context) => OtpConfirmation(
-        //             countryCode: countryCode,
-        //             phoneNumber: phoneNumber,
-        //           )),
-        // );
       }
 
       codeAutoRetrievalTimeout(String verificationId) {
@@ -104,14 +95,6 @@ class AppAuthentication {
       await saveUserInfo(user_info.UserInfo(
           userId: response.id, firebaseUUID: userRecord.user!.uid));
       await NotificationService().saveToken(userRecord.user!.uid);
-      // ignore: use_build_context_synchronously
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(
-      //       builder: (context) => UserProfile(
-      //             userId: response.id,
-      //           )),
-      // );
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -136,14 +119,6 @@ class AppAuthentication {
         idToken: googleAuth?.idToken,
       );
       await auth.signInWithCredential(credential);
-      // ignore: use_build_context_synchronously
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //       builder: (context) => const UserProfile(
-      //             userId: 2,
-      //           )),
-      // );
     } catch (e) {
       if (kDebugMode) {
         print("Fail to Login with Google");
@@ -176,7 +151,7 @@ class AppAuthentication {
     }
     await saveUserInfo(
         user_info.UserInfo(userId: response!.id, firebaseUUID: user.uid));
-    // await NotificationService().saveToken(user.uid);
+    await NotificationService().saveToken(user.uid);
     return "Sign in with user ${response.name}";
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 import '../common/colors.dart';
 import '../common/jwt_interceptor.dart';
@@ -27,6 +28,11 @@ class _ProfileState extends State<Profile> {
   void initState() {
     _getUserById();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   _getUserById() async {
@@ -54,8 +60,7 @@ class _ProfileState extends State<Profile> {
             width: 108.w,
             child: InkWell(
               onTap: () {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (BuildContext context) => const MainPage()));
+                Get.off(() => const MainPage());
               },
               child: Image.asset(
                 "assets/image/app-logo/homepage-icon.png",
@@ -174,11 +179,9 @@ class _ProfileState extends State<Profile> {
                   InkWell(
                     onTap: () async {
                       await AppAuthentication().logout();
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            const WelcomeScreen(),
-                      ));
+                      Get.offAll(
+                        () => const WelcomeScreen(),
+                      );
                     },
                     child: Row(
                       children: <Widget>[

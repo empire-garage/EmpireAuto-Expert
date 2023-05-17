@@ -1,5 +1,10 @@
+import 'dart:convert';
+
+import 'package:empire_expert/screens/order_detail.dart';
 import 'package:empire_expert/screens/welcome_screen.dart';
 import 'package:empire_expert/widgets/error_page.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,10 +24,75 @@ setUpFirebase() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseMessaging.instance.requestPermission();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 }
 
-class MyApp extends StatelessWidget {
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print(message.data.toString());
+  print(message.notification!.title);
+}
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    FirebaseMessaging.instance.getInitialMessage().then((message) async {
+      if (message != null) {
+        print(message);
+      }
+    });
+
+    ///forground work
+    FirebaseMessaging.onMessage.listen((message) {
+      if (message.notification != null) {
+        var title = message.notification!.title.toString();
+        var body = message.notification!.body.toString();
+        if (kDebugMode) {
+          print(message.notification!.body);
+          print(message.notification!.title);
+        }
+        Get.snackbar(title, body,
+            icon: Image.asset(
+              'assets/image/app-logo/launcher.png',
+              height: 30,
+              width: 30,
+            ),
+            duration: const Duration(seconds: 5),
+            backgroundColor: Colors.white.withOpacity(0.5),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15));
+        final routeFromMessage = message.data["route"];
+        var jsonRoute = jsonDecode(routeFromMessage);
+        switch (jsonRoute['route']) {
+          case "customer-pay-success":
+            Get.to(() => OrderDetailPage(
+                orderServiceId: jsonRoute['orderServiceId'] as int));
+            break;
+          default:
+        }
+      }
+    });
+
+    ///When the app is in background but opened and user taps
+    ///on the notification
+    FirebaseMessaging.onMessageOpenedApp.listen((message) async {
+      final routeFromMessage = message.data["route"];
+      print(message);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   // This widget is the root of your application.
   @override

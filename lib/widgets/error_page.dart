@@ -2,6 +2,7 @@ import 'package:empire_expert/common/colors.dart';
 import 'package:empire_expert/common/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
 class CustomError extends StatelessWidget {
@@ -50,9 +51,7 @@ class LottieErrorScreen extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(30))),
             child: TextButton(
               onPressed: () {
-                if (Navigator.canPop(context)) {
-                  Navigator.pop(context);
-                }
+                Get.back();
               },
               child: Text(
                 'Go back',

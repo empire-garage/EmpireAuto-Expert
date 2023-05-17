@@ -6,6 +6,7 @@ import 'package:empire_expert/models/response/item.dart';
 import 'package:empire_expert/services/item_service/item_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 
 class SearchPage extends StatefulWidget {
   final String? searchString;
@@ -101,7 +102,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
             child: IconButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Get.back();
                 },
                 icon: const Icon(
                   Icons.arrow_back_outlined,
@@ -300,8 +301,7 @@ class _SearchPageState extends State<SearchPage> {
                                                     'Không tìm thấy',
                                                     style: TextStyle(
                                                       fontSize: 24,
-                                                      fontFamily:
-                                                          'Roboto',
+                                                      fontFamily: 'Roboto',
                                                       fontWeight:
                                                           FontWeight.w700,
                                                     ),
@@ -329,15 +329,11 @@ class _SearchPageState extends State<SearchPage> {
                                       return Column(
                                         children: [
                                           InkWell(
-                                            onTap: () => Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ServiceDetails(
-                                                        itemId: _filteredItem![
-                                                                index]
-                                                            .id,
-                                                      )),
+                                            onTap: () => Get.to(
+                                              () => ServiceDetails(
+                                                itemId:
+                                                    _filteredItem![index].id,
+                                              ),
                                             ),
                                             child: SerivceCard(
                                                 backgroundImage:

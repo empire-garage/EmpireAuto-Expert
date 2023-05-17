@@ -1,5 +1,6 @@
 import 'package:empire_expert/common/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -27,7 +28,7 @@ class _NotificationPageState extends State<NotificationPage> {
             ),
             child: IconButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Get.back();
                 },
                 icon: const Icon(
                   Icons.arrow_back_outlined,

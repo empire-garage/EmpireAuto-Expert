@@ -27,7 +27,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController textEditingController = TextEditingController();
   final FirebaseAuth auth = FirebaseAuth.instance;
   late bool _loading = false;
   bool _obscureText = true;
@@ -223,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       if (message != "Unauthorized") {
                                         await _getBrands();
                                         Get.back();
-                                        Get.off(() => const MainPage());
+                                        Get.offAll(() => const MainPage());
                                       } else {
                                         Get.back();
                                       }

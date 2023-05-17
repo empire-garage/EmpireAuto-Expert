@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:empire_expert/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../common/colors.dart';
 
@@ -20,11 +21,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Timer(
-        const Duration(seconds: 3),
-        () => Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (BuildContext context) => const LoginScreen(),
-            )));
+    Timer(const Duration(seconds: 3), () => Get.to(() => const LoginScreen()));
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
