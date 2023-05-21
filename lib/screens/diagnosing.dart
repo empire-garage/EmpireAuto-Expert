@@ -356,8 +356,8 @@ class _OrderDetailState extends State<OrderDetail> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => BottomPopup(
-          image: 'assets/image/app-logo/launcher.png',
-          title: "Gửi chẩn đoán",
+          header: "Gửi chẩn đoán",
+          title: "Bạn muốn gửi chẩn đoán?",
           body:
               "Kiểm tra kĩ càng trước khi gửi chẩn đoán, quá trình này sẽ không được hoàn tác",
           buttonTitle: "Gửi chẩn đoán",
