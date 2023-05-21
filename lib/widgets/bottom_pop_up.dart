@@ -5,14 +5,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../common/colors.dart';
 
 class BottomPopup extends StatelessWidget {
-  final String image;
+  final String? header;
+  final String? image;
   final String title;
   final String body;
   final Function()? action;
   final String buttonTitle;
   const BottomPopup(
       {Key? key,
-      required this.image,
+      this.image,
+      this.header,
       required this.title,
       required this.body,
       this.action,
@@ -25,31 +27,50 @@ class BottomPopup extends StatelessWidget {
       height: 330.h,
       decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(
-              top: Radius.circular(24))),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       child: ClipRRect(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 12),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 20.h,
-              ),
-              ClipRRect(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Visibility(
+                visible: header != null,
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 5.sp),
+                      child: Text(
+                        header ?? "",
+                        style: AppStyles.header600(fontsize: 16.sp),
+                      ),
+                    ),
+                    const Divider(
+                      thickness: 1,
+                    )
+                  ],
+                )),
+            SizedBox(
+              height: 20.h,
+            ),
+            Visibility(
+              visible: image != null,
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: SizedBox(
                   height: 140.h,
                   width: 140.h,
                   child: Image.asset(
-                    image,
+                    image ?? 'assets/image/app-logo/launcher.png',
                     fit: BoxFit.fill,
                   ),
                 ),
               ),
-              SizedBox(
-                height: 20.h,
-              ),
-              Text(
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(
                 title,
                 style: TextStyle(
                   fontFamily: 'SFProDisplay',
@@ -58,10 +79,13 @@ class BottomPopup extends StatelessWidget {
                   color: AppColors.blackTextColor,
                 ),
               ),
-              SizedBox(
-                height: 10.h,
-              ),
-              SizedBox(
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: SizedBox(
                 width: 300.w,
                 child: Center(
                   child: Text(
@@ -76,10 +100,13 @@ class BottomPopup extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 20.h,
-              ),
-              Row(
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Expanded(
@@ -98,8 +125,11 @@ class BottomPopup extends StatelessWidget {
                   )
                 ],
               ),
-            ],
-          ),
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+          ],
         ),
       ),
     );

@@ -4,14 +4,16 @@ import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/request/send_diagnosing_request_model.dart'
     as send_diagnosing;
 import 'package:empire_expert/models/response/orderservices.dart';
+import 'package:empire_expert/screens/main_page.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:empire_expert/widgets/bottom_pop_up.dart';
 import 'package:empire_expert/widgets/loading.dart';
+import 'package:empire_expert/widgets/screen_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -579,86 +581,6 @@ class _OrderDetailState extends State<OrderDetail> {
                   },
                   itemCount: _listOrderServiceDetails.length,
                 ),
-                // const Divider(
-                //   thickness: 1,
-                //   color: AppColors.searchBarColor,
-                // ),
-                // SizedBox(height: 15.h),
-                // Row(
-                //   children: [
-                //     Text(
-                //       "Tổng tạm tính",
-                //       style: TextStyle(
-                //         fontFamily: 'Roboto',
-                //         fontSize: 16.sp,
-                //         fontWeight: FontWeight.w600,
-                //         color: AppColors.blackTextColor,
-                //       ),
-                //     ),
-                //     const Spacer(),
-                //     Text(
-                //       sum.toString(),
-                //       style: TextStyle(
-                //         fontFamily: 'Roboto',
-                //         fontSize: 16.sp,
-                //         fontWeight: FontWeight.w600,
-                //         color: AppColors.blackTextColor,
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // Padding(
-                //   padding: const EdgeInsets.only(top: 20),
-                //   child: Row(
-                //     children: [
-                //       Text(
-                //         "Phí đặt lịch",
-                //         style: TextStyle(
-                //           fontFamily: 'Roboto',
-                //           fontSize: 12.sp,
-                //           fontWeight: FontWeight.w500,
-                //           color: Colors.red,
-                //         ),
-                //       ),
-                //       const Spacer(),
-                //       Text(
-                //         prepaid.toString(),
-                //         style: TextStyle(
-                //           fontFamily: 'Roboto',
-                //           fontSize: 12.sp,
-                //           fontWeight: FontWeight.w500,
-                //           color: Colors.red,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                // Padding(
-                //   padding: const EdgeInsets.only(top: 20),
-                //   child: Row(
-                //     children: [
-                //       Text(
-                //         "Tổng cộng",
-                //         style: TextStyle(
-                //           fontFamily: 'Roboto',
-                //           fontSize: 16.sp,
-                //           fontWeight: FontWeight.w600,
-                //           color: Colors.black,
-                //         ),
-                //       ),
-                //       const Spacer(),
-                //       Text(
-                //         sumAfter.toString(),
-                //         style: TextStyle(
-                //           fontFamily: 'Roboto',
-                //           fontSize: 16.sp,
-                //           fontWeight: FontWeight.w600,
-                //           color: Colors.black,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
                 SizedBox(
                   height: 30.h,
                 ),
@@ -668,10 +590,48 @@ class _OrderDetailState extends State<OrderDetail> {
                     height: 52.h,
                     child: ElevatedButton(
                       onPressed: () async {
-                        var result = await _doneOrder();
-                        if (result == true) {
-                          Get.back();
-                        }
+                        Get.bottomSheet(
+                        BottomPopup(
+                            header: "Hoàn thành",
+                            title: "Bạn muốn hoàn thành sửa chữa?",
+                            body:
+                                "Kiểm tra kĩ càng trước khi hoàn thành, quá trình này sẽ không được hoàn tác",
+                            buttonTitle: "Hoàn thành",
+                            action: () async {
+                              showDialog(
+                                context: context,
+                                builder: (context) => const ScreenLoading(),
+                              );
+                              var result = await _doneOrder();
+                              Get.back();
+                              if (result == true) {
+                                Get.replace(Get.bottomSheet(
+                                  backgroundColor: Colors.transparent,
+                                  BottomPopup(
+                                    image:
+                                        'assets/image/icon-logo/successfull-icon.png',
+                                    title: "Hoàn thành sửa chữa",
+                                    body:
+                                        "Chuẩn bị xe sẵn sàng trước khi giao lại cho khách nhé",
+                                    buttonTitle: "Trở về",
+                                    action: () => Get.offAll(const MainPage()),
+                                  ),
+                                ));
+                              } else {
+                                Get.replace(Get.bottomSheet(
+                                  backgroundColor: Colors.transparent,
+                                  BottomPopup(
+                                    image:
+                                        'assets/image/icon-logo/failed-icon.png',
+                                    title: "Thất bại",
+                                    body: "Có sự cố khi hoàn thành sửa chữa",
+                                    buttonTitle: "Trở về",
+                                    action: () => Get.back(),
+                                  ),
+                                ));
+                              }
+                            })
+                        );
                       },
                       style: AppStyles.button16(),
                       child: Text(

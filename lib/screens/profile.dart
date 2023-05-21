@@ -126,7 +126,7 @@ class _ProfileState extends State<Profile> {
                         : Text(
                             _user!.fullname,
                             style: TextStyle(
-                                fontSize: 24.sp,
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Roboto',
                                 color: AppColors.blackTextColor),
@@ -159,7 +159,7 @@ class _ProfileState extends State<Profile> {
                         Text(
                           "Thông tin cá nhân",
                           style: TextStyle(
-                              fontSize: 18.sp,
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.w600,
                               fontFamily: 'Roboto',
                               color: AppColors.blackTextColor),
@@ -196,7 +196,7 @@ class _ProfileState extends State<Profile> {
                         Text(
                           "Đăng xuất",
                           style: TextStyle(
-                              fontSize: 18.sp,
+                              fontSize: 14.sp,
                               fontWeight: FontWeight.w600,
                               fontFamily: 'Roboto',
                               color: Colors.red),

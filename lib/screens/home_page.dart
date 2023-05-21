@@ -6,12 +6,10 @@ import 'package:empire_expert/screens/diagnosing.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:empire_expert/widgets/search_bar.dart';
-import 'package:empire_expert/widgets/top_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -77,17 +75,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future refresh() {
-    showTopSnackBar(
-            Overlay.of(context),
-            TopSnackBar.info(
-              message: "title",
-              subMessage: "body",
-              icon: Image.asset(
-                'assets/image/app-logo/launcher.png',
-                height: 30,
-                width: 30,
-              ),
-            ));
     return _fetchData();
   }
 
@@ -134,6 +121,7 @@ class _HomePageState extends State<HomePage> {
                 )
               ],
               bottom: AppBar(
+                automaticallyImplyLeading: false,
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
                 title: SearchBar(

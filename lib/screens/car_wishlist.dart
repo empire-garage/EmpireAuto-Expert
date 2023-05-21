@@ -95,6 +95,7 @@ class _CarWishListState extends State<CarWishList> {
                 ),
               ),
               bottom: AppBar(
+                automaticallyImplyLeading: false,
                 backgroundColor: Colors.transparent,
                 shadowColor: Colors.transparent,
                 title: SearchBar(
