@@ -71,29 +71,37 @@ class _TagEditorState extends State<TagEditor> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (_suggestedTags.isNotEmpty)
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: _suggestedTags.length,
-                  itemBuilder: (context, index) {
-                    final tag = _suggestedTags[index];
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _controller.clear();
-                          _selectedTags.add(tag);
-                          widget.onChanged(_selectedTags);
-                          _suggestedTags = [];
-                        });
+                Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade500),
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _suggestedTags.length,
+                      itemBuilder: (context, index) {
+                        final tag = _suggestedTags[index];
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _controller.clear();
+                              _selectedTags.add(tag);
+                              widget.onChanged(_selectedTags);
+                              _suggestedTags = [];
+                            });
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10.sp),
+                            child: Text(
+                              tag.name,
+                              style: AppStyles.text400(fontsize: 10.sp),
+                            ),
+                          ),
+                        );
                       },
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10.sp),
-                        child: Text(
-                          tag.name,
-                          style: AppStyles.text400(fontsize: 10.sp),
-                        ),
-                      ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
               TextFormField(
                 focusNode: _diagnoseFocusNode,
@@ -140,12 +148,17 @@ class _TagEditorState extends State<TagEditor> {
                   }
                 },
               ),
-              SizedBox(height: 8.sp,),
+              SizedBox(
+                height: 8.sp,
+              ),
               Wrap(
                 spacing: 8.sp,
                 children: _selectedTags.map((tag) {
                   return Chip(
-                    label: Text(tag.name, style: AppStyles.text400(fontsize: 10.sp),),
+                    label: Text(
+                      tag.name,
+                      style: AppStyles.text400(fontsize: 10.sp),
+                    ),
                     onDeleted: () {
                       setState(() {
                         _selectedTags.remove(tag);

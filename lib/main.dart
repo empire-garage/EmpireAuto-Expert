@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:empire_expert/screens/diagnosing.dart';
+import 'package:empire_expert/screens/main_page.dart';
 import 'package:empire_expert/screens/order_detail.dart';
 import 'package:empire_expert/screens/welcome_screen.dart';
 import 'package:empire_expert/widgets/error_page.dart';
@@ -60,6 +62,7 @@ class _MyAppState extends State<MyApp> {
           print(message.notification!.body);
           print(message.notification!.title);
         }
+        Get.offAll(() => const MainPage());
         Get.snackbar(title, body,
             icon: Image.asset(
               'assets/image/app-logo/launcher.png',
@@ -74,6 +77,10 @@ class _MyAppState extends State<MyApp> {
         switch (jsonRoute['route']) {
           case "customer-pay-success":
             Get.to(() => OrderDetailPage(
+                orderServiceId: jsonRoute['orderServiceId'] as int));
+            break;
+          case "qr-checkin-success":
+            Get.to(() => DiagnosingPage(
                 orderServiceId: jsonRoute['orderServiceId'] as int));
             break;
           default:
