@@ -362,35 +362,38 @@ class _OrderDetailState extends State<OrderDetail> {
               "Kiểm tra kĩ càng trước khi gửi chẩn đoán, quá trình này sẽ không được hoàn tác",
           buttonTitle: "Gửi chẩn đoán",
           action: () async {
-            showDialog(context: context, builder: (context) => const ScreenLoading(),);
+            showDialog(
+              context: context,
+              builder: (context) => const ScreenLoading(),
+            );
             var result = await _sendDiagnosing();
             Get.back();
             if (result == true) {
               // ignore: use_build_context_synchronously
               Get.replace(showModalBottomSheet(
-                    context: context,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => BottomPopup(
-                      image: 'assets/image/icon-logo/successfull-icon.png',
-                      title: "Gửi chuẩn đoán thành công",
-                      body: "Đã gửi chuẩn đoán thành công đến chủ xe",
-                      buttonTitle: "Trở về",
-                      action: () => Get.offAll(const MainPage()),
-                    ),
-                  ));
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (context) => BottomPopup(
+                  image: 'assets/image/icon-logo/successfull-icon.png',
+                  title: "Gửi chuẩn đoán thành công",
+                  body: "Đã gửi chuẩn đoán thành công đến chủ xe",
+                  buttonTitle: "Trở về",
+                  action: () => Get.offAll(const MainPage()),
+                ),
+              ));
             } else {
               // ignore: use_build_context_synchronously
               Get.replace(showModalBottomSheet(
-                    context: context,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => BottomPopup(
-                      image: 'assets/image/icon-logo/failed-icon.png',
-                      title: "Gửi chuẩn đoán thất bại",
-                      body: "Có sự cố khi gửi chẩn đoán",
-                      buttonTitle: "Trở về",
-                      action: () => Get.back(),
-                    ),
-                  ));
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (context) => BottomPopup(
+                  image: 'assets/image/icon-logo/failed-icon.png',
+                  title: "Gửi chuẩn đoán thất bại",
+                  body: "Có sự cố khi gửi chẩn đoán",
+                  buttonTitle: "Trở về",
+                  action: () => Get.back(),
+                ),
+              ));
             }
           }),
     );
@@ -418,7 +421,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
         child: Padding(
           padding: EdgeInsets.only(left: 30.w),
           child: Text(
-            "Thông tin khách hàng",
+            "Thông tin phương tiện",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Roboto',
@@ -430,40 +433,40 @@ class _CustomerInfoState extends State<CustomerInfo> {
         ),
       ),
       children: <Widget>[
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: Image.asset(
-            "assets/image/service-picture/mechanicPic.png",
-            height: 50.h,
-            width: 50.w,
-          ),
-          title: Text(
-            widget.orderService.order.user.fullname,
-            style: TextStyle(
-              fontFamily: 'Roboto',
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.blackTextColor,
-            ),
-          ),
-          subtitle: Align(
-            alignment: Alignment.topLeft,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.orderService.order.user.phone,
-                  style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.lightTextColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        // ListTile(
+        //   contentPadding: EdgeInsets.zero,
+        //   leading: Image.asset(
+        //     "assets/image/service-picture/mechanicPic.png",
+        //     height: 50.h,
+        //     width: 50.w,
+        //   ),
+        //   title: Text(
+        //     widget.orderService.order.user.fullname,
+        //     style: TextStyle(
+        //       fontFamily: 'Roboto',
+        //       fontSize: 14.sp,
+        //       fontWeight: FontWeight.w600,
+        //       color: AppColors.blackTextColor,
+        //     ),
+        //   ),
+        //   subtitle: Align(
+        //     alignment: Alignment.topLeft,
+        //     child: Column(
+        //       crossAxisAlignment: CrossAxisAlignment.start,
+        //       children: [
+        //         Text(
+        //           widget.orderService.order.user.phone,
+        //           style: TextStyle(
+        //             fontFamily: 'Roboto',
+        //             fontSize: 12.sp,
+        //             fontWeight: FontWeight.w400,
+        //             color: AppColors.lightTextColor,
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: FutureBuilder(
