@@ -308,7 +308,7 @@ class Problem {
   Problem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    symptom = Symptom.fromJson(json['symptom']);
+    symptom = json['symptom'] != null ? Symptom.fromJson(json['symptom']) : null;
     intendedMinutes = json['intendedMinutes'];
   }
 }
