@@ -1,6 +1,6 @@
 import 'package:empire_expert/common/colors.dart';
 import 'package:empire_expert/common/style.dart';
-import 'package:empire_expert/models/response/orderservices.dart';
+import 'package:empire_expert/models/response/orderservices.dart' as order_service;
 import 'package:empire_expert/models/response/problem.dart';
 import 'package:empire_expert/services/diagnose_services/diagnose_services.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +9,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class TagEditor extends StatefulWidget {
   final List<ProblemModel> tags;
   final void Function(List<ProblemModel>) onChanged;
-  final Car car;
+  final order_service.Car car;
+  final List<order_service.Symptom>? symptoms;
 
   const TagEditor(
       {super.key,
       required this.tags,
       required this.onChanged,
-      required this.car});
+      required this.car,
+      this.symptoms
+      });
 
   @override
   _TagEditorState createState() => _TagEditorState();
@@ -34,10 +37,19 @@ class _TagEditorState extends State<TagEditor> {
   _fetchInitSuggestTag() async {
     var result = await DiagnoseService().getListProblem(widget.car);
     setState(() {
+      result.sort((a, b) => _hasThisSymptom(b.symptom!.id) ? 1 : -1);
       _initSuggestTags = result;
+      _suggestedTags = _initSuggestTags;
       _loading = false;
     });
     return result;
+  }
+
+  _hasThisSymptom(int symptomId) {
+    if (widget.symptoms != null && widget.symptoms!.any((element) => element.id == symptomId)) {
+      return true;
+    }
+    return false;
   }
 
   @override
@@ -93,9 +105,39 @@ class _TagEditorState extends State<TagEditor> {
                           },
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 10.sp),
-                            child: Text(
-                              tag.name,
-                              style: AppStyles.text400(fontsize: 10.sp),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    tag.name,
+                                    style: AppStyles.text400(fontsize: 12.sp),
+                                  ),
+                                ),
+                                const SizedBox(width: 10,),
+                                Visibility(
+                                  visible: tag.symptom != null && _hasThisSymptom(tag.symptom!.id),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 80,
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Visibility(
+                                            visible: tag.symptom != null && tag.symptom!.name != null,
+                                            child: Text(
+                                               tag.symptom!.name!,
+                                                style: AppStyles.text400(fontsize: 10.sp, color: Colors.grey.shade500),
+                                                overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Icon(Icons.lightbulb, color: Colors.yellow.shade500,),
+                                    ],
+                                  ),
+                                )
+                              ],
                             ),
                           ),
                         );

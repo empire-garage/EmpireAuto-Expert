@@ -290,6 +290,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       _validateProblem = null;
                     });
                   },
+                  symptoms: widget.order.symptoms,
                 ),
                 _validateProblem != null
                     ? Text(

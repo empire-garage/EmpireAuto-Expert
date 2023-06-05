@@ -11,6 +11,7 @@ class OrderServicesResponseModel {
   Order order;
   List<OrderServiceDetails>? orderServiceDetails;
   List<ConsiderProblem> considerProblems = [];
+  List<Symptom>? symptoms = [];
 
   OrderServicesResponseModel({
     required this.id,
@@ -22,6 +23,7 @@ class OrderServicesResponseModel {
     required this.order,
     this.orderServiceDetails,
     required this.considerProblems,
+    this.symptoms,
   });
 
   factory OrderServicesResponseModel.fromJson(Map<String, dynamic> json) {
@@ -42,6 +44,10 @@ class OrderServicesResponseModel {
         considerProblems: json['considerProblems'] != null
             ? List<ConsiderProblem>.from(json['considerProblems']
                 .map((x) => ConsiderProblem.fromJson(x)))
+            : [],
+        symptoms: json['symptoms'] != null
+            ? List<Symptom>.from(json['symptoms']
+                .map((x) => Symptom.fromJson(x)))
             : []);
   }
 }
@@ -289,15 +295,34 @@ class Item {
 class Problem {
   int? id;
   String? name;
+  Symptom? symptom;
+  int? intendedMinutes;
 
   Problem({
     this.id,
     this.name,
+    this.symptom,
+    this.intendedMinutes
   });
 
   Problem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
+    symptom = Symptom.fromJson(json['symptom']);
+    intendedMinutes = json['intendedMinutes'];
+  }
+}
+
+class Symptom {
+  int id;
+  String? name;
+  Symptom({
+    required this.id,
+    this.name
+  });
+  
+  factory Symptom.fromJson(Map<String,dynamic> json) {
+    return Symptom(id: json['id'], name: json['name']);
   }
 }
 
