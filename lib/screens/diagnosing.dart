@@ -3,6 +3,7 @@ import 'package:empire_expert/models/response/orderservices.dart';
 import 'package:empire_expert/models/response/problem.dart';
 import 'package:empire_expert/screens/main_page.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
+import 'package:empire_expert/services/diagnose_services/diagnose_services.dart';
 import 'package:empire_expert/services/item_service/item_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:empire_expert/widgets/bottom_pop_up.dart';
@@ -123,7 +124,6 @@ class _OrderDetailState extends State<OrderDetail> {
   bool _loading = true;
 
   List<ProblemModel> _tags = [];
-  // final List<HealthCarRecordProblem> _healthCarRecordProblems = [];
   List<ItemResponseModel> options = [
     ItemResponseModel(
       id: 1,
@@ -149,11 +149,32 @@ class _OrderDetailState extends State<OrderDetail> {
   final _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   String symptom = "";
+  late List<ProblemModel> _initSuggestTags;
 
   @override
   void initState() {
     super.initState();
     _getOption();
+    _fetchInitSuggestTag();
+  }
+
+  _fetchInitSuggestTag() async {
+    var result = await DiagnoseService().getListProblem(widget.order.car);
+    setState(() {
+      result.sort((a, b) => _hasThisSymptom(b.symptom!.id) ? 1 : -1);
+      _initSuggestTags = result;
+      _loading = false;
+    });
+
+    return result;
+  }
+
+  _hasThisSymptom(int symptomId) {
+    if (widget.order.symptoms != null &&
+        widget.order.symptoms!.any((element) => element.id == symptomId)) {
+      return true;
+    }
+    return false;
   }
 
   _getOption() async {
@@ -279,18 +300,120 @@ class _OrderDetailState extends State<OrderDetail> {
                   ),
                 ),
                 SizedBox(
-                  height: 10.sp,
+                  height: 5.sp,
                 ),
-                TagEditor(
-                  tags: _tags,
-                  car: widget.order.car,
-                  onChanged: (tags) {
+                ReorderableListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  onReorder: (oldIndex, newIndex) {
                     setState(() {
-                      _tags = tags;
-                      _validateProblem = null;
+                      if (newIndex > oldIndex) {
+                        newIndex -= 1;
+                      }
+                      final item = _tags.removeAt(oldIndex);
+                      _tags.insert(newIndex, item);
                     });
                   },
-                  symptoms: widget.order.symptoms,
+                  children: _tags.map((tag) {
+                    return Container(
+                      key: Key('${_tags.indexOf(tag)}'),
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            tag.name.toString(),
+                            style: AppStyles.text400(fontsize: 12.sp),
+                          ),
+                          Row(
+                            children: [
+                              Visibility(
+                                visible: tag.symptom != null &&
+                                    _hasThisSymptom(tag.symptom!.id),
+                                child: Visibility(
+                                  visible: tag.symptom != null &&
+                                      tag.symptom!.name != null,
+                                  child: Text(
+                                    tag.symptom!.name!,
+                                    style: AppStyles.text400(
+                                        fontsize: 10.sp,
+                                        color: Colors.grey.shade500),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    _tags.remove(tag);
+                                  });
+                                },
+                                child: const Icon(
+                                  Icons.cancel,
+                                  size: 18,
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+                SizedBox(
+                  height: 10.sp,
+                ),
+                InkWell(
+                  onTap: () {
+                    Get.bottomSheet(
+                        Scaffold(
+                          body: Container(
+                            margin: const EdgeInsets.all(10),
+                            child: TagEditor(
+                              tags: _tags,
+                              car: widget.order.car,
+                              onChanged: (tags) {
+                                setState(() {
+                                  _tags = tags;
+                                  _validateProblem = null;
+                                });
+                              },
+                              symptoms: widget.order.symptoms ?? [],
+                              initSuggestTags: _initSuggestTags
+                                  .where((element) =>
+                                      !_tags.any((e) => e.id == element.id))
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                        backgroundColor: Colors.white,
+                        isScrollControlled: true,
+                        ignoreSafeArea: false);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.grey.shade500,
+                        ),
+                        borderRadius: BorderRadius.circular(16)),
+                    child: TextFormField(
+                      decoration: AppStyles.textbox12(
+                        hintText: "Chọn kết quả chẩn đoán",
+                        suffixIcon: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                      enabled: false,
+                    ),
+                  ),
                 ),
                 _validateProblem != null
                     ? Text(
