@@ -1,3 +1,4 @@
+import 'package:empire_expert/common/colors.dart';
 import 'package:flutter/material.dart';
 
 class Loading extends StatelessWidget {
@@ -9,7 +10,7 @@ class Loading extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       body: const Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator(color: AppColors.blueTextColor,),
       ),
     );
   }

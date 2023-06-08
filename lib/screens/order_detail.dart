@@ -135,6 +135,7 @@ class _OrderDetailState extends State<OrderDetail> {
   final List<ItemResponseModel> _listSuggestService = [];
   final _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  int _loadingImage = -1;
 
   send_diagnosing.SendDiagnosingModel model =
       send_diagnosing.SendDiagnosingModel(
@@ -142,6 +143,9 @@ class _OrderDetailState extends State<OrderDetail> {
           orderServiceDetails: []);
 
   _getImageUrl(item) async {
+    setState(() {
+      _loadingImage = item.images.length;
+    });
     /*Step 1:Pick image*/
     //Install image_picker
     //Import the corresponding library
@@ -153,7 +157,13 @@ class _OrderDetailState extends State<OrderDetail> {
 
       //print('${file?.path}');
 
-      if (file == null) return;
+      if (file == null) {
+        setState(() {
+          _loadingImage = -1;
+        });
+        return;
+      }
+
       //Import dart:core
       String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -179,7 +189,13 @@ class _OrderDetailState extends State<OrderDetail> {
         item.images.add(imageUrl);
       });
       await _updateExpertTask(item);
+      setState(() {
+        _loadingImage = -1;
+      });
     } catch (error) {
+      setState(() {
+        _loadingImage = -1;
+      });
       showModalBottomSheet(
           context: context,
           backgroundColor: Colors.transparent,
@@ -217,7 +233,10 @@ class _OrderDetailState extends State<OrderDetail> {
   @override
   Widget build(BuildContext context) {
     return _loading
-        ? const Center(child: CircularProgressIndicator())
+        ? const SizedBox(
+          height: double.maxFinite,
+          width: double.maxFinite,
+          child: Loading(),)
         : Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
@@ -467,7 +486,8 @@ class _OrderDetailState extends State<OrderDetail> {
                               ),
                             ),
                             Visibility(
-                              visible: item.images.isNotEmpty,
+                              visible:
+                                  item.images.isNotEmpty || _loadingImage != -1,
                               child: Container(
                                 padding:
                                     EdgeInsets.symmetric(horizontal: 10.sp),
@@ -479,6 +499,18 @@ class _OrderDetailState extends State<OrderDetail> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: 5,
                                   itemBuilder: (context, index) {
+                                    if (index == _loadingImage) {
+                                      return Container(
+                                        margin: const EdgeInsets.all(5),
+                                        height: 60,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color:
+                                                    AppColors.blueTextColor)),
+                                        child: const Loading(),
+                                      );
+                                    }
                                     if (index <= item.images.length - 1) {
                                       return Stack(
                                           alignment:
@@ -590,8 +622,7 @@ class _OrderDetailState extends State<OrderDetail> {
                     height: 52.h,
                     child: ElevatedButton(
                       onPressed: () async {
-                        Get.bottomSheet(
-                        BottomPopup(
+                        Get.bottomSheet(BottomPopup(
                             header: "Hoàn thành",
                             title: "Bạn muốn hoàn thành sửa chữa?",
                             body:
@@ -630,8 +661,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                   ),
                                 ));
                               }
-                            })
-                        );
+                            }));
                       },
                       style: AppStyles.button16(),
                       child: Text(

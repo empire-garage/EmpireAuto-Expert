@@ -232,7 +232,7 @@ class _OrderDetailState extends State<OrderDetail> {
   @override
   Widget build(BuildContext context) {
     return _loading
-        ? const Center(child: CircularProgressIndicator())
+        ? const Loading()
         : Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(

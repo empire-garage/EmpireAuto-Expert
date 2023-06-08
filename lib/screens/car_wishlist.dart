@@ -4,6 +4,7 @@ import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/response/orderservices.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
+import 'package:empire_expert/widgets/loading.dart';
 import 'package:empire_expert/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -80,9 +81,8 @@ class _CarWishListState extends State<CarWishList> {
   Widget build(BuildContext context) {
     return _loading
         ? const Scaffold(
-            body: Center(
-            child: CircularProgressIndicator(),
-          ))
+            body: Loading(),
+          )
         : Scaffold(
             backgroundColor: Colors.white,
             appBar: AppBar(

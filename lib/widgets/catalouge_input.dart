@@ -1,5 +1,6 @@
 import 'package:empire_expert/models/response/problem.dart';
 import 'package:empire_expert/services/diagnose_services/diagnose_services.dart';
+import 'package:empire_expert/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -40,7 +41,7 @@ class _CataLougeInputState extends State<CataLougeInput> {
   @override
   Widget build(BuildContext context) {
     return _loading
-        ? const CircularProgressIndicator()
+        ? const Loading()
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
