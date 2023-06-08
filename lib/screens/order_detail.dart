@@ -135,7 +135,6 @@ class _OrderDetailState extends State<OrderDetail> {
   final List<ItemResponseModel> _listSuggestService = [];
   final _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  int _loadingImage = -1;
 
   send_diagnosing.SendDiagnosingModel model =
       send_diagnosing.SendDiagnosingModel(
@@ -144,7 +143,7 @@ class _OrderDetailState extends State<OrderDetail> {
 
   _getImageUrl(item) async {
     setState(() {
-      _loadingImage = item.images.length;
+      item.loadingImage = item.images.length;
     });
     /*Step 1:Pick image*/
     //Install image_picker
@@ -159,7 +158,7 @@ class _OrderDetailState extends State<OrderDetail> {
 
       if (file == null) {
         setState(() {
-          _loadingImage = -1;
+          item.loadingImage = -1;
         });
         return;
       }
@@ -190,11 +189,11 @@ class _OrderDetailState extends State<OrderDetail> {
       });
       await _updateExpertTask(item);
       setState(() {
-        _loadingImage = -1;
+        item.loadingImage = -1;
       });
     } catch (error) {
       setState(() {
-        _loadingImage = -1;
+        item.loadingImage = -1;
       });
       showModalBottomSheet(
           context: context,
@@ -219,6 +218,10 @@ class _OrderDetailState extends State<OrderDetail> {
   void dispose() {
     _focusNode.dispose();
     _textController.dispose();
+    for (var element in _listOrderServiceDetails) {
+      element.noteFocusNode.dispose();
+      element.controller.dispose();
+    }
     super.dispose();
   }
 
@@ -234,9 +237,12 @@ class _OrderDetailState extends State<OrderDetail> {
   Widget build(BuildContext context) {
     return _loading
         ? const SizedBox(
-          height: double.maxFinite,
-          width: double.maxFinite,
-          child: Loading(),)
+            height: 100,
+            width: double.infinity,
+            child: Loading(
+              backgroundColor: Colors.white,
+            ),
+          )
         : Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
@@ -418,25 +424,32 @@ class _OrderDetailState extends State<OrderDetail> {
                                                 .note = value;
                                           },
                                           onTapOutside: (event) async {
-                                            _listOrderServiceDetails[index]
+                                            if (_listOrderServiceDetails[index]
                                                 .noteFocusNode
-                                                .unfocus();
-                                            _listOrderServiceDetails[index]
-                                                    .note =
-                                                _listOrderServiceDetails[index]
-                                                        .controller
-                                                        .text
-                                                        .trim()
-                                                        .isNotEmpty
-                                                    ? _listOrderServiceDetails[
-                                                            index]
-                                                        .controller
-                                                        .text
-                                                    : null;
-                                            setState(() {});
-                                            await _updateExpertTask(
-                                                _listOrderServiceDetails[
-                                                    index]);
+                                                .hasFocus) {
+                                              await _updateExpertTask(
+                                                  _listOrderServiceDetails[
+                                                      index]);
+                                            }
+
+                                            setState(() {
+                                              _listOrderServiceDetails[index]
+                                                  .noteFocusNode
+                                                  .unfocus();
+                                              _listOrderServiceDetails[index]
+                                                      .note =
+                                                  _listOrderServiceDetails[
+                                                              index]
+                                                          .controller
+                                                          .text
+                                                          .trim()
+                                                          .isNotEmpty
+                                                      ? _listOrderServiceDetails[
+                                                              index]
+                                                          .controller
+                                                          .text
+                                                      : null;
+                                            });
                                           },
                                           cursorColor: AppColors.blueTextColor,
                                           decoration: InputDecoration(
@@ -458,8 +471,12 @@ class _OrderDetailState extends State<OrderDetail> {
                                           maxLines: 3,
                                         ),
                                       ),
-                            const Divider(),
-                            InkWell(
+                            !_listOrderServiceDetails[index].showNote
+                                ? Container()
+                                : const Divider(),
+                            !_listOrderServiceDetails[index].showNote
+                                ? Container()
+                                : InkWell(
                               onTap: () async {
                                 await _getImageUrl(item);
                               },
@@ -485,9 +502,11 @@ class _OrderDetailState extends State<OrderDetail> {
                                 ),
                               ),
                             ),
-                            Visibility(
+                            !_listOrderServiceDetails[index].showNote
+                                ? Container()
+                                : Visibility(
                               visible:
-                                  item.images.isNotEmpty || _loadingImage != -1,
+                                  item.images.isNotEmpty || item.loadingImage != -1,
                               child: Container(
                                 padding:
                                     EdgeInsets.symmetric(horizontal: 10.sp),
@@ -499,7 +518,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: 5,
                                   itemBuilder: (context, index) {
-                                    if (index == _loadingImage) {
+                                    if (index == item.loadingImage) {
                                       return Container(
                                         margin: const EdgeInsets.all(5),
                                         height: 60,
@@ -705,7 +724,7 @@ class _CustomerInfoState extends State<CustomerInfo> {
         child: Padding(
           padding: EdgeInsets.only(left: 30.w),
           child: Text(
-            "Thông tin khách hàng",
+            "Thông tin phương tiện",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Roboto',
@@ -717,40 +736,6 @@ class _CustomerInfoState extends State<CustomerInfo> {
         ),
       ),
       children: <Widget>[
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: Image.asset(
-            "assets/image/service-picture/mechanicPic.png",
-            height: 50.h,
-            width: 50.w,
-          ),
-          title: Text(
-            widget.orderService.order.user.fullname,
-            style: TextStyle(
-              fontFamily: 'Roboto',
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              color: AppColors.blackTextColor,
-            ),
-          ),
-          subtitle: Align(
-            alignment: Alignment.topLeft,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.orderService.order.user.phone,
-                  style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.lightTextColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: FutureBuilder(

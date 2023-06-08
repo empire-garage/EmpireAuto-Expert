@@ -212,6 +212,7 @@ class OrderServiceDetails {
   bool? done;
   String? note;
   List<String> images = [];
+  int loadingImage = -1;
   bool showNote = true;
   TextEditingController controller = TextEditingController();
   FocusNode noteFocusNode = FocusNode();

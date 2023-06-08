@@ -232,7 +232,10 @@ class _OrderDetailState extends State<OrderDetail> {
   @override
   Widget build(BuildContext context) {
     return _loading
-        ? const Loading()
+        ? const SizedBox(
+          height: 100,
+          width: double.infinity,
+          child: Loading(backgroundColor: Colors.white),)
         : Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
