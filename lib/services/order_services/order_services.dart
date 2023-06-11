@@ -35,7 +35,9 @@ class OrderServices {
         List<dynamic> jsonArray = json.decode(response.body);
         List<OrderServiceOfExpertModel> list = [];
         for (var jsonObject in jsonArray) {
-          list.add(OrderServiceOfExpertModel.fromJson(jsonObject));
+          var order = OrderServiceOfExpertModel.fromJson(jsonObject);
+          order.status ??= 1;
+          list.add(order);
         }
         return list;
       }
@@ -54,7 +56,9 @@ class OrderServices {
         List<dynamic> jsonArray = json.decode(response.body);
         List<OrderServiceOfExpertModel> list = [];
         for (var jsonObject in jsonArray) {
-          list.add(OrderServiceOfExpertModel.fromJson(jsonObject));
+          var order = OrderServiceOfExpertModel.fromJson(jsonObject);
+          order.status ??= 3;
+          list.add(order);
         }
         return list;
       }

@@ -3,6 +3,7 @@ import 'package:empire_expert/common/jwt_interceptor.dart';
 import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/response/orderservices.dart';
 import 'package:empire_expert/screens/diagnosing.dart';
+import 'package:empire_expert/screens/order_detail.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:empire_expert/widgets/loading.dart';
@@ -11,6 +12,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+
+class OrderType {
+  String label;
+  Color color;
+  OrderType({required this.label, required this.color});
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,16 +30,26 @@ class _HomePageState extends State<HomePage> {
   bool _loading = true;
   late List<OrderServiceOfExpertModel> _model;
   List<OrderServiceOfExpertModel> rawData = [];
+  Map<int, OrderType> orderType = {
+    2: OrderType(label: "Chẩn đoán", color: AppColors.greenTextColor),
+    3: OrderType(label: "Sửa chữa", color: AppColors.blueTextColor),
+  };
+  final OrderType defaultType =
+      OrderType(label: "Công việc", color: Colors.black);
 
   _fetchData() async {
     var expertId = await getUserId();
     if (expertId == null) throw Exception("User id not found");
     var response = await OrderServices().getOrderServiceOfExpert(expertId);
+    var response2 =
+        await OrderServices().getDoingOrderServiceOfExpert(expertId);
     if (!mounted) return;
-    if (response == null) throw Exception("Get order serivce fail");
+    if (response == null || response2 == null) {
+      throw Exception("Get order serivce fail");
+    }
     setState(() {
-      rawData = response;
-      _model = response;
+      rawData = response + response2;
+      _model = response + response2;
       _model.sort(
         (a, b) => a.order.updatedAt.compareTo(b.order.updatedAt),
       );
@@ -84,7 +101,6 @@ class _HomePageState extends State<HomePage> {
     if (!mounted) return;
     return photo;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -142,10 +158,10 @@ class _HomePageState extends State<HomePage> {
                 child: ListView(
                   children: [
                     Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 15.sp, horizontal: 5.sp),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 15.sp, horizontal: 5.sp),
                       child: Text(
-                        "Danh mục cần kiểm tra",
+                        "Công việc sắp tới",
                         style: AppStyles.header600(fontsize: 14.sp),
                       ),
                     ),
@@ -153,113 +169,140 @@ class _HomePageState extends State<HomePage> {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: _model.length,
-                        itemBuilder: (context, index) => Slidable(
-                              startActionPane: ActionPane(
-                                  motion: const StretchMotion(),
-                                  children: [
-                                    SlidableAction(
-                                      onPressed: (context) {},
-                                      backgroundColor: AppColors.errorIcon,
-                                      icon: Icons.cancel,
-                                      label: 'Hủy',
-                                    )
-                                  ]),
-                              endActionPane: ActionPane(
-                                  motion: const StretchMotion(),
-                                  children: [
-                                    SlidableAction(
-                                      onPressed: (context) {
-                                        Get.to(() => DiagnosingPage(
-                                              orderServiceId: _model[index].id,
-                                            ));
-                                      },
-                                      backgroundColor: AppColors.blue600,
-                                      icon: Icons.settings_suggest,
-                                      label: 'Chẩn đoán',
-                                    )
-                                  ]),
-                              child: GestureDetector(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => DiagnosingPage(
-                                      orderServiceId: _model[index].id,
+                        itemBuilder: (context, index) {
+                          var type = _model[index].status == 1
+                              ? orderType[2]
+                              : _model[index].status == 3
+                                  ? orderType[3]
+                                  : defaultType;
+                          return Slidable(
+                            startActionPane: ActionPane(
+                                motion: const StretchMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) {},
+                                    backgroundColor: AppColors.errorIcon,
+                                    icon: Icons.cancel,
+                                    label: 'Hủy',
+                                  )
+                                ]),
+                            endActionPane: ActionPane(
+                                motion: const StretchMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) {
+                                      Get.to(() => DiagnosingPage(
+                                            orderServiceId: _model[index].id,
+                                          ));
+                                    },
+                                    backgroundColor: AppColors.blue600,
+                                    icon: Icons.settings_suggest,
+                                    label: 'Chẩn đoán',
+                                  )
+                                ]),
+                            child: GestureDetector(
+                              onTap: () {
+                                if (_model[index].status == 1) {
+                                  Get.bottomSheet(
+                                      DiagnosingPage(
+                                        orderServiceId: _model[index].id,
+                                      ),
+                                      isScrollControlled: true,
+                                      ignoreSafeArea: false);
+                                } else if (_model[index].status == 3) {
+                                  Get.to(() => OrderDetailPage(
+                                        orderServiceId: _model[index].id,
+                                      ));
+                                }
+                              },
+                              child: DecoratedBox(
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16)),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                                  child: ListTile(
+                                    // contentPadding: EdgeInsets.zero,
+                                    leading: FutureBuilder(
+                                        future: getBrand(
+                                            _model[index].car.carBrand),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return Image.network(
+                                              snapshot.data.toString(),
+                                              height: 50.h,
+                                              width: 50.w,
+                                            );
+                                          } else if (snapshot.hasError) {
+                                            return Image.asset(
+                                              "assets/image/icon-logo/bmw-car-icon.png",
+                                              height: 50.h,
+                                              width: 50.w,
+                                            );
+                                          } else {
+                                            return Image.asset(
+                                              "assets/image/icon-logo/bmw-car-icon.png",
+                                              height: 50.h,
+                                              width: 50.w,
+                                            );
+                                          }
+                                        }),
+                                    title: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Text(
+                                                type != null
+                                                    ? type.label
+                                                    : defaultType.label,
+                                                style: AppStyles.header600(
+                                                    fontsize: 10.sp,
+                                                    color: type != null
+                                                        ? type.color
+                                                        : defaultType.color)),
+                                            Text(" - ",
+                                                style: AppStyles.text400(
+                                                    fontsize: 10.sp,
+                                                    color:
+                                                        Colors.grey.shade500)),
+                                            Text("${_model[index].code}",
+                                                style: AppStyles.text400(
+                                                    fontsize: 10.sp,
+                                                    color:
+                                                        Colors.grey.shade500)),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 5.sp,
+                                        ),
+                                        Text(_model[index].car.carLisenceNo,
+                                            style: AppStyles.header600(
+                                              fontsize: 12.sp,
+                                            )),
+                                        SizedBox(
+                                          height: 5.sp,
+                                        ),
+                                        Text(
+                                            "${_model[index].car.carBrand} ${_model[index].car.carModel}",
+                                            style: AppStyles.text400(
+                                                fontsize: 10.sp,
+                                                color: Colors.grey.shade500)),
+                                      ],
                                     ),
-                                    isScrollControlled: true,
-                                    useSafeArea: true 
-                                  );
-                                  // Get.to(() => DiagnosingPage(
-                                  //       orderServiceId: _model[index].id,
-                                  //     ));
-                                },
-                                child: DecoratedBox(
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(16)),
-                                  ),
-                                  child: Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 10.h),
-                                    child: ListTile(
-                                      // contentPadding: EdgeInsets.zero,
-                                      leading: FutureBuilder(
-                                          future: getBrand(_model[index].car.carBrand),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.hasData) {
-                                              return Image.network(
-                                                snapshot.data.toString(),
-                                                height: 50.h,
-                                                width: 50.w,
-                                              );
-                                            } else if (snapshot.hasError) {
-                                              return Image.asset(
-                                                "assets/image/icon-logo/bmw-car-icon.png",
-                                                height: 50.h,
-                                                width: 50.w,
-                                              );
-                                            } else {
-                                              return Image.asset(
-                                                "assets/image/icon-logo/bmw-car-icon.png",
-                                                height: 50.h,
-                                                width: 50.w,
-                                              );
-                                            }
-                                          }),
-                                      title: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                              "${_model[index].car.carBrand} ${_model[index].car.carModel}",
-                                              style: AppStyles.text400(
-                                                  fontsize: 10.sp,
-                                                  color: Colors.grey.shade500)),
-                                          SizedBox(
-                                            height: 5.sp,
-                                          ),
-                                          Text(_model[index].car.carLisenceNo,
-                                              style: AppStyles.header600(
-                                                fontsize: 12.sp,
-                                              )),
-                                          SizedBox(
-                                            height: 5.sp,
-                                          ),
-                                          Text("${_model[index].code}",
-                                              style: AppStyles.text400(
-                                                  fontsize: 10.sp,
-                                                  color: Colors.grey.shade500)),
-                                        ],
-                                      ),
-                                      trailing: const Icon(
-                                        Icons.navigate_next,
-                                        color: Colors.black,
-                                      ),
+                                    trailing: const Icon(
+                                      Icons.navigate_next,
+                                      color: Colors.black,
                                     ),
                                   ),
                                 ),
                               ),
-                            )),
+                            ),
+                          );
+                        }),
                   ],
                 ),
               ),

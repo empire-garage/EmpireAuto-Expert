@@ -1,4 +1,5 @@
 import 'package:empire_expert/common/style.dart';
+import 'package:empire_expert/screens/diagnosing_list.dart';
 import 'package:empire_expert/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -63,7 +64,7 @@ class _MainPageState extends State<MainPage> {
                       height: 5.sp,
                     ),
                     Text(
-                      "Chẩn đoán",
+                      "Công việc",
                       style: AppStyles.header600(
                         fontsize: 10,
                         color: currentTab == 1
@@ -77,7 +78,7 @@ class _MainPageState extends State<MainPage> {
               MaterialButton(
                 onPressed: () {
                   setState(() {
-                    currentScreen = const CarWishList();
+                    currentScreen = const DiagnosingList();
                     currentTab = 2;
                   });
                 },
@@ -85,7 +86,7 @@ class _MainPageState extends State<MainPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      FontAwesomeIcons.screwdriverWrench,
+                      FontAwesomeIcons.listCheck,
                       size: 24,
                       color: currentTab == 2
                           ? AppColors.buttonColor
@@ -95,7 +96,7 @@ class _MainPageState extends State<MainPage> {
                       height: 5.sp,
                     ),
                     Text(
-                      "Sửa chữa",
+                      "Chẩn đoán",
                       style: AppStyles.header600(
                         fontsize: 10,
                         color: currentTab == 2
@@ -109,8 +110,40 @@ class _MainPageState extends State<MainPage> {
               MaterialButton(
                 onPressed: () {
                   setState(() {
-                    currentScreen = const Profile();
+                    currentScreen = const CarWishList();
                     currentTab = 3;
+                  });
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      FontAwesomeIcons.screwdriverWrench,
+                      size: 24,
+                      color: currentTab == 3
+                          ? AppColors.buttonColor
+                          : AppColors.grey400,
+                    ),
+                    SizedBox(
+                      height: 5.sp,
+                    ),
+                    Text(
+                      "Sửa chữa",
+                      style: AppStyles.header600(
+                        fontsize: 10,
+                        color: currentTab == 3
+                            ? AppColors.buttonColor
+                            : AppColors.grey400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  setState(() {
+                    currentScreen = const Profile();
+                    currentTab = 4;
                   });
                 },
                 child: Column(
@@ -119,7 +152,7 @@ class _MainPageState extends State<MainPage> {
                     Icon(
                       FontAwesomeIcons.userGear,
                       size: 24,
-                      color: currentTab == 3
+                      color: currentTab == 4
                           ? AppColors.buttonColor
                           : AppColors.grey400,
                     ),
@@ -130,7 +163,7 @@ class _MainPageState extends State<MainPage> {
                       "Tài khoản",
                       style: AppStyles.header600(
                         fontsize: 10,
-                        color: currentTab == 3
+                        color: currentTab == 4
                             ? AppColors.buttonColor
                             : AppColors.grey400,
                       ),
