@@ -7,6 +7,7 @@ import 'package:empire_expert/services/diagnose_services/diagnose_services.dart'
 import 'package:empire_expert/services/item_service/item_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:empire_expert/widgets/bottom_pop_up.dart';
+import 'package:empire_expert/widgets/expert_popup.dart';
 import 'package:empire_expert/widgets/loading.dart';
 import 'package:empire_expert/widgets/screen_loading.dart';
 import 'package:empire_expert/widgets/tag_editor.dart';
@@ -150,6 +151,7 @@ class _OrderDetailState extends State<OrderDetail> {
   final FocusNode _focusNode = FocusNode();
   String symptom = "";
   late List<ProblemModel> _initSuggestTags;
+
 
   @override
   void initState() {
@@ -478,15 +480,21 @@ class _OrderDetailState extends State<OrderDetail> {
   }
 
   void sendDiagnose() async {
+    var list = [];
+    for(var tag in _tags){
+      list.add(tag.name);
+    }
+    var result = list.join("\n");
     if (_validate(symptom, _tags) == false) return;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => BottomPopup(
-          header: "Gửi chẩn đoán",
-          title: "Bạn muốn gửi chẩn đoán?",
-          body:
-              "Kiểm tra kĩ càng trước khi gửi chẩn đoán, quá trình này sẽ không được hoàn tác",
+      builder: (context) => ExpertPopup(
+          header: "Bạn muốn gửi chẩn đoán?",
+          diagnose: "Các chẩn đoán đã chọn",
+          diagnoseList: result,
+          symptom: "Triệu chứng",
+          symptomList: symptom.toString(),
           buttonTitle: "Gửi chẩn đoán",
           action: () async {
             showDialog(

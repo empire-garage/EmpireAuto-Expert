@@ -149,6 +149,7 @@ class _TagEditorState extends State<TagEditor> {
                   _textController.text = "";
                   _suggestedTags.remove(suggestion);
                   _selectedTags.add(suggestion as ProblemModel);
+                  widget.onChanged(_selectedTags);
                 });
               },
               noItemsFoundBuilder: (context) {
