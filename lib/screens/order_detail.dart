@@ -103,6 +103,7 @@ class _OrderDetailState extends State<OrderDetail> {
   int prepaid = 500000;
   List<OrderServiceDetails> _listOrderServiceDetails = [];
   OrderServicesResponseModel? _orderServicesResponseModel;
+  bool checkedService = false;
 
   _getOrderServices() async {
     var listOrderServiceDetails =
@@ -233,6 +234,18 @@ class _OrderDetailState extends State<OrderDetail> {
     return true;
   }
 
+  _isCheckedAllService() async {
+    if (_listOrderServiceDetails.any((element) => element.done == false)) {
+      setState(() {
+        checkedService = false;
+      });
+    } else {
+      setState(() {
+        checkedService = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return _loading
@@ -308,6 +321,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                 });
                                 await _updateExpertTask(
                                     _listOrderServiceDetails[index]);
+                                _isCheckedAllService();
                               },
                               onLongPress: () {
                                 setState(() {
@@ -646,65 +660,70 @@ class _OrderDetailState extends State<OrderDetail> {
                 SizedBox(
                   height: 30.h,
                 ),
-                Center(
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 52.h,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        Get.bottomSheet(BottomPopup(
-                            header: "Hoàn thành",
-                            title: "Bạn muốn hoàn thành sửa chữa?",
-                            body:
-                                "Kiểm tra kĩ càng trước khi hoàn thành, quá trình này sẽ không được hoàn tác",
-                            buttonTitle: "Hoàn thành",
-                            action: () async {
-                              showDialog(
-                                context: context,
-                                builder: (context) => const ScreenLoading(),
-                              );
-                              var result = await _doneOrder();
-                              Get.back();
-                              if (result == true) {
-                                Get.replace(Get.bottomSheet(
-                                  backgroundColor: Colors.transparent,
-                                  BottomPopup(
-                                    image:
-                                        'assets/image/icon-logo/successfull-icon.png',
-                                    title: "Hoàn thành sửa chữa",
-                                    body:
-                                        "Chuẩn bị xe sẵn sàng trước khi giao lại cho khách nhé",
-                                    buttonTitle: "Trở về",
-                                    action: () => Get.offAll(const MainPage()),
-                                  ),
-                                ));
-                              } else {
-                                Get.replace(Get.bottomSheet(
-                                  backgroundColor: Colors.transparent,
-                                  BottomPopup(
-                                    image:
-                                        'assets/image/icon-logo/failed-icon.png',
-                                    title: "Thất bại",
-                                    body: "Có sự cố khi hoàn thành sửa chữa",
-                                    buttonTitle: "Trở về",
-                                    action: () => Get.back(),
-                                  ),
-                                ));
-                              }
-                            }));
-                      },
-                      style: AppStyles.button16(),
-                      child: Text(
-                        'Hoàn thành',
-                        style: TextStyle(
-                          fontFamily: 'Roboto',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
+                checkedService == false
+                    ? Container()
+                    : Center(
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 52.h,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              Get.bottomSheet(BottomPopup(
+                                  header: "Hoàn thành",
+                                  title: "Bạn muốn hoàn thành sửa chữa?",
+                                  body:
+                                      "Kiểm tra kĩ càng trước khi hoàn thành, quá trình này sẽ không được hoàn tác",
+                                  buttonTitle: "Hoàn thành",
+                                  action: () async {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          const ScreenLoading(),
+                                    );
+                                    var result = await _doneOrder();
+                                    Get.back();
+                                    if (result == true) {
+                                      Get.replace(Get.bottomSheet(
+                                        backgroundColor: Colors.transparent,
+                                        BottomPopup(
+                                          image:
+                                              'assets/image/icon-logo/successfull-icon.png',
+                                          title: "Hoàn thành sửa chữa",
+                                          body:
+                                              "Chuẩn bị xe sẵn sàng trước khi giao lại cho khách nhé",
+                                          buttonTitle: "Trở về",
+                                          action: () =>
+                                              Get.offAll(const MainPage()),
+                                        ),
+                                      ));
+                                    } else {
+                                      Get.replace(Get.bottomSheet(
+                                        backgroundColor: Colors.transparent,
+                                        BottomPopup(
+                                          image:
+                                              'assets/image/icon-logo/failed-icon.png',
+                                          title: "Thất bại",
+                                          body:
+                                              "Có sự cố khi hoàn thành sửa chữa",
+                                          buttonTitle: "Trở về",
+                                          action: () => Get.back(),
+                                        ),
+                                      ));
+                                    }
+                                  }));
+                            },
+                            style: AppStyles.button16(),
+                            child: Text(
+                              'Hoàn thành',
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
                 SizedBox(
                   height: 30.h,
                 ),
