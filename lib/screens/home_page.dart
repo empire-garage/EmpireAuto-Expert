@@ -133,6 +133,7 @@ class _HomePageState extends State<HomePage> {
     return photo;
   }
 
+
   @override
   Widget build(BuildContext context) {
     return _loading
@@ -325,9 +326,18 @@ class _HomePageState extends State<HomePage> {
                                                 color: Colors.grey.shade500)),
                                       ],
                                     ),
-                                    trailing: const Icon(
-                                      Icons.navigate_next,
-                                      color: Colors.black,
+                                    trailing: Column(
+                                      children: const [
+                                         Icon(
+                                          Icons.circle,
+                                          size: 10,
+                                          color: Colors.red,
+                                        ),
+                                        Icon(
+                                          Icons.navigate_next,
+                                          color: Colors.black,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
