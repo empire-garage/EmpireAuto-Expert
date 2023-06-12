@@ -76,17 +76,14 @@ class _DiagnosingPageState extends State<DiagnosingPage> {
             ),
             backgroundColor: Colors.white,
             body: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Column(
-                    children: [
-                      OrderDetail(
-                        key: _childKey,
-                        order: _order,
-                        onGoingPaymentCallBack: () {},
-                      ),
-                    ]
-                ),
+              child: Column(
+                  children: [
+                    OrderDetail(
+                      key: _childKey,
+                      order: _order,
+                      onGoingPaymentCallBack: () {},
+                    ),
+                  ]
               ),
                ),
             bottomNavigationBar: DecoratedBox(
@@ -430,11 +427,14 @@ class _OrderDetailState extends State<OrderDetail> {
                   ),
                 ),
                 _validateProblem != null
-                    ? Text(
-                        _validateProblem!,
-                        style: AppStyles.text400(
-                            fontsize: 12.sp, color: AppColors.errorIcon),
-                      )
+                    ? Padding(
+                      padding: EdgeInsets.symmetric(vertical: 5.sp),
+                      child: Text(
+                          _validateProblem!,
+                          style: AppStyles.text400(
+                              fontsize: 12.sp, color: AppColors.errorIcon),
+                        ),
+                    )
                     : Container(),
                 SizedBox(
                   height: 10.sp,
