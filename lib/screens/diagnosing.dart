@@ -21,6 +21,7 @@ import '../models/response/item.dart';
 class DiagnosingPage extends StatefulWidget {
   final int orderServiceId;
   const DiagnosingPage({super.key, required this.orderServiceId});
+  final bool _showContainer = true;
 
   @override
   State<DiagnosingPage> createState() => _DiagnosingPageState();
@@ -53,6 +54,7 @@ class _DiagnosingPageState extends State<DiagnosingPage> {
     return _loading
         ? const Loading()
         : Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(
               toolbarHeight: 70.sp,
               leading: Padding(
@@ -73,13 +75,20 @@ class _DiagnosingPageState extends State<DiagnosingPage> {
               ),
             ),
             backgroundColor: Colors.white,
-            body: ListView(children: [
-              OrderDetail(
-                key: _childKey,
-                order: _order,
-                onGoingPaymentCallBack: () {},
-              )
-            ]),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                    children: [
+                      OrderDetail(
+                        key: _childKey,
+                        order: _order,
+                        onGoingPaymentCallBack: () {},
+                      ),
+                    ]
+                ),
+              ),
+               ),
             bottomNavigationBar: DecoratedBox(
               decoration: BoxDecoration(
                   border: Border.symmetric(
@@ -151,7 +160,6 @@ class _OrderDetailState extends State<OrderDetail> {
   final FocusNode _focusNode = FocusNode();
   String symptom = "";
   late List<ProblemModel> _initSuggestTags;
-
 
   @override
   void initState() {
@@ -235,9 +243,10 @@ class _OrderDetailState extends State<OrderDetail> {
   Widget build(BuildContext context) {
     return _loading
         ? const SizedBox(
-          height: 100,
-          width: double.infinity,
-          child: Loading(backgroundColor: Colors.white),)
+            height: 100,
+            width: double.infinity,
+            child: Loading(backgroundColor: Colors.white),
+          )
         : Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
@@ -480,19 +489,16 @@ class _OrderDetailState extends State<OrderDetail> {
   }
 
   void sendDiagnose() async {
-    var list = [];
-    for(var tag in _tags){
-      list.add(tag.name);
-    }
-    var result = list.join("\n");
     if (_validate(symptom, _tags) == false) return;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      //isScrollControlled: false,
       builder: (context) => ExpertPopup(
           header: "Bạn muốn gửi chẩn đoán?",
           diagnose: "Các chẩn đoán đã chọn",
-          diagnoseList: result,
+          diagnoseList: _tags,
+          orderSymptoms: widget.order.symptoms??[],
           symptom: "Triệu chứng",
           symptomList: symptom.toString(),
           buttonTitle: "Gửi chẩn đoán",

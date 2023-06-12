@@ -1,17 +1,21 @@
 import 'package:empire_expert/common/style.dart';
+import 'package:empire_expert/models/request/send_diagnosing_request_model.dart';
+import 'package:empire_expert/models/response/orderservices.dart';
+import 'package:empire_expert/models/response/problem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:empire_expert/models/response/orderservices.dart' as Service;
 import '../../common/colors.dart';
 
 class ExpertPopup extends StatelessWidget {
   final String? header;
   final String diagnose;
-  final String diagnoseList;
+  final List<ProblemModel> diagnoseList;
   final String symptom;
   final String symptomList;
   final Function()? action;
   final String buttonTitle;
+  final List<Service.Symptom> orderSymptoms;
   const ExpertPopup(
       {Key? key,
         this.header,
@@ -20,8 +24,16 @@ class ExpertPopup extends StatelessWidget {
         required this.symptom,
         required this.symptomList,
         this.action,
+        required this.orderSymptoms,
         required this.buttonTitle})
       : super(key: key);
+
+  _hasThisSymptom(int symptomId) {
+    if (orderSymptoms.any((element) => element.id == symptomId)) {
+      return true;
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +44,9 @@ class ExpertPopup extends StatelessWidget {
           borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       child: ClipRRect(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            SizedBox(height: 10.h),
             Visibility(
                 visible: header != null,
                 child: Column(
@@ -50,92 +63,126 @@ class ExpertPopup extends StatelessWidget {
                     )
                   ],
                 )),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
-              child: SizedBox(
-                width: 300.w,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children:[
-                      Text(
-                        diagnose,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontFamily: 'SFProDisplay',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.blackTextColor,
-                        ),
-                      ),
-                    ]
+            SizedBox(height: 10.h),
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: SizedBox(
+                    width: 300.w,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:[
+                          Text(
+                            diagnose,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontFamily: 'SFProDisplay',
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.blackTextColor,
+                            ),
+                          ),
+                        ]
+                    ),
                   ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
-              child: SizedBox(
-                width: 300.w,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      diagnoseList,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: 'SFProDisplay',
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.lightTextColor,
-                      ),
-                    ),
-                  ],
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
-              child: SizedBox(
-                width: 300.w,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      symptom,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: 'SFProDisplay',
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.blackTextColor,
-                      ),
+                SizedBox(height: 5.h),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: SizedBox(
+                    width: 300.w,
+                    child: ListView.builder(
+                      itemCount: diagnoseList.length,
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index){
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 5.sp),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                diagnoseList[index].name,
+                                style: AppStyles.text400(fontsize: 10.sp),
+                              ),
+                              Visibility(
+                                visible: diagnoseList[index].symptom != null &&
+                                    _hasThisSymptom(diagnoseList[index].symptom!.id),
+                                child: Visibility(
+                                  visible: diagnoseList[index].symptom != null &&
+                                      diagnoseList[index].symptom!.name != null,
+                                  child: Text(
+                                    diagnoseList[index].symptom!.name!,
+                                    style: AppStyles.text400(
+                                        fontsize: 10.sp,
+                                        color: Colors.grey.shade500),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
-              child: SizedBox(
-                width: 300.w,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      symptomList,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: 'SFProDisplay',
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.lightTextColor,
-                      ),
+                SizedBox(height: 5.h),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Divider(thickness: 1),
+                ),
+                SizedBox(height: 5.h),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: SizedBox(
+                    width: 300.w,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          symptom,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontFamily: 'SFProDisplay',
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.blackTextColor,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                SizedBox(height: 5.h),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: SizedBox(
+                    width: 300.w,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          symptomList,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontFamily: 'SFProDisplay',
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.lightTextColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
+            Spacer(),
+            Divider(),
             Padding(
-              padding: const EdgeInsets.only(left: 2.0, top: 2.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
