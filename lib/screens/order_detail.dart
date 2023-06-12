@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/request/send_diagnosing_request_model.dart'
     as send_diagnosing;
 import 'package:empire_expert/models/response/orderservices.dart';
+import 'package:empire_expert/screens/home_page.dart';
 import 'package:empire_expert/screens/main_page.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
@@ -20,9 +22,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../../common/colors.dart';
 import '../models/response/item.dart';
 
+// ignore: depend_on_referenced_packages
+import 'package:shared_preferences/shared_preferences.dart';
+
 class OrderDetailPage extends StatefulWidget {
   final int orderServiceId;
-  const OrderDetailPage({super.key, required this.orderServiceId});
+  final bool? isNew;
+  const OrderDetailPage({super.key, required this.orderServiceId, this.isNew});
 
   @override
   State<OrderDetailPage> createState() => _OrderDetailPageState();
@@ -77,6 +83,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             body: ListView(children: [
               OrderDetail(
                 order: _order,
+                isNew: widget.isNew,
                 onGoingPaymentCallBack: () {},
               )
             ]),
@@ -87,8 +94,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 class OrderDetail extends StatefulWidget {
   final OrderServicesResponseModel order;
   final Function onGoingPaymentCallBack;
+  final bool? isNew;
   const OrderDetail(
-      {super.key, required this.onGoingPaymentCallBack, required this.order});
+      {super.key, required this.onGoingPaymentCallBack, required this.order, this.isNew});
 
   @override
   State<OrderDetail> createState() => _OrderDetailState();
@@ -104,7 +112,7 @@ class _OrderDetailState extends State<OrderDetail> {
   List<OrderServiceDetails> _listOrderServiceDetails = [];
   OrderServicesResponseModel? _orderServicesResponseModel;
   bool checkedService = false;
-  bool isStart = false;
+  bool _isNew = true;
 
   _getOrderServices() async {
     var listOrderServiceDetails =
@@ -212,6 +220,7 @@ class _OrderDetailState extends State<OrderDetail> {
 
   @override
   void initState() {
+    _isNew = widget.isNew ?? true;
     super.initState();
     _getOrderServices();
     _isCheckedAllService();
@@ -248,6 +257,28 @@ class _OrderDetailState extends State<OrderDetail> {
     }
   }
 
+  Future<List<OrderServiceIsNew>> _getListOrderServiceIsNew(prefs) async {
+    var stringJson = prefs.getString('orderServicesIsNewJson');
+    List<OrderServiceIsNew> list = [];
+    if (stringJson != null) {
+      List<dynamic> jsonList = jsonDecode(stringJson);
+      for (var element in jsonList) {
+        list.add(OrderServiceIsNew.fromJson(element));
+      }
+    }
+    return list;
+  }
+  
+  _setOrderServiceIsNotNew(int orderServiceId) async {
+    final prefs = await SharedPreferences.getInstance();
+    var listFromStorage = await _getListOrderServiceIsNew(prefs);
+
+    listFromStorage.where((element) => element.orderServiceId == orderServiceId).first.isNew = false;
+
+    var listJson = jsonEncode(listFromStorage.map((e) => e.toJson()).toList());
+    await prefs.setString('orderServicesIsNewJson', listJson);
+  }
+
   @override
   Widget build(BuildContext context) {
     return _loading
@@ -260,543 +291,565 @@ class _OrderDetailState extends State<OrderDetail> {
           )
         : Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: isStart == false
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 52.h,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            setState(() {
-                              isStart = true;
-                              checkedService = false;
-                            });
-                          },
-                          style: AppStyles.button16(),
-                          child: Text(
-                            'Bắt đầu',
-                            style: TextStyle(
-                              fontFamily: 'Roboto',
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                : Column(
-                    children: <Widget>[
-                      CustomerInfo(
-                        orderService: widget.order,
-                      ),
-                      SizedBox(height: 15.h),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Những dịch vụ được yêu cầu",
-                          style: TextStyle(
-                            fontFamily: 'Roboto',
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.blackTextColor,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 5.h),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Đánh dấu hoàn thành sau khi hoàn tất công việc",
-                          style: TextStyle(
-                            fontFamily: 'Roboto',
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.lightTextColor,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          var item = _listOrderServiceDetails[index];
-                          return Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8.h),
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.r)),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                        offset: Offset(0, 5),
-                                        blurRadius: 10,
-                                        color: AppColors.grey400,
-                                        blurStyle: BlurStyle.outer)
-                                  ]),
-                              child: Column(
-                                children: [
-                                  InkWell(
-                                    onTap: () async {
-                                      setState(() {
-                                        var done =
-                                            _listOrderServiceDetails[index]
-                                                    .done ??
-                                                false;
-                                        _listOrderServiceDetails[index].done =
-                                            !done;
-                                      });
-                                      await _updateExpertTask(
-                                          _listOrderServiceDetails[index]);
-                                      _isCheckedAllService();
-                                    },
-                                    onLongPress: () {
-                                      setState(() {
-                                        var showNote =
-                                            _listOrderServiceDetails[index]
-                                                .showNote;
-                                        _listOrderServiceDetails[index]
-                                            .showNote = !showNote;
-                                      });
-                                    },
-                                    child: ListTile(
-                                      title: Text(
-                                        _listOrderServiceDetails[index]
-                                            .item!
-                                            .name
-                                            .toString(),
-                                        style: TextStyle(
-                                          fontFamily: 'Roboto',
-                                          fontSize: 12.sp,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.blackTextColor,
-                                        ),
-                                      ),
-                                      subtitle: SizedBox(
-                                        width: 250.w,
-                                        child: Text(
-                                          _listOrderServiceDetails[index]
-                                              .item!
-                                              .problem!
-                                              .name
-                                              .toString(),
-                                          style: TextStyle(
-                                            fontFamily: 'Roboto',
-                                            fontSize: 12.sp,
-                                            fontWeight: FontWeight.w400,
-                                            color: AppColors.grey600,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      ),
-                                      trailing: _listOrderServiceDetails[index]
-                                                  .done !=
-                                              true
-                                          ? const Icon(Icons.circle_outlined)
-                                          : const Icon(
-                                              Icons.check_circle,
-                                              color: AppColors.blue600,
-                                            ),
-                                    ),
-                                  ),
-                                  !_listOrderServiceDetails[index].showNote
-                                      ? Container()
-                                      : const Divider(),
-                                  !_listOrderServiceDetails[index].showNote
-                                      ? Container()
-                                      : _listOrderServiceDetails[index].note !=
-                                              null
-                                          ? ListTile(
-                                              title: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    'Ghi chú',
-                                                    style: TextStyle(
-                                                      fontFamily: 'Roboto',
-                                                      fontSize: 12.sp,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: AppColors
-                                                          .blackTextColor,
-                                                    ),
-                                                  ),
-                                                  InkWell(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          _listOrderServiceDetails[
-                                                                      index]
-                                                                  .controller
-                                                                  .text =
-                                                              _listOrderServiceDetails[
-                                                                      index]
-                                                                  .note
-                                                                  .toString();
-                                                          _listOrderServiceDetails[
-                                                                  index]
-                                                              .note = null;
-                                                        });
-                                                      },
-                                                      child: const Icon(
-                                                          Icons.edit_note)),
-                                                ],
-                                              ),
-                                              subtitle: Padding(
-                                                padding:
-                                                    EdgeInsets.only(top: 5.h),
-                                                child: Text(
-                                                  _listOrderServiceDetails[
-                                                              index]
-                                                          .note ??
-                                                      "",
-                                                  style: AppStyles.text400(
-                                                      fontsize: 12.sp,
-                                                      color: AppColors.grey600),
-                                                ),
-                                              ),
-                                            )
-                                          : Container(
-                                              margin: const EdgeInsets.only(
-                                                  left: 16,
-                                                  right: 16,
-                                                  bottom: 16),
-                                              child: TextField(
-                                                controller:
-                                                    _listOrderServiceDetails[
-                                                            index]
-                                                        .controller,
-                                                focusNode:
-                                                    _listOrderServiceDetails[
-                                                            index]
-                                                        .noteFocusNode,
-                                                onChanged: (value) {
-                                                  _listOrderServiceDetails[
-                                                          index]
-                                                      .note = value;
-                                                },
-                                                onTapOutside: (event) async {
-                                                  if (_listOrderServiceDetails[
-                                                          index]
-                                                      .noteFocusNode
-                                                      .hasFocus) {
-                                                    await _updateExpertTask(
-                                                        _listOrderServiceDetails[
-                                                            index]);
-                                                  }
-
-                                                  setState(() {
-                                                    _listOrderServiceDetails[
-                                                            index]
-                                                        .noteFocusNode
-                                                        .unfocus();
-                                                    _listOrderServiceDetails[
-                                                                index]
-                                                            .note =
-                                                        _listOrderServiceDetails[
-                                                                    index]
-                                                                .controller
-                                                                .text
-                                                                .trim()
-                                                                .isNotEmpty
-                                                            ? _listOrderServiceDetails[
-                                                                    index]
-                                                                .controller
-                                                                .text
-                                                            : null;
-                                                  });
-                                                },
-                                                cursorColor:
-                                                    AppColors.blueTextColor,
-                                                decoration: InputDecoration(
-                                                    hintText: 'Ghi chú',
-                                                    hintStyle:
-                                                        AppStyles.header600(
-                                                            fontsize: 12.sp,
-                                                            color: AppColors
-                                                                .grey400),
-                                                    enabledBorder:
-                                                        UnderlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade300)),
-                                                    focusedBorder:
-                                                        const UnderlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color: AppColors
-                                                                    .blueTextColor,
-                                                                width: 2))),
-                                                maxLines: 3,
-                                              ),
-                                            ),
-                                  !_listOrderServiceDetails[index].showNote
-                                      ? Container()
-                                      : const Divider(),
-                                  !_listOrderServiceDetails[index].showNote
-                                      ? Container()
-                                      : InkWell(
-                                          onTap: () async {
-                                            await _getImageUrl(item);
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text('Chụp ảnh',
-                                                    style: AppStyles.header600(
-                                                        fontsize: 12.sp,
-                                                        color:
-                                                            AppColors.grey400)),
-                                                Container(
-                                                    margin:
-                                                        const EdgeInsets.all(5),
-                                                    child: Icon(
-                                                      FontAwesomeIcons.camera,
-                                                      color: AppColors.grey400,
-                                                      size: 18.sp,
-                                                    ))
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                  !_listOrderServiceDetails[index].showNote
-                                      ? Container()
-                                      : Visibility(
-                                          visible: item.images.isNotEmpty ||
-                                              item.loadingImage != -1,
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 10.sp),
-                                            width: double.infinity,
-                                            height: 60,
-                                            child: ListView.builder(
-                                              scrollDirection: Axis.horizontal,
-                                              shrinkWrap: true,
-                                              physics:
-                                                  const NeverScrollableScrollPhysics(),
-                                              itemCount: 5,
-                                              itemBuilder: (context, index) {
-                                                if (index ==
-                                                    item.loadingImage) {
-                                                  return Container(
-                                                    margin:
-                                                        const EdgeInsets.all(5),
-                                                    height: 60,
-                                                    width: 50,
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color: AppColors
-                                                                .blueTextColor)),
-                                                    child: const Loading(),
-                                                  );
-                                                }
-                                                if (index <=
-                                                    item.images.length - 1) {
-                                                  return Stack(
-                                                      alignment:
-                                                          AlignmentDirectional
-                                                              .topEnd,
-                                                      children: [
-                                                        InkWell(
-                                                          onTap: () {
-                                                            showDialog(
-                                                                context:
-                                                                    context,
-                                                                useSafeArea:
-                                                                    true,
-                                                                builder:
-                                                                    (context) {
-                                                                  return Material(
-                                                                    color: Colors
-                                                                        .transparent,
-                                                                    child:
-                                                                        InkWell(
-                                                                      onTap: () =>
-                                                                          Get.back(),
-                                                                      child:
-                                                                          Container(
-                                                                        color: Colors
-                                                                            .black
-                                                                            .withOpacity(0.5),
-                                                                        child: Center(
-                                                                            child:
-                                                                                Image.network(item.images[index], fit: BoxFit.cover)),
-                                                                      ),
-                                                                    ),
-                                                                  );
-                                                                });
-                                                          },
-                                                          child: Container(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(
-                                                                          5.sp),
-                                                              height: 60,
-                                                              width: 60,
-                                                              child: Image.network(
-                                                                  item.images[
-                                                                      index],
-                                                                  height: 60,
-                                                                  width: 60,
-                                                                  fit: BoxFit
-                                                                      .fitHeight)),
-                                                        ),
-                                                        Positioned(
-                                                            child: InkWell(
-                                                          onTap: () async {
-                                                            setState(() {
-                                                              item.images
-                                                                  .removeAt(
-                                                                      index);
-                                                            });
-                                                            await _updateExpertTask(
-                                                                item);
-                                                          },
-                                                          child: Stack(
-                                                            alignment:
-                                                                AlignmentDirectional
-                                                                    .center,
-                                                            children: [
-                                                              Container(
-                                                                width: 13,
-                                                                height: 13,
-                                                                decoration:
-                                                                    const BoxDecoration(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  shape: BoxShape
-                                                                      .circle,
-                                                                ),
-                                                              ),
-                                                              Icon(
-                                                                Icons.cancel,
-                                                                color: Colors
-                                                                    .grey
-                                                                    .shade700,
-                                                                size: 17,
-                                                              )
-                                                            ],
-                                                          ),
-                                                        )),
-                                                      ]);
-                                                } else {
-                                                  return InkWell(
-                                                    onTap: () async {
-                                                      await _getImageUrl(item);
-                                                    },
-                                                    child: Container(
-                                                      margin:
-                                                          const EdgeInsets.all(
-                                                              5),
-                                                      height: 60,
-                                                      width: 50,
-                                                      decoration: BoxDecoration(
-                                                          border: Border.all(
-                                                              color: AppColors
-                                                                  .blueTextColor)),
-                                                      child: const Icon(
-                                                          FontAwesomeIcons.plus,
-                                                          color: AppColors
-                                                              .blueTextColor),
-                                                    ),
-                                                  );
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                        )
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                        itemCount: _listOrderServiceDetails.length,
-                      ),
-                      SizedBox(
-                        height: 30.h,
-                      ),
-                      checkedService == false
-                          ? Container()
-                          : Center(
-                              child: SizedBox(
-                                width: double.infinity,
-                                height: 52.h,
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    Get.bottomSheet(BottomPopup(
-                                        header: "Hoàn thành",
-                                        title: "Bạn muốn hoàn thành sửa chữa?",
-                                        body:
-                                            "Kiểm tra kĩ càng trước khi hoàn thành, quá trình này sẽ không được hoàn tác",
-                                        buttonTitle: "Hoàn thành",
-                                        action: () async {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                                const ScreenLoading(),
-                                          );
-                                          var result = await _doneOrder();
-                                          Get.back();
-                                          if (result == true) {
-                                            Get.replace(Get.bottomSheet(
-                                              backgroundColor:
-                                                  Colors.transparent,
-                                              BottomPopup(
-                                                image:
-                                                    'assets/image/icon-logo/successfull-icon.png',
-                                                title: "Hoàn thành sửa chữa",
-                                                body:
-                                                    "Chuẩn bị xe sẵn sàng trước khi giao lại cho khách nhé",
-                                                buttonTitle: "Trở về",
-                                                action: () => Get.offAll(
-                                                    const MainPage()),
-                                              ),
-                                            ));
-                                          } else {
-                                            Get.replace(Get.bottomSheet(
-                                              backgroundColor:
-                                                  Colors.transparent,
-                                              BottomPopup(
-                                                image:
-                                                    'assets/image/icon-logo/failed-icon.png',
-                                                title: "Thất bại",
-                                                body:
-                                                    "Có sự cố khi hoàn thành sửa chữa",
-                                                buttonTitle: "Trở về",
-                                                action: () => Get.back(),
-                                              ),
-                                            ));
-                                          }
-                                        }));
-                                  },
-                                  style: AppStyles.button16(),
-                                  child: Text(
-                                    'Hoàn thành',
-                                    style: TextStyle(
-                                      fontFamily: 'Roboto',
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+            child: Column(
+              children: <Widget>[
+                CustomerInfo(
+                  orderService: widget.order,
+                ),
+                _isNew == true
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 52.h,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                setState(() {
+                                  _isNew = false;
+                                  _setOrderServiceIsNotNew(widget.order.id);
+                                  checkedService = false;
+                                });
+                              },
+                              style: AppStyles.button16(),
+                              child: Text(
+                                'Bắt đầu',
+                                style: TextStyle(
+                                  fontFamily: 'Roboto',
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
-                      SizedBox(
-                        height: 30.h,
+                          ),
+                        ),
+                      )
+                    : Column(
+                        children: [
+                          SizedBox(height: 15.h),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Những dịch vụ được yêu cầu",
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.blackTextColor,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 5.h),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Đánh dấu hoàn thành sau khi hoàn tất công việc",
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.lightTextColor,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 10.h),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              var item = _listOrderServiceDetails[index];
+                              return Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8.h),
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15.r)),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                            offset: Offset(0, 5),
+                                            blurRadius: 10,
+                                            color: AppColors.grey400,
+                                            blurStyle: BlurStyle.outer)
+                                      ]),
+                                  child: Column(
+                                    children: [
+                                      InkWell(
+                                        onTap: () async {
+                                          setState(() {
+                                            var done =
+                                                _listOrderServiceDetails[index]
+                                                        .done ??
+                                                    false;
+                                            _listOrderServiceDetails[index]
+                                                .done = !done;
+                                          });
+                                          await _updateExpertTask(
+                                              _listOrderServiceDetails[index]);
+                                          _isCheckedAllService();
+                                        },
+                                        onLongPress: () {
+                                          setState(() {
+                                            var showNote =
+                                                _listOrderServiceDetails[index]
+                                                    .showNote;
+                                            _listOrderServiceDetails[index]
+                                                .showNote = !showNote;
+                                          });
+                                        },
+                                        child: ListTile(
+                                          title: Text(
+                                            _listOrderServiceDetails[index]
+                                                .item!
+                                                .name
+                                                .toString(),
+                                            style: TextStyle(
+                                              fontFamily: 'Roboto',
+                                              fontSize: 12.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: AppColors.blackTextColor,
+                                            ),
+                                          ),
+                                          subtitle: SizedBox(
+                                            width: 250.w,
+                                            child: Text(
+                                              _listOrderServiceDetails[index]
+                                                  .item!
+                                                  .problem!
+                                                  .name
+                                                  .toString(),
+                                              style: TextStyle(
+                                                fontFamily: 'Roboto',
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w400,
+                                                color: AppColors.grey600,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                          ),
+                                          trailing:
+                                              _listOrderServiceDetails[index]
+                                                          .done !=
+                                                      true
+                                                  ? const Icon(
+                                                      Icons.circle_outlined)
+                                                  : const Icon(
+                                                      Icons.check_circle,
+                                                      color: AppColors.blue600,
+                                                    ),
+                                        ),
+                                      ),
+                                      !_listOrderServiceDetails[index].showNote
+                                          ? Container()
+                                          : const Divider(),
+                                      !_listOrderServiceDetails[index].showNote
+                                          ? Container()
+                                          : _listOrderServiceDetails[index]
+                                                      .note !=
+                                                  null
+                                              ? ListTile(
+                                                  title: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        'Ghi chú',
+                                                        style: TextStyle(
+                                                          fontFamily: 'Roboto',
+                                                          fontSize: 12.sp,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: AppColors
+                                                              .blackTextColor,
+                                                        ),
+                                                      ),
+                                                      InkWell(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              _listOrderServiceDetails[
+                                                                          index]
+                                                                      .controller
+                                                                      .text =
+                                                                  _listOrderServiceDetails[
+                                                                          index]
+                                                                      .note
+                                                                      .toString();
+                                                              _listOrderServiceDetails[
+                                                                      index]
+                                                                  .note = null;
+                                                            });
+                                                          },
+                                                          child: const Icon(
+                                                              Icons.edit_note)),
+                                                    ],
+                                                  ),
+                                                  subtitle: Padding(
+                                                    padding: EdgeInsets.only(
+                                                        top: 5.h),
+                                                    child: Text(
+                                                      _listOrderServiceDetails[
+                                                                  index]
+                                                              .note ??
+                                                          "",
+                                                      style: AppStyles.text400(
+                                                          fontsize: 12.sp,
+                                                          color: AppColors
+                                                              .grey600),
+                                                    ),
+                                                  ),
+                                                )
+                                              : Container(
+                                                  margin: const EdgeInsets.only(
+                                                      left: 16,
+                                                      right: 16,
+                                                      bottom: 16),
+                                                  child: TextField(
+                                                    controller:
+                                                        _listOrderServiceDetails[
+                                                                index]
+                                                            .controller,
+                                                    focusNode:
+                                                        _listOrderServiceDetails[
+                                                                index]
+                                                            .noteFocusNode,
+                                                    onChanged: (value) {
+                                                      _listOrderServiceDetails[
+                                                              index]
+                                                          .note = value;
+                                                    },
+                                                    onTapOutside:
+                                                        (event) async {
+                                                      if (_listOrderServiceDetails[
+                                                              index]
+                                                          .noteFocusNode
+                                                          .hasFocus) {
+                                                        await _updateExpertTask(
+                                                            _listOrderServiceDetails[
+                                                                index]);
+                                                      }
+
+                                                      setState(() {
+                                                        _listOrderServiceDetails[
+                                                                index]
+                                                            .noteFocusNode
+                                                            .unfocus();
+                                                        _listOrderServiceDetails[
+                                                                    index]
+                                                                .note =
+                                                            _listOrderServiceDetails[
+                                                                        index]
+                                                                    .controller
+                                                                    .text
+                                                                    .trim()
+                                                                    .isNotEmpty
+                                                                ? _listOrderServiceDetails[
+                                                                        index]
+                                                                    .controller
+                                                                    .text
+                                                                : null;
+                                                      });
+                                                    },
+                                                    cursorColor:
+                                                        AppColors.blueTextColor,
+                                                    decoration: InputDecoration(
+                                                        hintText: 'Ghi chú',
+                                                        hintStyle:
+                                                            AppStyles.header600(
+                                                                fontsize: 12.sp,
+                                                                color: AppColors
+                                                                    .grey400),
+                                                        enabledBorder:
+                                                            UnderlineInputBorder(
+                                                                borderSide:
+                                                                    BorderSide(
+                                                                        color: Colors
+                                                                            .grey
+                                                                            .shade300)),
+                                                        focusedBorder:
+                                                            const UnderlineInputBorder(
+                                                                borderSide: BorderSide(
+                                                                    color: AppColors
+                                                                        .blueTextColor,
+                                                                    width: 2))),
+                                                    maxLines: 3,
+                                                  ),
+                                                ),
+                                      !_listOrderServiceDetails[index].showNote
+                                          ? Container()
+                                          : const Divider(),
+                                      !_listOrderServiceDetails[index].showNote
+                                          ? Container()
+                                          : InkWell(
+                                              onTap: () async {
+                                                await _getImageUrl(item);
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 16),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text('Chụp ảnh',
+                                                        style:
+                                                            AppStyles.header600(
+                                                                fontsize: 12.sp,
+                                                                color: AppColors
+                                                                    .grey400)),
+                                                    Container(
+                                                        margin: const EdgeInsets
+                                                            .all(5),
+                                                        child: Icon(
+                                                          FontAwesomeIcons
+                                                              .camera,
+                                                          color:
+                                                              AppColors.grey400,
+                                                          size: 18.sp,
+                                                        ))
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                      !_listOrderServiceDetails[index].showNote
+                                          ? Container()
+                                          : Visibility(
+                                              visible: item.images.isNotEmpty ||
+                                                  item.loadingImage != -1,
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 10.sp),
+                                                width: double.infinity,
+                                                height: 60,
+                                                child: ListView.builder(
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  shrinkWrap: true,
+                                                  physics:
+                                                      const NeverScrollableScrollPhysics(),
+                                                  itemCount: 5,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    if (index ==
+                                                        item.loadingImage) {
+                                                      return Container(
+                                                        margin: const EdgeInsets
+                                                            .all(5),
+                                                        height: 60,
+                                                        width: 50,
+                                                        decoration: BoxDecoration(
+                                                            border: Border.all(
+                                                                color: AppColors
+                                                                    .blueTextColor)),
+                                                        child: const Loading(),
+                                                      );
+                                                    }
+                                                    if (index <=
+                                                        item.images.length -
+                                                            1) {
+                                                      return Stack(
+                                                          alignment:
+                                                              AlignmentDirectional
+                                                                  .topEnd,
+                                                          children: [
+                                                            InkWell(
+                                                              onTap: () {
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    useSafeArea:
+                                                                        true,
+                                                                    builder:
+                                                                        (context) {
+                                                                      return Material(
+                                                                        color: Colors
+                                                                            .transparent,
+                                                                        child:
+                                                                            InkWell(
+                                                                          onTap: () =>
+                                                                              Get.back(),
+                                                                          child:
+                                                                              Container(
+                                                                            color:
+                                                                                Colors.black.withOpacity(0.5),
+                                                                            child:
+                                                                                Center(child: Image.network(item.images[index], fit: BoxFit.cover)),
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    });
+                                                              },
+                                                              child: Container(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(5
+                                                                              .sp),
+                                                                  height: 60,
+                                                                  width: 60,
+                                                                  child: Image.network(
+                                                                      item.images[
+                                                                          index],
+                                                                      height:
+                                                                          60,
+                                                                      width: 60,
+                                                                      fit: BoxFit
+                                                                          .fitHeight)),
+                                                            ),
+                                                            Positioned(
+                                                                child: InkWell(
+                                                              onTap: () async {
+                                                                setState(() {
+                                                                  item.images
+                                                                      .removeAt(
+                                                                          index);
+                                                                });
+                                                                await _updateExpertTask(
+                                                                    item);
+                                                              },
+                                                              child: Stack(
+                                                                alignment:
+                                                                    AlignmentDirectional
+                                                                        .center,
+                                                                children: [
+                                                                  Container(
+                                                                    width: 13,
+                                                                    height: 13,
+                                                                    decoration:
+                                                                        const BoxDecoration(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      shape: BoxShape
+                                                                          .circle,
+                                                                    ),
+                                                                  ),
+                                                                  Icon(
+                                                                    Icons
+                                                                        .cancel,
+                                                                    color: Colors
+                                                                        .grey
+                                                                        .shade700,
+                                                                    size: 17,
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            )),
+                                                          ]);
+                                                    } else {
+                                                      return InkWell(
+                                                        onTap: () async {
+                                                          await _getImageUrl(
+                                                              item);
+                                                        },
+                                                        child: Container(
+                                                          margin:
+                                                              const EdgeInsets
+                                                                  .all(5),
+                                                          height: 60,
+                                                          width: 50,
+                                                          decoration: BoxDecoration(
+                                                              border: Border.all(
+                                                                  color: AppColors
+                                                                      .blueTextColor)),
+                                                          child: const Icon(
+                                                              FontAwesomeIcons
+                                                                  .plus,
+                                                              color: AppColors
+                                                                  .blueTextColor),
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+                                                ),
+                                              ),
+                                            )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            itemCount: _listOrderServiceDetails.length,
+                          ),
+                          SizedBox(
+                            height: 30.h,
+                          ),
+                          checkedService == false
+                              ? Container()
+                              : Center(
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    height: 52.h,
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        Get.bottomSheet(BottomPopup(
+                                            header: "Hoàn thành",
+                                            title:
+                                                "Bạn muốn hoàn thành sửa chữa?",
+                                            body:
+                                                "Kiểm tra kĩ càng trước khi hoàn thành, quá trình này sẽ không được hoàn tác",
+                                            buttonTitle: "Hoàn thành",
+                                            action: () async {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    const ScreenLoading(),
+                                              );
+                                              var result = await _doneOrder();
+                                              Get.back();
+                                              if (result == true) {
+                                                Get.replace(Get.bottomSheet(
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  BottomPopup(
+                                                    image:
+                                                        'assets/image/icon-logo/successfull-icon.png',
+                                                    title:
+                                                        "Hoàn thành sửa chữa",
+                                                    body:
+                                                        "Chuẩn bị xe sẵn sàng trước khi giao lại cho khách nhé",
+                                                    buttonTitle: "Trở về",
+                                                    action: () => Get.offAll(
+                                                        const MainPage()),
+                                                  ),
+                                                ));
+                                              } else {
+                                                Get.replace(Get.bottomSheet(
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  BottomPopup(
+                                                    image:
+                                                        'assets/image/icon-logo/failed-icon.png',
+                                                    title: "Thất bại",
+                                                    body:
+                                                        "Có sự cố khi hoàn thành sửa chữa",
+                                                    buttonTitle: "Trở về",
+                                                    action: () => Get.back(),
+                                                  ),
+                                                ));
+                                              }
+                                            }));
+                                      },
+                                      style: AppStyles.button16(),
+                                      child: Text(
+                                        'Hoàn thành',
+                                        style: TextStyle(
+                                          fontFamily: 'Roboto',
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                          SizedBox(
+                            height: 30.h,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+              ],
+            ),
           );
   }
 }

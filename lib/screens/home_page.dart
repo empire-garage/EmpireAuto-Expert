@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:empire_expert/common/colors.dart';
 import 'package:empire_expert/common/jwt_interceptor.dart';
 import 'package:empire_expert/common/style.dart';
@@ -13,6 +15,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+
+// ignore: depend_on_referenced_packages
+import 'package:shared_preferences/shared_preferences.dart';
+
+class OrderServiceIsNew {
+  int orderServiceId;
+  bool isNew;
+
+  OrderServiceIsNew({required this.orderServiceId, required this.isNew});
+
+  factory OrderServiceIsNew.fromJson(Map<String, dynamic> json) {
+    return OrderServiceIsNew(
+      orderServiceId: json['orderServiceId'],
+      isNew: json['isNew'],
+    );
+  }
+  Map<String, dynamic> toJson() => {
+        'orderServiceId': orderServiceId,
+        'isNew': isNew,
+      };
+}
 
 class OrderType {
   String label;
@@ -65,6 +88,7 @@ class _HomePageState extends State<HomePage> {
         (a, b) => (a.priority ?? 0).compareTo(b.priority ?? 0),
       );
       _orderByDataByWorkload();
+      _setOrderServiceIsNew();
       _loading = false;
     });
   }
@@ -76,7 +100,7 @@ class _HomePageState extends State<HomePage> {
       for (var element in _model) {
         count += (element.workload ?? 0);
         if (count < _maxWorkLoadPerDay!) {
-            element.isJobOfToday = true;
+          element.isJobOfToday = true;
         } else {
           break;
         }
@@ -111,6 +135,47 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<List<OrderServiceIsNew>> _getListOrderServiceIsNew(prefs) async {
+    var stringJson = prefs.getString('orderServicesIsNewJson');
+    List<OrderServiceIsNew> list = [];
+    if (stringJson != null) {
+      List<dynamic> jsonList = jsonDecode(stringJson);
+      for (var element in jsonList) {
+        list.add(OrderServiceIsNew.fromJson(element));
+      }
+    }
+    return list;
+  }
+
+  _setOrderServiceIsNew() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<OrderServiceIsNew> list = [];
+    var listFromStorage = await _getListOrderServiceIsNew(prefs);
+
+    // Ignore when storage already has order_service
+    // Remove when storage still have but api response not have
+    for (var element in _model) {
+      var selectedItem =
+          listFromStorage.where((e) => e.orderServiceId == element.id);
+      // Case storage already have
+      if (selectedItem.isNotEmpty) {
+        var orderServiceIsNew = OrderServiceIsNew(
+            orderServiceId: element.id, isNew: selectedItem.first.isNew);
+        element.isNew = selectedItem.first.isNew;
+        list.add(orderServiceIsNew);
+      } else {
+        // Default when order service has created
+        var orderServiceIsNew =
+            OrderServiceIsNew(orderServiceId: element.id, isNew: true);
+        element.isNew = true;
+        list.add(orderServiceIsNew);
+      }
+    }
+
+    var listJson = jsonEncode(list.map((e) => e.toJson()).toList());
+    await prefs.setString('orderServicesIsNewJson', listJson);
+  }
+
   @override
   void initState() {
     _getMaxWorkloadPerDay();
@@ -132,7 +197,6 @@ class _HomePageState extends State<HomePage> {
     if (!mounted) return;
     return photo;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -200,9 +264,13 @@ class _HomePageState extends State<HomePage> {
                     ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _model.where((element) => element.isJobOfToday == true).length,
+                        itemCount: _model
+                            .where((element) => element.isJobOfToday == true)
+                            .length,
                         itemBuilder: (context, index) {
-                          var item = _model.where((element) => element.isJobOfToday == true).toList();
+                          var item = _model
+                              .where((element) => element.isJobOfToday == true)
+                              .toList();
                           var type = item[index].status == 1
                               ? orderType[2]
                               : item[index].status == 3
@@ -226,6 +294,7 @@ class _HomePageState extends State<HomePage> {
                                     onPressed: (context) {
                                       Get.to(() => DiagnosingPage(
                                             orderServiceId: item[index].id,
+                                            isNew: item[index].isNew,
                                           ));
                                     },
                                     backgroundColor: AppColors.blue600,
@@ -239,12 +308,14 @@ class _HomePageState extends State<HomePage> {
                                   Get.bottomSheet(
                                       DiagnosingPage(
                                         orderServiceId: item[index].id,
+                                        isNew: item[index].isNew,
                                       ),
                                       isScrollControlled: true,
                                       ignoreSafeArea: false);
                                 } else if (item[index].status == 3) {
                                   Get.to(() => OrderDetailPage(
                                         orderServiceId: item[index].id,
+                                        isNew: item[index].isNew,
                                       ));
                                 }
                               },
@@ -259,8 +330,8 @@ class _HomePageState extends State<HomePage> {
                                   child: ListTile(
                                     // contentPadding: EdgeInsets.zero,
                                     leading: FutureBuilder(
-                                        future: getBrand(
-                                            item[index].car.carBrand),
+                                        future:
+                                            getBrand(item[index].car.carBrand),
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
                                             return Image.network(
@@ -326,19 +397,24 @@ class _HomePageState extends State<HomePage> {
                                                 color: Colors.grey.shade500)),
                                       ],
                                     ),
-                                    trailing: Column(
-                                      children: const [
-                                         Icon(
-                                          Icons.circle,
-                                          size: 10,
-                                          color: Colors.red,
-                                        ),
-                                        Icon(
-                                          Icons.navigate_next,
-                                          color: Colors.black,
-                                        ),
-                                      ],
-                                    ),
+                                    trailing: item[index].isNew
+                                        ? Column(
+                                            children: const [
+                                              Icon(
+                                                Icons.circle,
+                                                size: 10,
+                                                color: Colors.red,
+                                              ),
+                                              Icon(
+                                                Icons.navigate_next,
+                                                color: Colors.black,
+                                              ),
+                                            ],
+                                          )
+                                        : const Icon(
+                                            Icons.navigate_next,
+                                            color: Colors.black,
+                                          ),
                                   ),
                                 ),
                               ),
@@ -356,9 +432,13 @@ class _HomePageState extends State<HomePage> {
                     ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _model.where((element) => element.isJobOfToday == false).length,
+                        itemCount: _model
+                            .where((element) => element.isJobOfToday == false)
+                            .length,
                         itemBuilder: (context, index) {
-                          var item = _model.where((element) => element.isJobOfToday == false).toList();
+                          var item = _model
+                              .where((element) => element.isJobOfToday == false)
+                              .toList();
                           var type = item[index].status == 1
                               ? orderType[2]
                               : item[index].status == 3
@@ -382,6 +462,7 @@ class _HomePageState extends State<HomePage> {
                                     onPressed: (context) {
                                       Get.to(() => DiagnosingPage(
                                             orderServiceId: item[index].id,
+                                            isNew: item[index].isNew,
                                           ));
                                     },
                                     backgroundColor: AppColors.blue600,
@@ -395,12 +476,14 @@ class _HomePageState extends State<HomePage> {
                                   Get.bottomSheet(
                                       DiagnosingPage(
                                         orderServiceId: item[index].id,
+                                        isNew: item[index].isNew,
                                       ),
                                       isScrollControlled: true,
                                       ignoreSafeArea: false);
                                 } else if (item[index].status == 3) {
                                   Get.to(() => OrderDetailPage(
                                         orderServiceId: item[index].id,
+                                        isNew: item[index].isNew,
                                       ));
                                 }
                               },
@@ -415,8 +498,8 @@ class _HomePageState extends State<HomePage> {
                                   child: ListTile(
                                     // contentPadding: EdgeInsets.zero,
                                     leading: FutureBuilder(
-                                        future: getBrand(
-                                            item[index].car.carBrand),
+                                        future:
+                                            getBrand(item[index].car.carBrand),
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
                                             return Image.network(
@@ -482,10 +565,24 @@ class _HomePageState extends State<HomePage> {
                                                 color: Colors.grey.shade500)),
                                       ],
                                     ),
-                                    trailing: const Icon(
-                                      Icons.navigate_next,
-                                      color: Colors.black,
-                                    ),
+                                    trailing: item[index].isNew
+                                        ? Column(
+                                            children: const [
+                                              Icon(
+                                                Icons.circle,
+                                                size: 10,
+                                                color: Colors.red,
+                                              ),
+                                              Icon(
+                                                Icons.navigate_next,
+                                                color: Colors.black,
+                                              ),
+                                            ],
+                                          )
+                                        : const Icon(
+                                            Icons.navigate_next,
+                                            color: Colors.black,
+                                          ),
                                   ),
                                 ),
                               ),

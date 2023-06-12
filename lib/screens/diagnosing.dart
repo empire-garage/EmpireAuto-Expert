@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/response/orderservices.dart';
 import 'package:empire_expert/models/response/problem.dart';
@@ -17,11 +19,15 @@ import 'package:get/get.dart';
 
 import '../../common/colors.dart';
 import '../models/response/item.dart';
+import 'home_page.dart';
+
+// ignore: depend_on_referenced_packages
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DiagnosingPage extends StatefulWidget {
   final int orderServiceId;
-  const DiagnosingPage({super.key, required this.orderServiceId});
-  final bool _showContainer = true;
+  final bool? isNew;
+  const DiagnosingPage({super.key, required this.orderServiceId, this.isNew});
 
   @override
   State<DiagnosingPage> createState() => _DiagnosingPageState();
@@ -31,9 +37,11 @@ class _DiagnosingPageState extends State<DiagnosingPage> {
   late OrderServicesResponseModel _order;
   final GlobalKey<_OrderDetailState> _childKey = GlobalKey<_OrderDetailState>();
   bool _loading = true;
+  bool _started = false;
 
   @override
   void initState() {
+    _started = widget.isNew != null ? !widget.isNew! : false;
     super.initState();
     _fetchData();
   }
@@ -46,6 +54,12 @@ class _DiagnosingPageState extends State<DiagnosingPage> {
     setState(() {
       _order = response;
       _loading = false;
+    });
+  }
+
+  _onPressStart() {
+    setState(() {
+      _started = true;
     });
   }
 
@@ -76,42 +90,45 @@ class _DiagnosingPageState extends State<DiagnosingPage> {
             ),
             backgroundColor: Colors.white,
             body: SingleChildScrollView(
-              child: Column(
-                  children: [
-                    OrderDetail(
-                      key: _childKey,
-                      order: _order,
-                      onGoingPaymentCallBack: () {},
-                    ),
-                  ]
-              ),
-               ),
-            bottomNavigationBar: DecoratedBox(
-              decoration: BoxDecoration(
-                  border: Border.symmetric(
-                      horizontal: BorderSide.merge(
-                          BorderSide(color: Colors.grey.shade200, width: 1),
-                          BorderSide.none))),
-              child: Container(
-                margin: const EdgeInsets.all(20),
-                width: double.infinity,
-                height: 52.h,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    _childKey.currentState!.sendDiagnose();
-                  },
-                  style: AppStyles.button16(),
-                  child: Text(
-                    'Gửi chẩn đoán',
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+              child: Column(children: [
+                OrderDetail(
+                  key: _childKey,
+                  order: _order,
+                  isNew: widget.isNew,
+                  onGoingPaymentCallBack: () {},
+                  onPressStartCallBack: _onPressStart,
                 ),
-              ),
+              ]),
             ),
+            bottomNavigationBar: (widget.isNew == false || _started == true)
+                ? DecoratedBox(
+                    decoration: BoxDecoration(
+                        border: Border.symmetric(
+                            horizontal: BorderSide.merge(
+                                BorderSide(
+                                    color: Colors.grey.shade200, width: 1),
+                                BorderSide.none))),
+                    child: Container(
+                      margin: const EdgeInsets.all(20),
+                      width: double.infinity,
+                      height: 52.h,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          _childKey.currentState!.sendDiagnose();
+                        },
+                        style: AppStyles.button16(),
+                        child: Text(
+                          'Gửi chẩn đoán',
+                          style: TextStyle(
+                            fontFamily: 'Roboto',
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : null,
           );
   }
 }
@@ -119,8 +136,14 @@ class _DiagnosingPageState extends State<DiagnosingPage> {
 class OrderDetail extends StatefulWidget {
   final OrderServicesResponseModel order;
   final Function onGoingPaymentCallBack;
+  final Function onPressStartCallBack;
+  final bool? isNew;
   const OrderDetail(
-      {super.key, required this.onGoingPaymentCallBack, required this.order});
+      {super.key,
+      required this.onGoingPaymentCallBack,
+      required this.order,
+      required this.onPressStartCallBack,
+      this.isNew});
 
   @override
   State<OrderDetail> createState() => _OrderDetailState();
@@ -157,9 +180,11 @@ class _OrderDetailState extends State<OrderDetail> {
   final FocusNode _focusNode = FocusNode();
   String symptom = "";
   late List<ProblemModel> _initSuggestTags;
+  bool _isNew = true;
 
   @override
   void initState() {
+    _isNew = widget.isNew ?? true;
     super.initState();
     _getOption();
     _fetchInitSuggestTag();
@@ -236,6 +261,31 @@ class _OrderDetailState extends State<OrderDetail> {
     return true;
   }
 
+  Future<List<OrderServiceIsNew>> _getListOrderServiceIsNew(prefs) async {
+    var stringJson = prefs.getString('orderServicesIsNewJson');
+    List<OrderServiceIsNew> list = [];
+    if (stringJson != null) {
+      List<dynamic> jsonList = jsonDecode(stringJson);
+      for (var element in jsonList) {
+        list.add(OrderServiceIsNew.fromJson(element));
+      }
+    }
+    return list;
+  }
+
+  _setOrderServiceIsNotNew(int orderServiceId) async {
+    final prefs = await SharedPreferences.getInstance();
+    var listFromStorage = await _getListOrderServiceIsNew(prefs);
+
+    listFromStorage
+        .where((element) => element.orderServiceId == orderServiceId)
+        .first
+        .isNew = false;
+
+    var listJson = jsonEncode(listFromStorage.map((e) => e.toJson()).toList());
+    await prefs.setString('orderServicesIsNewJson', listJson);
+  }
+
   @override
   Widget build(BuildContext context) {
     return _loading
@@ -252,237 +302,275 @@ class _OrderDetailState extends State<OrderDetail> {
                 CustomerInfo(
                   orderService: widget.order,
                 ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    'Khách báo tình trạng xe',
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.blackTextColor,
-                    ),
-                  ),
-                  subtitle: Padding(
-                    padding: EdgeInsets.only(top: 5.h),
-                    child: Text(
-                      '${widget.order.receivingStatus}',
-                      style: TextStyle(
-                        fontFamily: 'Roboto',
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.lightTextColor,
-                      ),
-                    ),
-                  ),
-                ),
-                widget.order.considerProblems.isNotEmpty
-                    ? Text(
-                        'Vấn đề tái sửa chữa',
-                        style: AppStyles.header600(
-                            fontsize: 12.sp, color: AppColors.blackTextColor),
-                      )
-                    : Container(),
-                ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: widget.order.considerProblems.length,
-                    itemBuilder: (context, index) {
-                      var data = widget.order.considerProblems[index];
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.h),
-                        child: Text(
-                          data.name,
-                          style: TextStyle(
-                            fontFamily: 'Roboto',
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.lightTextColor,
-                          ),
-                        ),
-                      );
-                    }),
-                Text(
-                  "Kết quả chẩn đoán",
-                  style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.blackTextColor,
-                  ),
-                ),
-                SizedBox(
-                  height: 5.sp,
-                ),
-                ReorderableListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  onReorder: (oldIndex, newIndex) {
-                    setState(() {
-                      if (newIndex > oldIndex) {
-                        newIndex -= 1;
-                      }
-                      final item = _tags.removeAt(oldIndex);
-                      _tags.insert(newIndex, item);
-                    });
-                  },
-                  children: _tags.map((tag) {
-                    return Container(
-                      key: Key('${_tags.indexOf(tag)}'),
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            tag.name.toString(),
-                            style: AppStyles.text400(fontsize: 12.sp),
-                          ),
-                          Row(
-                            children: [
-                              Visibility(
-                                visible: tag.symptom != null &&
-                                    _hasThisSymptom(tag.symptom!.id),
-                                child: Visibility(
-                                  visible: tag.symptom != null &&
-                                      tag.symptom!.name != null,
-                                  child: Text(
-                                    tag.symptom!.name!,
-                                    style: AppStyles.text400(
-                                        fontsize: 10.sp,
-                                        color: Colors.grey.shade500),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _tags.remove(tag);
-                                  });
-                                },
-                                child: const Icon(
-                                  Icons.cancel,
-                                  size: 18,
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(
-                  height: 10.sp,
-                ),
-                InkWell(
-                  onTap: () {
-                    Get.bottomSheet(
-                        Scaffold(
-                          body: Container(
-                            margin: const EdgeInsets.all(10),
-                            child: TagEditor(
-                              tags: _tags,
-                              car: widget.order.car,
-                              onChanged: (tags) {
+                _isNew == true
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 52.h,
+                            child: ElevatedButton(
+                              onPressed: () async {
                                 setState(() {
-                                  _tags = tags;
-                                  _validateProblem = null;
+                                  _isNew = false;
+                                  _setOrderServiceIsNotNew(widget.order.id);
+                                  widget.onPressStartCallBack();
                                 });
                               },
-                              symptoms: widget.order.symptoms ?? [],
-                              initSuggestTags: _initSuggestTags
-                                  .where((element) =>
-                                      !_tags.any((e) => e.id == element.id))
-                                  .toList(),
+                              style: AppStyles.button16(),
+                              child: Text(
+                                'Bắt đầu',
+                                style: TextStyle(
+                                  fontFamily: 'Roboto',
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                        backgroundColor: Colors.white,
-                        isScrollControlled: true,
-                        ignoreSafeArea: false);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          width: 1,
-                          color: Colors.grey.shade500,
-                        ),
-                        borderRadius: BorderRadius.circular(16)),
-                    child: TextFormField(
-                      decoration: AppStyles.textbox12(
-                        hintText: "Chọn kết quả chẩn đoán",
-                        suffixIcon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                      enabled: false,
-                    ),
-                  ),
-                ),
-                _validateProblem != null
-                    ? Padding(
-                      padding: EdgeInsets.symmetric(vertical: 5.sp),
-                      child: Text(
-                          _validateProblem!,
-                          style: AppStyles.text400(
-                              fontsize: 12.sp, color: AppColors.errorIcon),
-                        ),
-                    )
-                    : Container(),
-                SizedBox(
-                  height: 10.sp,
-                ),
-                Text(
-                  "Triệu chứng",
-                  style: TextStyle(
-                    fontFamily: 'Roboto',
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.blackTextColor,
-                  ),
-                ),
-                SizedBox(
-                  height: 10.sp,
-                ),
-                TextFormField(
-                    maxLength: 200,
-                    maxLines: 3,
-                    focusNode: _focusNode,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Không được bỏ trống triệu chứng xe";
-                      }
-                      return null;
-                    },
-                    onTapOutside: (event) {
-                      _handleTapOutside();
-                    },
-                    controller: _textController,
-                    onChanged: (value) {
-                      setState(() {
-                        symptom = value;
-                        _validateSymptom = null;
-                      });
-                    },
-                    decoration: AppStyles.textbox12(
-                        hintText: "Nhập triệu chứng xe",
-                        hintTextColor: _validateSymptom != null
-                            ? Colors.red
-                            : Colors.grey.shade500)),
-                _validateSymptom != null
-                    ? Text(
-                        _validateSymptom!,
-                        style: AppStyles.text400(
-                            fontsize: 12.sp, color: AppColors.errorIcon),
                       )
-                    : Container(),
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              'Khách báo tình trạng xe',
+                              style: TextStyle(
+                                fontFamily: 'Roboto',
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.blackTextColor,
+                              ),
+                            ),
+                            subtitle: Padding(
+                              padding: EdgeInsets.only(top: 5.h),
+                              child: Text(
+                                '${widget.order.receivingStatus}',
+                                style: TextStyle(
+                                  fontFamily: 'Roboto',
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.lightTextColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                          widget.order.considerProblems.isNotEmpty
+                              ? Text(
+                                  'Vấn đề tái sửa chữa',
+                                  style: AppStyles.header600(
+                                      fontsize: 12.sp,
+                                      color: AppColors.blackTextColor),
+                                )
+                              : Container(),
+                          ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: widget.order.considerProblems.length,
+                              itemBuilder: (context, index) {
+                                var data = widget.order.considerProblems[index];
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                                  child: Text(
+                                    data.name,
+                                    style: TextStyle(
+                                      fontFamily: 'Roboto',
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.lightTextColor,
+                                    ),
+                                  ),
+                                );
+                              }),
+                          Text(
+                            "Kết quả chẩn đoán",
+                            style: TextStyle(
+                              fontFamily: 'Roboto',
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.blackTextColor,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5.sp,
+                          ),
+                          ReorderableListView(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            onReorder: (oldIndex, newIndex) {
+                              setState(() {
+                                if (newIndex > oldIndex) {
+                                  newIndex -= 1;
+                                }
+                                final item = _tags.removeAt(oldIndex);
+                                _tags.insert(newIndex, item);
+                              });
+                            },
+                            children: _tags.map((tag) {
+                              return Container(
+                                key: Key('${_tags.indexOf(tag)}'),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 5),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16)),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      tag.name.toString(),
+                                      style: AppStyles.text400(fontsize: 12.sp),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Visibility(
+                                          visible: tag.symptom != null &&
+                                              _hasThisSymptom(tag.symptom!.id),
+                                          child: Visibility(
+                                            visible: tag.symptom != null &&
+                                                tag.symptom!.name != null,
+                                            child: Text(
+                                              tag.symptom!.name!,
+                                              style: AppStyles.text400(
+                                                  fontsize: 10.sp,
+                                                  color: Colors.grey.shade500),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              _tags.remove(tag);
+                                            });
+                                          },
+                                          child: const Icon(
+                                            Icons.cancel,
+                                            size: 18,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                          SizedBox(
+                            height: 10.sp,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Get.bottomSheet(
+                                  Scaffold(
+                                    body: Container(
+                                      margin: const EdgeInsets.all(10),
+                                      child: TagEditor(
+                                        tags: _tags,
+                                        car: widget.order.car,
+                                        onChanged: (tags) {
+                                          setState(() {
+                                            _tags = tags;
+                                            _validateProblem = null;
+                                          });
+                                        },
+                                        symptoms: widget.order.symptoms ?? [],
+                                        initSuggestTags: _initSuggestTags
+                                            .where((element) => !_tags
+                                                .any((e) => e.id == element.id))
+                                            .toList(),
+                                      ),
+                                    ),
+                                  ),
+                                  backgroundColor: Colors.white,
+                                  isScrollControlled: true,
+                                  ignoreSafeArea: false);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    width: 1,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                  borderRadius: BorderRadius.circular(16)),
+                              child: TextFormField(
+                                decoration: AppStyles.textbox12(
+                                  hintText: "Chọn kết quả chẩn đoán",
+                                  suffixIcon: Icon(
+                                    Icons.keyboard_arrow_down,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                                enabled: false,
+                              ),
+                            ),
+                          ),
+                          _validateProblem != null
+                              ? Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 5.sp),
+                                  child: Text(
+                                    _validateProblem!,
+                                    style: AppStyles.text400(
+                                        fontsize: 12.sp,
+                                        color: AppColors.errorIcon),
+                                  ),
+                                )
+                              : Container(),
+                          SizedBox(
+                            height: 10.sp,
+                          ),
+                          Text(
+                            "Triệu chứng",
+                            style: TextStyle(
+                              fontFamily: 'Roboto',
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.blackTextColor,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10.sp,
+                          ),
+                          TextFormField(
+                              maxLength: 200,
+                              maxLines: 3,
+                              focusNode: _focusNode,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Không được bỏ trống triệu chứng xe";
+                                }
+                                return null;
+                              },
+                              onTapOutside: (event) {
+                                _handleTapOutside();
+                              },
+                              controller: _textController,
+                              onChanged: (value) {
+                                setState(() {
+                                  symptom = value;
+                                  _validateSymptom = null;
+                                });
+                              },
+                              decoration: AppStyles.textbox12(
+                                  hintText: "Nhập triệu chứng xe",
+                                  hintTextColor: _validateSymptom != null
+                                      ? Colors.red
+                                      : Colors.grey.shade500)),
+                          _validateSymptom != null
+                              ? Text(
+                                  _validateSymptom!,
+                                  style: AppStyles.text400(
+                                      fontsize: 12.sp,
+                                      color: AppColors.errorIcon),
+                                )
+                              : Container(),
+                        ],
+                      ),
               ],
             ),
           );
@@ -498,7 +586,7 @@ class _OrderDetailState extends State<OrderDetail> {
           header: "Bạn muốn gửi chẩn đoán?",
           diagnose: "Các chẩn đoán đã chọn",
           diagnoseList: _tags,
-          orderSymptoms: widget.order.symptoms??[],
+          orderSymptoms: widget.order.symptoms ?? [],
           symptom: "Triệu chứng",
           symptomList: symptom.toString(),
           buttonTitle: "Gửi chẩn đoán",
