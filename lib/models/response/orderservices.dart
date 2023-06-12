@@ -77,6 +77,11 @@ class OrderServiceOfExpertModel {
   String? code;
   Car car;
   Order order;
+  int? workload;
+  int? totalMinutes;
+  int? daySpend;
+  int? priority;
+  bool isJobOfToday = false;
 
   OrderServiceOfExpertModel({
     required this.id,
@@ -84,6 +89,10 @@ class OrderServiceOfExpertModel {
     this.code,
     required this.car,
     required this.order,
+    this.totalMinutes,
+    this.workload,
+    this.daySpend,
+    this.priority,
   });
 
   factory OrderServiceOfExpertModel.fromJson(Map<String, dynamic> json) {
@@ -93,6 +102,10 @@ class OrderServiceOfExpertModel {
       code: json['code'],
       car: Car.fromJson(json['car']),
       order: Order.fromJson(json['order']),
+      totalMinutes: json['totalMinutes'],
+      daySpend: json['daySpend'],
+      workload: json['workload'],
+      priority: json['priority']
     );
   }
 }

@@ -477,154 +477,165 @@ class _OrderDetailState extends State<OrderDetail> {
                             !_listOrderServiceDetails[index].showNote
                                 ? Container()
                                 : InkWell(
-                              onTap: () async {
-                                await _getImageUrl(item);
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Chụp ảnh',
-                                        style: AppStyles.header600(
-                                            fontsize: 12.sp,
-                                            color: AppColors.grey400)),
-                                    Container(
-                                        margin: const EdgeInsets.all(5),
-                                        child: Icon(
-                                          FontAwesomeIcons.camera,
-                                          color: AppColors.grey400,
-                                          size: 18.sp,
-                                        ))
-                                  ],
-                                ),
-                              ),
-                            ),
+                                    onTap: () async {
+                                      await _getImageUrl(item);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Chụp ảnh',
+                                              style: AppStyles.header600(
+                                                  fontsize: 12.sp,
+                                                  color: AppColors.grey400)),
+                                          Container(
+                                              margin: const EdgeInsets.all(5),
+                                              child: Icon(
+                                                FontAwesomeIcons.camera,
+                                                color: AppColors.grey400,
+                                                size: 18.sp,
+                                              ))
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                             !_listOrderServiceDetails[index].showNote
                                 ? Container()
                                 : Visibility(
-                              visible:
-                                  item.images.isNotEmpty || item.loadingImage != -1,
-                              child: Container(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 10.sp),
-                                width: double.infinity,
-                                height: 60,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: 5,
-                                  itemBuilder: (context, index) {
-                                    if (index == item.loadingImage) {
-                                      return Container(
-                                        margin: const EdgeInsets.all(5),
-                                        height: 60,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color:
-                                                    AppColors.blueTextColor)),
-                                        child: const Loading(),
-                                      );
-                                    }
-                                    if (index <= item.images.length - 1) {
-                                      return Stack(
-                                          alignment:
-                                              AlignmentDirectional.topEnd,
-                                          children: [
-                                            InkWell(
-                                              onTap: () {
-                                                showDialog(
-                                                    context: context,
-                                                    useSafeArea: true,
-                                                    builder: (context) {
-                                                      return Material(
-                                                        color:
-                                                            Colors.transparent,
-                                                        child: InkWell(
-                                                          onTap: () =>
-                                                              Get.back(),
-                                                          child: Container(
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                                    0.5),
-                                                            child: Center(
-                                                                child: Image.network(
-                                                                    item.images[
-                                                                        index],
-                                                                    fit: BoxFit
-                                                                        .cover)),
+                                    visible: item.images.isNotEmpty ||
+                                        item.loadingImage != -1,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10.sp),
+                                      width: double.infinity,
+                                      height: 60,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount: 5,
+                                        itemBuilder: (context, index) {
+                                          if (index == item.loadingImage) {
+                                            return Container(
+                                              margin: const EdgeInsets.all(5),
+                                              height: 60,
+                                              width: 50,
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: AppColors
+                                                          .blueTextColor)),
+                                              child: const Loading(),
+                                            );
+                                          }
+                                          if (index <= item.images.length - 1) {
+                                            return Stack(
+                                                alignment:
+                                                    AlignmentDirectional.topEnd,
+                                                children: [
+                                                  InkWell(
+                                                    onTap: () {
+                                                      showDialog(
+                                                          context: context,
+                                                          useSafeArea: true,
+                                                          builder: (context) {
+                                                            return Material(
+                                                              color: Colors
+                                                                  .transparent,
+                                                              child: InkWell(
+                                                                onTap: () =>
+                                                                    Get.back(),
+                                                                child:
+                                                                    Container(
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withOpacity(
+                                                                          0.5),
+                                                                  child: Center(
+                                                                      child: Image.network(
+                                                                          item.images[
+                                                                              index],
+                                                                          fit: BoxFit
+                                                                              .cover)),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          });
+                                                    },
+                                                    child: Container(
+                                                        padding: EdgeInsets.all(
+                                                            5.sp),
+                                                        height: 60,
+                                                        width: 60,
+                                                        child: Image.network(
+                                                            item.images[index],
+                                                            height: 60,
+                                                            width: 60,
+                                                            fit: BoxFit
+                                                                .fitHeight)),
+                                                  ),
+                                                  Positioned(
+                                                      child: InkWell(
+                                                    onTap: () async {
+                                                      setState(() {
+                                                        item.images
+                                                            .removeAt(index);
+                                                      });
+                                                      await _updateExpertTask(
+                                                          item);
+                                                    },
+                                                    child: Stack(
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .center,
+                                                      children: [
+                                                        Container(
+                                                          width: 13,
+                                                          height: 13,
+                                                          decoration:
+                                                              const BoxDecoration(
+                                                            color: Colors.white,
+                                                            shape:
+                                                                BoxShape.circle,
                                                           ),
                                                         ),
-                                                      );
-                                                    });
+                                                        Icon(
+                                                          Icons.cancel,
+                                                          color: Colors
+                                                              .grey.shade700,
+                                                          size: 17,
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )),
+                                                ]);
+                                          } else {
+                                            return InkWell(
+                                              onTap: () async {
+                                                await _getImageUrl(item);
                                               },
                                               child: Container(
-                                                  padding: EdgeInsets.all(5.sp),
-                                                  height: 60,
-                                                  width: 60,
-                                                  child: Image.network(
-                                                      item.images[index],
-                                                      height: 60,
-                                                      width: 60,
-                                                      fit: BoxFit.fitHeight)),
-                                            ),
-                                            Positioned(
-                                                child: InkWell(
-                                              onTap: () async {
-                                                setState(() {
-                                                  item.images.removeAt(index);
-                                                });
-                                                await _updateExpertTask(item);
-                                              },
-                                              child: Stack(
-                                                alignment:
-                                                    AlignmentDirectional.center,
-                                                children: [
-                                                  Container(
-                                                    width: 13,
-                                                    height: 13,
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                      color: Colors.white,
-                                                      shape: BoxShape.circle,
-                                                    ),
-                                                  ),
-                                                  Icon(
-                                                    Icons.cancel,
-                                                    color: Colors.grey.shade700,
-                                                    size: 17,
-                                                  )
-                                                ],
+                                                margin: const EdgeInsets.all(5),
+                                                height: 60,
+                                                width: 50,
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: AppColors
+                                                            .blueTextColor)),
+                                                child: const Icon(
+                                                    FontAwesomeIcons.plus,
+                                                    color: AppColors
+                                                        .blueTextColor),
                                               ),
-                                            )),
-                                          ]);
-                                    } else {
-                                      return InkWell(
-                                        onTap: () async {
-                                          await _getImageUrl(item);
+                                            );
+                                          }
                                         },
-                                        child: Container(
-                                          margin: const EdgeInsets.all(5),
-                                          height: 60,
-                                          width: 50,
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color:
-                                                      AppColors.blueTextColor)),
-                                          child: const Icon(
-                                              FontAwesomeIcons.plus,
-                                              color: AppColors.blueTextColor),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                            )
+                                      ),
+                                    ),
+                                  )
                           ],
                         ),
                       ),
