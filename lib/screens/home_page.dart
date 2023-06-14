@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:empire_expert/common/colors.dart';
 import 'package:empire_expert/common/jwt_interceptor.dart';
 import 'package:empire_expert/common/style.dart';
+import 'package:empire_expert/helper/common_helper.dart';
 import 'package:empire_expert/models/response/orderservices.dart';
 import 'package:empire_expert/screens/diagnosing.dart';
 import 'package:empire_expert/screens/order_detail.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
 import 'package:empire_expert/services/system_configuration_serivces/system_services.dart';
+import 'package:empire_expert/services/workload_service/workload_services.dart';
 import 'package:empire_expert/widgets/loading.dart';
 import 'package:empire_expert/widgets/search_bar.dart';
 import 'package:flutter/material.dart';
@@ -81,14 +83,15 @@ class _HomePageState extends State<HomePage> {
     if (response == null || response2 == null) {
       throw Exception("Get order serivce fail");
     }
+    rawData = response + response2;
+    _model = response + response2;
+    _model.sort(
+      (a, b) => (a.priority ?? 0).compareTo(b.priority ?? 0),
+    );
+    _orderByDataByWorkload();
+    await _setOrderServiceIsNew();
+    await _getWorkloadofOrderService();
     setState(() {
-      rawData = response + response2;
-      _model = response + response2;
-      _model.sort(
-        (a, b) => (a.priority ?? 0).compareTo(b.priority ?? 0),
-      );
-      _orderByDataByWorkload();
-      _setOrderServiceIsNew();
       _loading = false;
     });
   }
@@ -108,6 +111,16 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _model;
       });
+    }
+  }
+
+  _getWorkloadofOrderService() async {
+    for (var element in _model) {
+      var workload = await WorkloadService().getWorkload(element.id);
+      if (workload != null) {
+        element.startTime = workload.startTime;
+        element.intendedFinishTime = workload.intendedFinishTime;
+      }
     }
   }
 
@@ -174,6 +187,12 @@ class _HomePageState extends State<HomePage> {
 
     var listJson = jsonEncode(list.map((e) => e.toJson()).toList());
     await prefs.setString('orderServicesIsNewJson', listJson);
+  }
+
+  _checkPriority(int? priority) {
+    if (priority == null) return false;
+    var index = _model.indexWhere((element) => element.priority == priority);
+    return index > 1;
   }
 
   @override
@@ -276,145 +295,173 @@ class _HomePageState extends State<HomePage> {
                               : item[index].status == 3
                                   ? orderType[3]
                                   : defaultType;
-                          return Slidable(
-                            startActionPane: ActionPane(
-                                motion: const StretchMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) {},
-                                    backgroundColor: AppColors.errorIcon,
-                                    icon: Icons.cancel,
-                                    label: 'Hủy',
-                                  )
-                                ]),
-                            endActionPane: ActionPane(
-                                motion: const StretchMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      Get.to(() => DiagnosingPage(
+                          return AbsorbPointer(
+                            absorbing: _checkPriority(item[index].priority),
+                            child: Opacity(
+                              opacity: _checkPriority(item[index].priority) ? 0.5 : 1,
+                              child: Slidable(
+                                startActionPane: ActionPane(
+                                    motion: const StretchMotion(),
+                                    children: [
+                                      SlidableAction(
+                                        onPressed: (context) {},
+                                        backgroundColor: AppColors.errorIcon,
+                                        icon: Icons.cancel,
+                                        label: 'Hủy',
+                                      )
+                                    ]),
+                                endActionPane: ActionPane(
+                                    motion: const StretchMotion(),
+                                    children: [
+                                      SlidableAction(
+                                        onPressed: (context) {
+                                          Get.to(() => DiagnosingPage(
+                                                orderServiceId: item[index].id,
+                                                isNew: item[index].isNew,
+                                              ));
+                                        },
+                                        backgroundColor: AppColors.blue600,
+                                        icon: Icons.settings_suggest,
+                                        label: 'Chẩn đoán',
+                                      )
+                                    ]),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (item[index].status == 1) {
+                                      Get.bottomSheet(
+                                          DiagnosingPage(
+                                            orderServiceId: item[index].id,
+                                            isNew: item[index].isNew,
+                                          ),
+                                          isScrollControlled: true,
+                                          ignoreSafeArea: false);
+                                    } else if (item[index].status == 3) {
+                                      Get.to(() => OrderDetailPage(
                                             orderServiceId: item[index].id,
                                             isNew: item[index].isNew,
                                           ));
-                                    },
-                                    backgroundColor: AppColors.blue600,
-                                    icon: Icons.settings_suggest,
-                                    label: 'Chẩn đoán',
-                                  )
-                                ]),
-                            child: GestureDetector(
-                              onTap: () {
-                                if (item[index].status == 1) {
-                                  Get.bottomSheet(
-                                      DiagnosingPage(
-                                        orderServiceId: item[index].id,
-                                        isNew: item[index].isNew,
-                                      ),
-                                      isScrollControlled: true,
-                                      ignoreSafeArea: false);
-                                } else if (item[index].status == 3) {
-                                  Get.to(() => OrderDetailPage(
-                                        orderServiceId: item[index].id,
-                                        isNew: item[index].isNew,
-                                      ));
-                                }
-                              },
-                              child: DecoratedBox(
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(16)),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10.h),
-                                  child: ListTile(
-                                    // contentPadding: EdgeInsets.zero,
-                                    leading: FutureBuilder(
-                                        future:
-                                            getBrand(item[index].car.carBrand),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData) {
-                                            return Image.network(
-                                              snapshot.data.toString(),
-                                              height: 50.h,
-                                              width: 50.w,
-                                            );
-                                          } else if (snapshot.hasError) {
-                                            return Image.asset(
-                                              "assets/image/icon-logo/bmw-car-icon.png",
-                                              height: 50.h,
-                                              width: 50.w,
-                                            );
-                                          } else {
-                                            return Image.asset(
-                                              "assets/image/icon-logo/bmw-car-icon.png",
-                                              height: 50.h,
-                                              width: 50.w,
-                                            );
-                                          }
-                                        }),
-                                    title: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
+                                    }
+                                  },
+                                  child: DecoratedBox(
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(16)),
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 10.h),
+                                      child: ListTile(
+                                        // contentPadding: EdgeInsets.zero,
+                                        leading: FutureBuilder(
+                                            future:
+                                                getBrand(item[index].car.carBrand),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return Image.network(
+                                                  snapshot.data.toString(),
+                                                  height: 50.h,
+                                                  width: 50.w,
+                                                );
+                                              } else if (snapshot.hasError) {
+                                                return Image.asset(
+                                                  "assets/image/icon-logo/bmw-car-icon.png",
+                                                  height: 50.h,
+                                                  width: 50.w,
+                                                );
+                                              } else {
+                                                return Image.asset(
+                                                  "assets/image/icon-logo/bmw-car-icon.png",
+                                                  height: 50.h,
+                                                  width: 50.w,
+                                                );
+                                              }
+                                            }),
+                                        title: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                    type != null
+                                                        ? type.label
+                                                        : defaultType.label,
+                                                    style: AppStyles.header600(
+                                                        fontsize: 10.sp,
+                                                        color: type != null
+                                                            ? type.color
+                                                            : defaultType.color)),
+                                                Text(" - ",
+                                                    style: AppStyles.text400(
+                                                        fontsize: 10.sp,
+                                                        color:
+                                                            Colors.grey.shade500)),
+                                                Text("${item[index].code}",
+                                                    style: AppStyles.text400(
+                                                        fontsize: 10.sp,
+                                                        color:
+                                                            Colors.grey.shade500)),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 5.sp,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Expanded(
+                                                  child: Text(item[index].car.carLisenceNo,
+                                                      style: AppStyles.header600(
+                                                        fontsize: 12.sp,
+                                                      )),
+                                                ),
+                                                item[index].intendedFinishTime != null ? Expanded(
+                                                  child: Align(
+                                                    alignment: Alignment.centerRight,
+                                                    child: Text(
+                                                        "Hẹn: ${formatDate(item[index].intendedFinishTime.toString(), true)}",
+                                                        overflow: TextOverflow.clip,
+                                                        style: AppStyles.header600(
+                                                            fontsize: 10.sp,
+                                                            color: AppColors
+                                                                .lightTextColor)),
+                                                  ),
+                                                ) : Container()
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 5.sp,
+                                            ),
                                             Text(
-                                                type != null
-                                                    ? type.label
-                                                    : defaultType.label,
-                                                style: AppStyles.header600(
-                                                    fontsize: 10.sp,
-                                                    color: type != null
-                                                        ? type.color
-                                                        : defaultType.color)),
-                                            Text(" - ",
+                                                "${item[index].car.carBrand} ${item[index].car.carModel}",
                                                 style: AppStyles.text400(
                                                     fontsize: 10.sp,
-                                                    color:
-                                                        Colors.grey.shade500)),
-                                            Text("${item[index].code}",
-                                                style: AppStyles.text400(
-                                                    fontsize: 10.sp,
-                                                    color:
-                                                        Colors.grey.shade500)),
+                                                    color: Colors.grey.shade500)),
                                           ],
                                         ),
-                                        SizedBox(
-                                          height: 5.sp,
-                                        ),
-                                        Text(item[index].car.carLisenceNo,
-                                            style: AppStyles.header600(
-                                              fontsize: 12.sp,
-                                            )),
-                                        SizedBox(
-                                          height: 5.sp,
-                                        ),
-                                        Text(
-                                            "${item[index].car.carBrand} ${item[index].car.carModel}",
-                                            style: AppStyles.text400(
-                                                fontsize: 10.sp,
-                                                color: Colors.grey.shade500)),
-                                      ],
-                                    ),
-                                    trailing: item[index].isNew
-                                        ? Column(
-                                            children: const [
-                                              Icon(
-                                                Icons.circle,
-                                                size: 10,
-                                                color: Colors.red,
-                                              ),
-                                              Icon(
+                                        trailing: item[index].isNew
+                                            ? Column(
+                                                children: const [
+                                                  Icon(
+                                                    Icons.circle,
+                                                    size: 10,
+                                                    color: Colors.red,
+                                                  ),
+                                                  Icon(
+                                                    Icons.navigate_next,
+                                                    color: Colors.black,
+                                                  ),
+                                                ],
+                                              )
+                                            : const Icon(
                                                 Icons.navigate_next,
                                                 color: Colors.black,
                                               ),
-                                            ],
-                                          )
-                                        : const Icon(
-                                            Icons.navigate_next,
-                                            color: Colors.black,
-                                          ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -444,145 +491,171 @@ class _HomePageState extends State<HomePage> {
                               : item[index].status == 3
                                   ? orderType[3]
                                   : defaultType;
-                          return Slidable(
-                            startActionPane: ActionPane(
-                                motion: const StretchMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) {},
-                                    backgroundColor: AppColors.errorIcon,
-                                    icon: Icons.cancel,
-                                    label: 'Hủy',
-                                  )
-                                ]),
-                            endActionPane: ActionPane(
-                                motion: const StretchMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      Get.to(() => DiagnosingPage(
+                          return AbsorbPointer(
+                            absorbing: _checkPriority(item[index].priority),
+                            child: Opacity(
+                              opacity: _checkPriority(item[index].priority) ? 0.5 : 1,
+                              child: Slidable(
+                                startActionPane: ActionPane(
+                                    motion: const StretchMotion(),
+                                    children: [
+                                      SlidableAction(
+                                        onPressed: (context) {},
+                                        backgroundColor: AppColors.errorIcon,
+                                        icon: Icons.cancel,
+                                        label: 'Hủy',
+                                      )
+                                    ]),
+                                endActionPane: ActionPane(
+                                    motion: const StretchMotion(),
+                                    children: [
+                                      SlidableAction(
+                                        onPressed: (context) {
+                                          Get.to(() => DiagnosingPage(
+                                                orderServiceId: item[index].id,
+                                                isNew: item[index].isNew,
+                                              ));
+                                        },
+                                        backgroundColor: AppColors.blue600,
+                                        icon: Icons.settings_suggest,
+                                        label: 'Chẩn đoán',
+                                      )
+                                    ]),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (item[index].status == 1) {
+                                      Get.bottomSheet(
+                                          DiagnosingPage(
+                                            orderServiceId: item[index].id,
+                                            isNew: item[index].isNew,
+                                          ),
+                                          isScrollControlled: true,
+                                          ignoreSafeArea: false);
+                                    } else if (item[index].status == 3) {
+                                      Get.to(() => OrderDetailPage(
                                             orderServiceId: item[index].id,
                                             isNew: item[index].isNew,
                                           ));
-                                    },
-                                    backgroundColor: AppColors.blue600,
-                                    icon: Icons.settings_suggest,
-                                    label: 'Chẩn đoán',
-                                  )
-                                ]),
-                            child: GestureDetector(
-                              onTap: () {
-                                if (item[index].status == 1) {
-                                  Get.bottomSheet(
-                                      DiagnosingPage(
-                                        orderServiceId: item[index].id,
-                                        isNew: item[index].isNew,
-                                      ),
-                                      isScrollControlled: true,
-                                      ignoreSafeArea: false);
-                                } else if (item[index].status == 3) {
-                                  Get.to(() => OrderDetailPage(
-                                        orderServiceId: item[index].id,
-                                        isNew: item[index].isNew,
-                                      ));
-                                }
-                              },
-                              child: DecoratedBox(
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(16)),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10.h),
-                                  child: ListTile(
-                                    // contentPadding: EdgeInsets.zero,
-                                    leading: FutureBuilder(
-                                        future:
-                                            getBrand(item[index].car.carBrand),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData) {
-                                            return Image.network(
-                                              snapshot.data.toString(),
-                                              height: 50.h,
-                                              width: 50.w,
-                                            );
-                                          } else if (snapshot.hasError) {
-                                            return Image.asset(
-                                              "assets/image/icon-logo/bmw-car-icon.png",
-                                              height: 50.h,
-                                              width: 50.w,
-                                            );
-                                          } else {
-                                            return Image.asset(
-                                              "assets/image/icon-logo/bmw-car-icon.png",
-                                              height: 50.h,
-                                              width: 50.w,
-                                            );
-                                          }
-                                        }),
-                                    title: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
+                                    }
+                                  },
+                                  child: DecoratedBox(
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(16)),
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 10.h),
+                                      child: ListTile(
+                                        // contentPadding: EdgeInsets.zero,
+                                        leading: FutureBuilder(
+                                            future:
+                                                getBrand(item[index].car.carBrand),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return Image.network(
+                                                  snapshot.data.toString(),
+                                                  height: 50.h,
+                                                  width: 50.w,
+                                                );
+                                              } else if (snapshot.hasError) {
+                                                return Image.asset(
+                                                  "assets/image/icon-logo/bmw-car-icon.png",
+                                                  height: 50.h,
+                                                  width: 50.w,
+                                                );
+                                              } else {
+                                                return Image.asset(
+                                                  "assets/image/icon-logo/bmw-car-icon.png",
+                                                  height: 50.h,
+                                                  width: 50.w,
+                                                );
+                                              }
+                                            }),
+                                        title: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                    type != null
+                                                        ? type.label
+                                                        : defaultType.label,
+                                                    style: AppStyles.header600(
+                                                        fontsize: 10.sp,
+                                                        color: type != null
+                                                            ? type.color
+                                                            : defaultType.color)),
+                                                Text(" - ",
+                                                    style: AppStyles.text400(
+                                                        fontsize: 10.sp,
+                                                        color:
+                                                            Colors.grey.shade500)),
+                                                Text("${item[index].code}",
+                                                    style: AppStyles.text400(
+                                                        fontsize: 10.sp,
+                                                        color:
+                                                            Colors.grey.shade500)),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 5.sp,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                Expanded(
+                                                  child: Text(item[index].car.carLisenceNo,
+                                                      style: AppStyles.header600(
+                                                        fontsize: 12.sp,
+                                                      )),
+                                                ),
+                                                item[index].intendedFinishTime != null ? Expanded(
+                                                  child: Align(
+                                                    alignment: Alignment.centerRight,
+                                                    child: Text(
+                                                        "Hẹn: ${formatDate(item[index].intendedFinishTime.toString(), true)}",
+                                                        overflow: TextOverflow.clip,
+                                                        style: AppStyles.header600(
+                                                            fontsize: 10.sp,
+                                                            color: AppColors
+                                                                .lightTextColor)),
+                                                  ),
+                                                ) : Container()
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 5.sp,
+                                            ),
                                             Text(
-                                                type != null
-                                                    ? type.label
-                                                    : defaultType.label,
-                                                style: AppStyles.header600(
-                                                    fontsize: 10.sp,
-                                                    color: type != null
-                                                        ? type.color
-                                                        : defaultType.color)),
-                                            Text(" - ",
+                                                "${item[index].car.carBrand} ${item[index].car.carModel}",
                                                 style: AppStyles.text400(
                                                     fontsize: 10.sp,
-                                                    color:
-                                                        Colors.grey.shade500)),
-                                            Text("${item[index].code}",
-                                                style: AppStyles.text400(
-                                                    fontsize: 10.sp,
-                                                    color:
-                                                        Colors.grey.shade500)),
+                                                    color: Colors.grey.shade500)),
                                           ],
                                         ),
-                                        SizedBox(
-                                          height: 5.sp,
-                                        ),
-                                        Text(item[index].car.carLisenceNo,
-                                            style: AppStyles.header600(
-                                              fontsize: 12.sp,
-                                            )),
-                                        SizedBox(
-                                          height: 5.sp,
-                                        ),
-                                        Text(
-                                            "${item[index].car.carBrand} ${item[index].car.carModel}",
-                                            style: AppStyles.text400(
-                                                fontsize: 10.sp,
-                                                color: Colors.grey.shade500)),
-                                      ],
-                                    ),
-                                    trailing: item[index].isNew
-                                        ? Column(
-                                            children: const [
-                                              Icon(
-                                                Icons.circle,
-                                                size: 10,
-                                                color: Colors.red,
-                                              ),
-                                              Icon(
+                                        trailing: item[index].isNew
+                                            ? Column(
+                                                children: const [
+                                                  Icon(
+                                                    Icons.circle,
+                                                    size: 10,
+                                                    color: Colors.red,
+                                                  ),
+                                                  Icon(
+                                                    Icons.navigate_next,
+                                                    color: Colors.black,
+                                                  ),
+                                                ],
+                                              )
+                                            : const Icon(
                                                 Icons.navigate_next,
                                                 color: Colors.black,
                                               ),
-                                            ],
-                                          )
-                                        : const Icon(
-                                            Icons.navigate_next,
-                                            color: Colors.black,
-                                          ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),

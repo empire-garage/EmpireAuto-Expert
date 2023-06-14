@@ -83,6 +83,8 @@ class OrderServiceOfExpertModel {
   int? priority;
   bool isJobOfToday = false;
   bool isNew = true;
+  DateTime? startTime;
+  DateTime? intendedFinishTime;
 
   OrderServiceOfExpertModel({
     required this.id,
