@@ -72,6 +72,7 @@ class BottomPopup extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Text(
                 title,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'SFProDisplay',
                   fontSize: 18.sp,
