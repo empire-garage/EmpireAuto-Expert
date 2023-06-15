@@ -8,6 +8,7 @@ import 'package:empire_expert/services/brand_service/brand_service.dart';
 import 'package:empire_expert/services/diagnose_services/diagnose_services.dart';
 import 'package:empire_expert/services/item_service/item_service.dart';
 import 'package:empire_expert/services/order_services/order_services.dart';
+import 'package:empire_expert/services/workload_service/workload_services.dart';
 import 'package:empire_expert/widgets/bottom_pop_up.dart';
 import 'package:empire_expert/widgets/expert_popup.dart';
 import 'package:empire_expert/widgets/loading.dart';
@@ -284,6 +285,9 @@ class _OrderDetailState extends State<OrderDetail> {
 
     var listJson = jsonEncode(listFromStorage.map((e) => e.toJson()).toList());
     await prefs.setString('orderServicesIsNewJson', listJson);
+
+    // Update database
+    await WorkloadService().updateWorkloadStartTime(orderServiceId);
   }
 
   @override

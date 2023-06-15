@@ -9,7 +9,8 @@ class WorkloadService {
   Future<WorkloadRm?> getWorkload(int orderServiceId) async {
     try {
       var expertId = await getUserId();
-      var apiUrl = "${APIPath.path}/workloads/by-order-service?expertId=$expertId&orderServiceId=$orderServiceId";
+      var apiUrl =
+          "${APIPath.path}/workloads/by-order-service?expertId=$expertId&orderServiceId=$orderServiceId";
       var response = await makeHttpRequest(apiUrl);
       if (response.statusCode == 200) {
         return WorkloadRm.fromJson(jsonDecode(response.body));
@@ -17,9 +18,33 @@ class WorkloadService {
         log(response.body);
         return null;
       }
-    } catch(e) {
+    } catch (e) {
       log(e.toString());
     }
     return null;
+  }
+
+  Future<bool> updateWorkloadStartTime(int orderServiceId) async {
+    try {
+      var expertId = await getUserId();
+      var apiUrl =
+          "${APIPath.path}/workloads/start-time?expertId=$expertId&orderServiceId=$orderServiceId";
+      var response = await makeHttpRequest(
+        apiUrl,
+        method: 'PUT',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 204) {
+        return true;
+      } else {
+        log(response.body);
+        return false;
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+    return false;
   }
 }

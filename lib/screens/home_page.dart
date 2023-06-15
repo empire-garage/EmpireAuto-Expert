@@ -422,7 +422,7 @@ class _HomePageState extends State<HomePage> {
                                                   child: Align(
                                                     alignment: Alignment.centerRight,
                                                     child: Text(
-                                                        "Hẹn: ${formatDate(item[index].intendedFinishTime.toString(), true)}",
+                                                        "Hạn: ${formatDate(item[index].intendedFinishTime.toString(), true)}",
                                                         overflow: TextOverflow.clip,
                                                         style: AppStyles.header600(
                                                             fontsize: 10.sp,
@@ -616,7 +616,7 @@ class _HomePageState extends State<HomePage> {
                                                   child: Align(
                                                     alignment: Alignment.centerRight,
                                                     child: Text(
-                                                        "Hẹn: ${formatDate(item[index].intendedFinishTime.toString(), true)}",
+                                                        "Hạn: ${formatDate(item[index].intendedFinishTime.toString(), true)}",
                                                         overflow: TextOverflow.clip,
                                                         style: AppStyles.header600(
                                                             fontsize: 10.sp,
