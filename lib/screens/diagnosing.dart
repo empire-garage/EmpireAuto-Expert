@@ -581,9 +581,9 @@ class _OrderDetailState extends State<OrderDetail> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      //isScrollControlled: true,
+      //isScrollControlled: false,
       builder: (context) => ExpertPopup(
-          header: "Bạn có chắc chắn muốn gửi những chẩn đoán hay chưa?",
+          header: "Bạn muốn gửi chẩn đoán?",
           diagnose: "Các chẩn đoán đã chọn",
           diagnoseList: _tags,
           orderSymptoms: widget.order.symptoms ?? [],
