@@ -63,7 +63,7 @@ class _ProfileState extends State<Profile> {
                 Get.off(() => const MainPage());
               },
               child: Image.asset(
-                "assets/image/app-logo/homepage-icon.png",
+                "assets/image/app-logo/expert_logo.png",
                 fit: BoxFit.fill,
               ),
             ),
