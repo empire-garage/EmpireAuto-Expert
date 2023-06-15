@@ -786,7 +786,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                         Get.bottomSheet(BottomPopup(
                                             header: "Hoàn thành",
                                             title:
-                                                "Bạn muốn hoàn thành sửa chữa?",
+                                                "Bạn có chắc chắn muốn hoàn thành sửa chữa?",
                                             body:
                                                 "Kiểm tra kĩ càng trước khi hoàn thành, quá trình này sẽ không được hoàn tác",
                                             buttonTitle: "Hoàn thành",
@@ -808,7 +808,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                                     title:
                                                         "Hoàn thành sửa chữa",
                                                     body:
-                                                        "Chuẩn bị xe sẵn sàng trước khi giao lại cho khách nhé",
+                                                        "Sửa chữa hoàn tất. Mong quý khách tới garage để nhận xe.",
                                                     buttonTitle: "Trở về",
                                                     action: () => Get.offAll(
                                                         const MainPage()),
