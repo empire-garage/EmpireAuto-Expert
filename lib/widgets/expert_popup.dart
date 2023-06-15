@@ -55,7 +55,8 @@ class ExpertPopup extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 5.sp),
                       child: Text(
                         header ?? "",
-                        style: AppStyles.header600(fontsize: 16.sp),
+                        textAlign: TextAlign.center,
+                        style: AppStyles.header600(fontsize: 14.sp),
                       ),
                     ),
                     const Divider(
