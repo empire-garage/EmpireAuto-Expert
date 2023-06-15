@@ -40,6 +40,7 @@ class BottomPopup extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 5.sp),
                       child: Text(
                         header ?? "",
+                        textAlign: TextAlign.center,
                         style: AppStyles.header600(fontsize: 16.sp),
                       ),
                     ),
