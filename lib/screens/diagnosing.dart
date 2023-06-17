@@ -495,7 +495,7 @@ class _OrderDetailState extends State<OrderDetail> {
       backgroundColor: Colors.transparent,
       //isScrollControlled: false,
       builder: (context) => ExpertPopup(
-          header: "Bạn có chắc chắn gửi những chẩn đoán này?",
+          header: "Bạn muốn gửi những chẩn đoán này ?",
           diagnose: "Các chẩn đoán đã chọn",
           diagnoseList: _tags,
           orderSymptoms: widget.order.symptoms??[],

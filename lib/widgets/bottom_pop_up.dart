@@ -24,7 +24,7 @@ class BottomPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 330.h,
+      height: 380.h,
       decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
@@ -104,7 +104,11 @@ class BottomPopup extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 20.h,
+              height: 10.h,
+            ),
+            Divider(thickness: 1),
+            SizedBox(
+              height: 10.h,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),

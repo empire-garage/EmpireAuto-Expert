@@ -38,7 +38,7 @@ class ExpertPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 330.h,
+      height: 350.h,
       decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
@@ -56,7 +56,7 @@ class ExpertPopup extends StatelessWidget {
                       child: Text(
                         header ?? "",
                         textAlign: TextAlign.center,
-                        style: AppStyles.header600(fontsize: 14.sp),
+                        style: AppStyles.header600(fontsize: 18.sp),
                       ),
                     ),
                     const Divider(
