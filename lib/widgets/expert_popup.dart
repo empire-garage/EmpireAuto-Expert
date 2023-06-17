@@ -18,14 +18,14 @@ class ExpertPopup extends StatelessWidget {
   final List<Service.Symptom> orderSymptoms;
   const ExpertPopup(
       {Key? key,
-        this.header,
-        required this.diagnose,
-        required this.diagnoseList,
-        required this.symptom,
-        required this.symptomList,
-        this.action,
-        required this.orderSymptoms,
-        required this.buttonTitle})
+      this.header,
+      required this.diagnose,
+      required this.diagnoseList,
+      required this.symptom,
+      required this.symptomList,
+      this.action,
+      required this.orderSymptoms,
+      required this.buttonTitle})
       : super(key: key);
 
   _hasThisSymptom(int symptomId) {
@@ -73,7 +73,7 @@ class ExpertPopup extends StatelessWidget {
                     width: 300.w,
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children:[
+                        children: [
                           Text(
                             diagnose,
                             textAlign: TextAlign.left,
@@ -84,8 +84,7 @@ class ExpertPopup extends StatelessWidget {
                               color: AppColors.blackTextColor,
                             ),
                           ),
-                        ]
-                    ),
+                        ]),
                   ),
                 ),
                 SizedBox(height: 5.h),
@@ -93,45 +92,52 @@ class ExpertPopup extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: SizedBox(
                     width: 300.w,
-                    child: ListView.builder(
-                      itemCount: diagnoseList.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index){
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 5.sp),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                diagnoseList[index].name,
-                                style: AppStyles.text400(fontsize: 10.sp),
-                              ),
-                              Visibility(
-                                visible: diagnoseList[index].symptom != null &&
-                                    _hasThisSymptom(diagnoseList[index].symptom!.id),
-                                child: Visibility(
-                                  visible: diagnoseList[index].symptom != null &&
-                                      diagnoseList[index].symptom!.name != null,
-                                  child: Text(
-                                    diagnoseList[index].symptom!.name!,
-                                    style: AppStyles.text400(
-                                        fontsize: 10.sp,
-                                        color: Colors.grey.shade500),
-                                    overflow: TextOverflow.ellipsis,
+                    height: 70.w,
+                    child: Scrollbar(
+                      child: ListView.builder(
+                        itemCount: diagnoseList.length,
+                        shrinkWrap: true,
+                        //physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 5.sp),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  diagnoseList[index].name,
+                                  style: AppStyles.text400(fontsize: 10.sp),
+                                ),
+                                Visibility(
+                                  visible:
+                                      diagnoseList[index].symptom != null &&
+                                          _hasThisSymptom(
+                                              diagnoseList[index].symptom!.id),
+                                  child: Visibility(
+                                    visible:
+                                        diagnoseList[index].symptom != null &&
+                                            diagnoseList[index].symptom!.name !=
+                                                null,
+                                    child: Text(
+                                      diagnoseList[index].symptom!.name!,
+                                      style: AppStyles.text400(
+                                          fontsize: 10.sp,
+                                          color: Colors.grey.shade500),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(height: 5.h),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: EdgeInsets.symmetric(horizontal: 12),
                   child: Divider(thickness: 1),
                 ),
                 SizedBox(height: 5.h),
@@ -161,17 +167,24 @@ class ExpertPopup extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: SizedBox(
                     width: 300.w,
+                    height: 40.w,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          symptomList,
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontFamily: 'SFProDisplay',
-                            fontSize: 10.sp,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.lightTextColor,
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Text(
+                              symptomList,
+                              textAlign: TextAlign.left,
+                              //maxLines: 3,
+                              style: TextStyle(
+                                fontFamily: 'SFProDisplay',
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.lightTextColor,
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -181,7 +194,9 @@ class ExpertPopup extends StatelessWidget {
               ],
             ),
             Spacer(),
-            Divider(),
+            Divider(
+              thickness: 1,
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Row(
