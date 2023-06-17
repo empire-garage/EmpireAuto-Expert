@@ -289,6 +289,8 @@ class _OrderDetailState extends State<OrderDetail> {
     await WorkloadService().updateWorkloadStartTime(orderServiceId);
   }
 
+  DateTime selectedDate = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     return _loading
@@ -741,6 +743,46 @@ class _OrderDetailState extends State<OrderDetail> {
                       ),
                     ],
                   ),
+                  SizedBox(
+                    height: 5.sp,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Chọn ngày bảo trì: ",
+                        style: TextStyle(
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        "${selectedDate.day} - ${selectedDate.month} -${selectedDate.year}",
+                        style: TextStyle(
+                          fontFamily: 'SFProDisplay',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.date_range),
+                        onPressed: () async {
+                          final DateTime? datetime = await showDatePicker(
+                            context: context,
+                            initialDate: selectedDate,
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime(2030),
+                          );
+                          if (datetime != null) {
+                            setState(() {
+                              selectedDate = datetime;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -812,9 +854,9 @@ class _OrderDetailState extends State<OrderDetail> {
                         ),
                       ))),
             ),
-      SizedBox(
-        height: 20.sp,
-      )
+            SizedBox(
+              height: 20.sp,
+            )
           ]);
   }
 }
