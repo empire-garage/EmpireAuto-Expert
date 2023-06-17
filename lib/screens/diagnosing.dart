@@ -582,12 +582,11 @@ class _OrderDetailState extends State<OrderDetail> {
 
   void sendDiagnose() async {
     if (_validate(symptom, _tags) == false) return;
-    showModalBottomSheet(
-      context: context,
+    Get.bottomSheet(
       backgroundColor: Colors.transparent,
-      //isScrollControlled: false,
-      builder: (context) => ExpertPopup(
-          header: "Bạn có chắc chắn muốn gửi những chẩn đoán này hay chưa?",
+      isScrollControlled: true,
+      ExpertPopup(
+          header: "Bạn muốn gửi những chẩn đoán này ?",
           diagnose: "Các chẩn đoán đã chọn",
           diagnoseList: _tags,
           orderSymptoms: widget.order.symptoms ?? [],
