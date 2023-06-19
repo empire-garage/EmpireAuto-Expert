@@ -19,6 +19,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
 
 import '../../common/colors.dart';
 import '../models/response/item.dart';
@@ -226,8 +227,7 @@ class _OrderDetailState extends State<OrderDetail> {
   void initState() {
     _isNew = widget.isNew ?? true;
     super.initState();
-    _getOrderServices();
-    _isCheckedAllService();
+    _getOrderServices().then((value) => _isCheckedAllService());
   }
 
   @override
@@ -242,9 +242,10 @@ class _OrderDetailState extends State<OrderDetail> {
   }
 
   Future<bool> _doneOrder() async {
-    var response = await OrderServices().doneOrder(widget.order.id, 4);
-    if (response == null || response.statusCode == 500) {
-      throw Exception("Error when diagnosing");
+    var maintenanceDate = selectedDate != null ? DateTime(selectedDate!.year, selectedDate!.month, selectedDate!.day).toIso8601String() : null;
+    var response = await OrderServices().doneOrder(widget.order.id, 4, maintenanceDate);
+    if (response == null || response.statusCode != 201) {
+      return false;
     }
     return true;
   }
@@ -257,6 +258,8 @@ class _OrderDetailState extends State<OrderDetail> {
     } else {
       setState(() {
         checkedService = true;
+        selectedDate = null;
+        isExpanded = false;
       });
     }
   }
@@ -289,7 +292,9 @@ class _OrderDetailState extends State<OrderDetail> {
     await WorkloadService().updateWorkloadStartTime(orderServiceId);
   }
 
-  DateTime selectedDate = DateTime.now();
+  DateTime? selectedDate = null;
+  bool isChecked = false;
+  bool isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -371,6 +376,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                       });
                                       await _updateExpertTask(
                                           _listOrderServiceDetails[index]);
+                                      _isCheckedAllService();
                                     },
                                     onLongPress: () {
                                       setState(() {
@@ -743,117 +749,164 @@ class _OrderDetailState extends State<OrderDetail> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 5.sp,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Chọn ngày bảo trì: ",
-                        style: TextStyle(
-                          fontFamily: 'SFProDisplay',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
+                  Visibility(
+                    visible: checkedService == false,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 5.sp,
                         ),
-                      ),
-                      Text(
-                        "${selectedDate.day} - ${selectedDate.month} -${selectedDate.year}",
-                        style: TextStyle(
-                          fontFamily: 'SFProDisplay',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
+                        Divider(
+                          thickness: 1,
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.date_range),
-                        onPressed: () async {
-                          final DateTime? datetime = await showDatePicker(
-                            context: context,
-                            initialDate: selectedDate,
-                            firstDate: DateTime.now(),
-                            lastDate: DateTime(2030),
-                          );
-                          if (datetime != null) {
+                        ExpansionTile(
+                          title: Text(
+                            "Thêm ngày bảo trì ",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontFamily: 'Roboto',
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.blackTextColor,
+                            ),
+                          ),
+                          shape: const ContinuousRectangleBorder(
+                              borderRadius: BorderRadius.zero),
+                          trailing: isExpanded? Icon(Icons.check_box_rounded, color: AppColors.blueTextColor,) :Icon(Icons.check_box_outline_blank),
+                          onExpansionChanged: (expanded){
                             setState(() {
-                              selectedDate = datetime;
+                              isExpanded = expanded;
+                              selectedDate = DateTime.now().add(Duration(days: 7));
                             });
-                          }
-                        },
-                      ),
-                    ],
+                          },
+                          tilePadding: EdgeInsets.zero,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Chọn ngày bảo trì: ",
+                                  style: TextStyle(
+                                    fontFamily: 'SFProDisplay',
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                selectedDate != null ? Text(
+                                  // "${selectedDate.day} - ${selectedDate.month} -${selectedDate.year}",
+                                  DateFormat('dd/MM/yyyy').format(selectedDate!),
+                                  style: TextStyle(
+                                    fontFamily: 'SFProDisplay',
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ): Text(""),
+                                IconButton(
+                                  icon: Icon(Icons.date_range),
+                                  color: AppColors.blueTextColor,
+                                  onPressed: () async {
+                                    final DateTime? datetime = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now().add(Duration(days: 7)),
+                                      firstDate: DateTime.now(),
+                                      lastDate: DateTime(2030),
+                                    );
+                                    if (datetime != null) {
+                                      setState(() {
+                                        selectedDate = datetime;
+                                      });
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-            SizedBox(
-              height: 20.h,
-            ),
-            Divider(thickness: 1),
-            SizedBox(
-              height: 10.h,
-            ),
-            Center(
-              child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.sp),
-                  child: SizedBox(
-                      width: double.infinity,
-                      height: 52.h,
-                      child: ElevatedButton(
-                        style: AppStyles.button16(),
-                        onPressed: () async {
-                          Get.bottomSheet(BottomPopup(
-                              image: 'assets/image/service-picture/done.png',
-                              title: "Hoàn thành công việc ?",
-                              body:
-                                  "Vui lòng kiểm tra lại thông tin trước khi xác nhận. Quy trình này sẽ không được hoàn tác",
-                              buttonTitle: "Hoàn thành",
-                              action: () async {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => const ScreenLoading(),
-                                );
-                                var result = await _doneOrder();
-                                Get.back();
-                                if (result == true) {
-                                  Get.replace(Get.bottomSheet(
-                                    backgroundColor: Colors.transparent,
-                                    BottomPopup(
-                                      image:
-                                          'assets/image/icon-logo/successfull-icon.png',
-                                      title: "Hoàn thành sửa chữa",
-                                      body:
-                                          "Chuẩn bị phương tiện sẵn sàng trước khi khách đến nhận xe",
-                                      buttonTitle: "Trở về",
-                                      action: () =>
-                                          Get.offAll(const MainPage()),
+            checkedService || selectedDate != null
+                ? Column(
+                    children: [
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      Divider(thickness: 1),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Center(
+                        child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20.sp),
+                            child: SizedBox(
+                                width: double.infinity,
+                                height: 52.h,
+                                child: ElevatedButton(
+                                  style: AppStyles.button16(),
+                                  onPressed: () async {
+                                    Get.bottomSheet(BottomPopup(
+                                        image:
+                                            'assets/image/service-picture/done.png',
+                                        title: "Hoàn thành công việc ?",
+                                        body:
+                                            "Vui lòng kiểm tra lại thông tin trước khi xác nhận. Quy trình này sẽ không được hoàn tác",
+                                        buttonTitle: "Hoàn thành",
+                                        action: () async {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                const ScreenLoading(),
+                                          );
+                                          var result = await _doneOrder();
+                                          Get.back();
+                                          if (result == true) {
+                                            Get.replace(Get.bottomSheet(
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                              BottomPopup(
+                                                image:
+                                                    'assets/image/icon-logo/successfull-icon.png',
+                                                title: "Hoàn thành sửa chữa",
+                                                body:
+                                                    "Chuẩn bị phương tiện sẵn sàng trước khi khách đến nhận xe",
+                                                buttonTitle: "Trở về",
+                                                action: () => Get.offAll(
+                                                    const MainPage()),
+                                              ),
+                                            ));
+                                          } else {
+                                            Get.replace(Get.bottomSheet(
+                                              backgroundColor:
+                                                  Colors.transparent,
+                                              BottomPopup(
+                                                image:
+                                                    'assets/image/icon-logo/failed-icon.png',
+                                                title: "Thất bại",
+                                                body:
+                                                    "Có sự cố khi hoàn thành sửa chữa",
+                                                buttonTitle: "Trở về",
+                                                action: () => Get.back(),
+                                              ),
+                                            ));
+                                          }
+                                        }));
+                                  },
+                                  child: Text(
+                                    "Hoàn thành",
+                                    style: TextStyle(
+                                      fontFamily: 'SFProDisplay',
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                  ));
-                                } else {
-                                  Get.replace(Get.bottomSheet(
-                                    backgroundColor: Colors.transparent,
-                                    BottomPopup(
-                                      image:
-                                          'assets/image/icon-logo/failed-icon.png',
-                                      title: "Thất bại",
-                                      body: "Có sự cố khi hoàn thành sửa chữa",
-                                      buttonTitle: "Trở về",
-                                      action: () => Get.back(),
-                                    ),
-                                  ));
-                                }
-                              }));
-                        },
-                        child: Text(
-                          "Hoàn thành",
-                          style: TextStyle(
-                            fontFamily: 'SFProDisplay',
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ))),
-            ),
+                                  ),
+                                ))),
+                      ),
+                    ],
+                  )
+                : Container(),
             SizedBox(
               height: 20.sp,
             )
