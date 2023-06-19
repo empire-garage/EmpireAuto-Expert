@@ -24,7 +24,6 @@ class BottomPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 380.h,
       decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
@@ -49,9 +48,6 @@ class BottomPopup extends StatelessWidget {
                     )
                   ],
                 )),
-            SizedBox(
-              height: 20.h,
-            ),
             Visibility(
               visible: image != null,
               child: ClipRRect(
@@ -66,9 +62,6 @@ class BottomPopup extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              height: 20.h,
-            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Text(
@@ -82,58 +75,48 @@ class BottomPopup extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
-              height: 10.h,
-            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: SizedBox(
-                width: 300.w,
-                child: Center(
-                  child: Text(
-                    body,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'SFProDisplay',
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.lightTextColor,
-                    ),
+              child: Center(
+                child: Text(
+                  body,
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  style: TextStyle(
+                    fontFamily: 'SFProDisplay',
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.lightTextColor,
                   ),
                 ),
               ),
             ),
-            SizedBox(
-              height: 10.h,
-            ),
-            Divider(thickness: 1),
-            SizedBox(
-              height: 10.h,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: action,
-                      style: AppStyles.button16(),
-                      child: Text(
-                        buttonTitle,
-                        style: TextStyle(
-                          fontFamily: 'SFProDisplay',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
+            Column(
+              children: [
+                const Divider(thickness: 1),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: action,
+                          style: AppStyles.button16(),
+                          child: Text(
+                            buttonTitle,
+                            style: TextStyle(
+                              fontFamily: 'SFProDisplay',
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 10.h,
+                      )
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),

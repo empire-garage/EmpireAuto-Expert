@@ -292,7 +292,7 @@ class _OrderDetailState extends State<OrderDetail> {
     await WorkloadService().updateWorkloadStartTime(orderServiceId);
   }
 
-  DateTime? selectedDate = null;
+  DateTime? selectedDate;
   bool isChecked = false;
   bool isExpanded = false;
 
@@ -756,7 +756,7 @@ class _OrderDetailState extends State<OrderDetail> {
                         SizedBox(
                           height: 5.sp,
                         ),
-                        Divider(
+                        const Divider(
                           thickness: 1,
                         ),
                         ExpansionTile(
@@ -772,11 +772,11 @@ class _OrderDetailState extends State<OrderDetail> {
                           ),
                           shape: const ContinuousRectangleBorder(
                               borderRadius: BorderRadius.zero),
-                          trailing: isExpanded? Icon(Icons.check_box_rounded, color: AppColors.blueTextColor,) :Icon(Icons.check_box_outline_blank),
+                          trailing: isExpanded? const Icon(Icons.check_box_rounded, color: AppColors.blueTextColor,) :const Icon(Icons.check_box_outline_blank),
                           onExpansionChanged: (expanded){
                             setState(() {
                               isExpanded = expanded;
-                              selectedDate = DateTime.now().add(Duration(days: 7));
+                              selectedDate = DateTime.now().add(const Duration(days: 7));
                             });
                           },
                           tilePadding: EdgeInsets.zero,
@@ -800,14 +800,14 @@ class _OrderDetailState extends State<OrderDetail> {
                                     fontSize: 12.sp,
                                     fontWeight: FontWeight.w600,
                                   ),
-                                ): Text(""),
+                                ): const Text(""),
                                 IconButton(
-                                  icon: Icon(Icons.date_range),
+                                  icon: const Icon(Icons.date_range),
                                   color: AppColors.blueTextColor,
                                   onPressed: () async {
                                     final DateTime? datetime = await showDatePicker(
                                       context: context,
-                                      initialDate: DateTime.now().add(Duration(days: 7)),
+                                      initialDate: DateTime.now().add(const Duration(days: 7)),
                                       firstDate: DateTime.now(),
                                       lastDate: DateTime(2030),
                                     );
@@ -834,7 +834,7 @@ class _OrderDetailState extends State<OrderDetail> {
                       SizedBox(
                         height: 20.h,
                       ),
-                      Divider(thickness: 1),
+                      const Divider(thickness: 1),
                       SizedBox(
                         height: 10.h,
                       ),
