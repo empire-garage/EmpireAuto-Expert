@@ -69,7 +69,7 @@ class OrderServices {
   }
 
   Future<http.Response?> doneOrder(
-      int orderServiceId, int orderServiceStatusId) async {
+      int orderServiceId, int orderServiceStatusId, String? maintenanceDate) async {
     http.Response? response;
     try {
       response = await makeHttpRequest(
@@ -80,7 +80,8 @@ class OrderServices {
         },
         body: jsonEncode(<String, dynamic>{
           'orderServiceId': orderServiceId,
-          'orderServiceStatusId': orderServiceStatusId
+          'orderServiceStatusId': orderServiceStatusId,
+          'maintenanceDate' : maintenanceDate,
         }),
       );
     } catch (e) {
