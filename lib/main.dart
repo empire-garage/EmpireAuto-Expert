@@ -1,8 +1,4 @@
-import 'dart:convert';
-
-import 'package:empire_expert/screens/diagnosing.dart';
 import 'package:empire_expert/screens/main_page.dart';
-import 'package:empire_expert/screens/order_detail.dart';
 import 'package:empire_expert/screens/welcome_screen.dart';
 import 'package:empire_expert/widgets/error_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -72,19 +68,19 @@ class _MyAppState extends State<MyApp> {
             duration: const Duration(seconds: 5),
             backgroundColor: Colors.white.withOpacity(0.5),
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15));
-        final routeFromMessage = message.data["route"];
-        var jsonRoute = jsonDecode(routeFromMessage);
-        switch (jsonRoute['route']) {
-          case "customer-pay-success":
-            Get.to(() => OrderDetailPage(
-                orderServiceId: jsonRoute['orderServiceId'] as int));
-            break;
-          case "qr-checkin-success":
-            Get.to(() => DiagnosingPage(
-                orderServiceId: jsonRoute['orderServiceId'] as int));
-            break;
-          default:
-        }
+        // final routeFromMessage = message.data["route"];
+        // var jsonRoute = jsonDecode(routeFromMessage);
+        // switch (jsonRoute['route']) {
+        //   case "customer-pay-success":
+        //     Get.to(() => OrderDetailPage(
+        //         orderServiceId: jsonRoute['orderServiceId'] as int));
+        //     break;
+        //   case "qr-checkin-success":
+        //     Get.to(() => DiagnosingPage(
+        //         orderServiceId: jsonRoute['orderServiceId'] as int));
+        //     break;
+        //   default:
+        // }
       }
     });
 
