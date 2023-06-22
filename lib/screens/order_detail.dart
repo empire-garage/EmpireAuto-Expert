@@ -836,7 +836,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                 itemCount: _listOrderServiceDetails.length,
                               ),
                               Visibility(
-                                visible: _checkedService == false,
+                                visible: _checkedService == true || _checkedService == false,
                                 child: Column(
                                   children: [
                                     SizedBox(
@@ -887,7 +887,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                                     initialDate: DateTime.now()
                                                         .add(const Duration(
                                                             days: 7)),
-                                                    firstDate: DateTime.now(),
+                                                    firstDate: DateTime(DateTime.now().day + 1),
                                                     lastDate: DateTime(
                                                         DateTime.now().year +
                                                             2),
