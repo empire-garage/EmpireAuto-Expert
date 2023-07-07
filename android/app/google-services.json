@@ -8,12 +8,124 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:120247352484:android:b5dc8b37c95c45bc80fa31",
+        "android_client_info": {
+          "package_name": "com.empire.empire_expert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120247352484-cso9020emuaommi9n888gsr85ljl7tca.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSogN-07rkrgPkR8esgxDrr6FoX1u2X18"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "120247352484-cso9020emuaommi9n888gsr85ljl7tca.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "120247352484-btcggcit9ms4o3gtrr8ugjh6jj0a25n8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.empireExpert"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120247352484:android:877c80a25254b1bd80fa31",
+        "android_client_info": {
+          "package_name": "com.empire.empire_garage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120247352484-a369dhs8m8tk0f9jfvd5427tb7bbmpkc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.empire.empire_garage",
+            "certificate_hash": "fe29739d7096b44eea51360de2d179d7dc9cd361"
+          }
+        },
+        {
+          "client_id": "120247352484-jji80rvc472l39d4e5tdec0kdbkq9so3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.empire.empire_garage",
+            "certificate_hash": "9a195359131086de71f84fe3518b81dbe51a4b22"
+          }
+        },
+        {
+          "client_id": "120247352484-mg65vi9jbt33s28mks9a7eh8t0c6r8dd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.empire.empire_garage",
+            "certificate_hash": "29ee906f0e7b177c4b1add5184bee22ad16624fa"
+          }
+        },
+        {
+          "client_id": "120247352484-pf3bduub9b8pl8osn1ah2ugjo09da4mv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.empire.empire_garage",
+            "certificate_hash": "851c3017fc928589fa29b34a7e2a4684e602cf16"
+          }
+        },
+        {
+          "client_id": "120247352484-cso9020emuaommi9n888gsr85ljl7tca.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSogN-07rkrgPkR8esgxDrr6FoX1u2X18"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "120247352484-cso9020emuaommi9n888gsr85ljl7tca.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "120247352484-btcggcit9ms4o3gtrr8ugjh6jj0a25n8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.empireExpert"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:120247352484:android:569729a420c85ff080fa31",
         "android_client_info": {
           "package_name": "com.example.empire_expert"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "120247352484-nesetpm4h8hj09m1iat7t2iati7uci6d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.empire_expert",
+            "certificate_hash": "fe29739d7096b44eea51360de2d179d7dc9cd361"
+          }
+        },
         {
           "client_id": "120247352484-cso9020emuaommi9n888gsr85ljl7tca.apps.googleusercontent.com",
           "client_type": 3
@@ -72,6 +184,14 @@
           "android_info": {
             "package_name": "com.example.empiregarage_mobile",
             "certificate_hash": "29ee906f0e7b177c4b1add5184bee22ad16624fa"
+          }
+        },
+        {
+          "client_id": "120247352484-r013hfjrqa0namrga8svv48ve6kqlf98.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.empiregarage_mobile",
+            "certificate_hash": "851c3017fc928589fa29b34a7e2a4684e602cf16"
           }
         },
         {
