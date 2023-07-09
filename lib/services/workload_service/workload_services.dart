@@ -47,4 +47,21 @@ class WorkloadService {
     }
     return false;
   }
+
+  Future<WorkloadRm?> getWorkloadByExpertId(var expertId) async {
+    try {
+      var expertId = await getUserId();
+      var apiUrl = "${APIPath.path}/workloads";
+      var response = await makeHttpRequest(apiUrl,body: jsonEncode(expertId));
+      if (response.statusCode == 200) {
+        return WorkloadRm.fromJson(jsonDecode(response.body));
+      } else {
+        log(response.body);
+        return null;
+      }
+    } catch (e) {
+      e.toString();
+    }
+    return null;
+  }
 }
