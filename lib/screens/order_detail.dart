@@ -335,7 +335,7 @@ class _OrderDetailState extends State<OrderDetail> {
     var response = await WorkloadService().getWorkloadByExpertId(expertId);
     if(response != null){
       setState(() {
-        initialDate = response.intendedFinishTime.add(const Duration(days: 2));
+        initialDate = response.intendedFinishTime;
       });
     }
   }
@@ -907,9 +907,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                             final DateTime? datetime =
                                                 await showDatePicker(
                                                     context: context,
-                                                    initialDate: DateTime.now()
-                                                        .add(const Duration(
-                                                            days: 7)),
+                                                    initialDate: initialDate as DateTime,
                                                     firstDate: initialDate as DateTime,
                                                     lastDate: DateTime(
                                                         DateTime.now().year +

@@ -51,8 +51,8 @@ class WorkloadService {
   Future<WorkloadRm?> getWorkloadByExpertId(var expertId) async {
     try {
       var expertId = await getUserId();
-      var apiUrl = "${APIPath.path}/workloads";
-      var response = await makeHttpRequest(apiUrl,body: jsonEncode(expertId));
+      var apiUrl = "${APIPath.path}/workloads?expertId=$expertId";
+      var response = await makeHttpRequest(apiUrl);
       if (response.statusCode == 200) {
         return WorkloadRm.fromJson(jsonDecode(response.body));
       } else {
