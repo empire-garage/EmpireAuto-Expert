@@ -6,6 +6,7 @@ import 'package:empire_expert/common/style.dart';
 import 'package:empire_expert/models/request/send_diagnosing_request_model.dart'
     as send_diagnosing;
 import 'package:empire_expert/models/response/orderservices.dart';
+import 'package:empire_expert/models/response/workload.dart';
 import 'package:empire_expert/screens/home_page.dart';
 import 'package:empire_expert/screens/main_page.dart';
 import 'package:empire_expert/services/brand_service/brand_service.dart';
@@ -24,6 +25,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 
 import '../../common/colors.dart';
+import '../common/jwt_interceptor.dart';
 import '../models/response/item.dart';
 
 // ignore: depend_on_referenced_packages
@@ -60,6 +62,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       _loading = false;
     });
   }
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -133,6 +137,7 @@ class _OrderDetailState extends State<OrderDetail> {
   int prepaid = 500000;
   List<OrderServiceDetails> _listOrderServiceDetails = [];
   OrderServicesResponseModel? _orderServicesResponseModel;
+  WorkloadRm? _workloadRm;
   bool _checkedService = false;
   bool _isNew = true;
 
@@ -243,6 +248,7 @@ class _OrderDetailState extends State<OrderDetail> {
     _isNew = widget.isNew ?? true;
     super.initState();
     _getOrderServices().then((e) => _isCheckedAllService());
+    _getIntendedDate();
   }
 
   @override
@@ -316,6 +322,23 @@ class _OrderDetailState extends State<OrderDetail> {
   DateTime? selectedDate;
   bool isChecked = false;
   bool isExpanded = false;
+
+ 
+
+  DateTime? initialDate; 
+
+  
+    _getIntendedDate() async {
+    // DateTime intialDate = DateTime.now().add(const Duration(days: 1));
+
+    var expertId = await getUserId();
+    var response = await WorkloadService().getWorkloadByExpertId(expertId);
+    if(response != null){
+      setState(() {
+        initialDate = response.intendedFinishTime;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -884,10 +907,8 @@ class _OrderDetailState extends State<OrderDetail> {
                                             final DateTime? datetime =
                                                 await showDatePicker(
                                                     context: context,
-                                                    initialDate: DateTime.now()
-                                                        .add(const Duration(
-                                                            days: 7)),
-                                                    firstDate: DateTime(DateTime.now().day + 1),
+                                                    initialDate: initialDate as DateTime,
+                                                    firstDate: initialDate as DateTime,
                                                     lastDate: DateTime(
                                                         DateTime.now().year +
                                                             2),
