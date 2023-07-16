@@ -18,6 +18,19 @@ class AppStyles {
     );
   }
 
+  static TextStyle textitalic(
+      {double fontsize = 22,
+        Color color = Colors.black,
+        fontWeight = FontWeight.w400}) {
+    return TextStyle(
+      fontSize: fontsize,
+      fontWeight: fontWeight,
+      fontStyle: FontStyle.italic,
+      fontFamily: fontFamily,
+      color: color,
+    );
+  }
+
   static TextStyle header600(
       {double fontsize = 22, Color color = Colors.black}) {
     return TextStyle(

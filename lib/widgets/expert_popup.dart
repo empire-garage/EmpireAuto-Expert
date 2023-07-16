@@ -119,7 +119,7 @@ class ExpertPopup extends StatelessWidget {
                                 )
                                     : Text(
                                   "Vấn đề phát sinh",
-                                  style: AppStyles.text400(
+                                  style: AppStyles.textitalic(
                                       fontsize: 10.sp,
                                       color:
                                       Colors.grey.shade500),
