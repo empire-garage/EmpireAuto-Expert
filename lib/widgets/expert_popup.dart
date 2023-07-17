@@ -107,25 +107,43 @@ class ExpertPopup extends StatelessWidget {
                                   diagnoseList[index].name,
                                   style: AppStyles.text400(fontsize: 10.sp),
                                 ),
-                                Visibility(
-                                  visible:
-                                      diagnoseList[index].symptom != null &&
-                                          _hasThisSymptom(
-                                              diagnoseList[index].symptom!.id),
-                                  child: Visibility(
-                                    visible:
-                                        diagnoseList[index].symptom != null &&
-                                            diagnoseList[index].symptom!.name !=
-                                                null,
-                                    child: Text(
-                                      diagnoseList[index].symptom!.name!,
-                                      style: AppStyles.text400(
-                                          fontsize: 10.sp,
-                                          color: Colors.grey.shade500),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
+                                diagnoseList[index].symptom != null &&
+                                    _hasThisSymptom(diagnoseList[index].symptom!.id)
+                                    ? Text(
+                                  diagnoseList[index].symptom!.name!,
+                                  style: AppStyles.text400(
+                                      fontsize: 10.sp,
+                                      color:
+                                      Colors.grey.shade500),
+                                  overflow: TextOverflow.ellipsis,
+                                )
+                                    : Text(
+                                  "Vấn đề phát sinh",
+                                  style: AppStyles.textitalic(
+                                      fontsize: 10.sp,
+                                      color:
+                                      Colors.grey.shade500),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
+                                // Visibility(
+                                //   visible:
+                                //       diagnoseList[index].symptom != null &&
+                                //           _hasThisSymptom(
+                                //               diagnoseList[index].symptom!.id),
+                                //   child: Visibility(
+                                //     visible:
+                                //         diagnoseList[index].symptom != null &&
+                                //             diagnoseList[index].symptom!.name !=
+                                //                 null,
+                                //     child: Text(
+                                //       diagnoseList[index].symptom!.name!,
+                                //       style: AppStyles.text400(
+                                //           fontsize: 10.sp,
+                                //           color: Colors.grey.shade500),
+                                //       overflow: TextOverflow.ellipsis,
+                                //     ),
+                                //   ),
+                                // ),
                               ],
                             ),
                           );

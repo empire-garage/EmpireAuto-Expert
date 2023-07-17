@@ -607,9 +607,9 @@ class _OrderDetailState extends State<OrderDetail> {
                 backgroundColor: Colors.transparent,
                 builder: (context) => BottomPopup(
                   image: 'assets/image/icon-logo/successfull-icon.png',
-                  title: "Gửi chuẩn đoán thành công",
-                  body: "Đã gửi chuẩn đoán thành công đến chủ xe",
-                  buttonTitle: "Trở về",
+                  title: "Chẩn đoán đã được gửi tới khách hàng",
+                  body: "Cảm ơn vì sự tận tâm làm việc của bạn",
+                  buttonTitle: "Công việc tiếp theo",
                   action: () => Get.offAll(const MainPage()),
                 ),
               ));
