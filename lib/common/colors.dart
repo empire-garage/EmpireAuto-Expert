@@ -22,10 +22,12 @@ class AppColors {
   static const Color green50 = Color(0xFFF1FFF4);
   static const Color white100 = Color(0xFFFAFAFA);
   static const Color grey600 = Color(0xFF7B7D89);
+  static const Color grey200 = Color(0xFFC9CAD2);
 
   //Search Bar Background
   static const Color searchBarColor = Color(0xFFEFEFFF);
   static const Color blue100 = Color(0xFFD4DCF6);
+  static const Color grey100 = Color(0xFFF5F5F5);
 
   //Icon color
   static const Color settingIcon = Color(0xFF2C53D2);

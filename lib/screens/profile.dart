@@ -1,4 +1,5 @@
 import 'package:empire_expert/models/response/user.dart';
+import 'package:empire_expert/screens/update_profile.dart';
 import 'package:empire_expert/screens/welcome_screen.dart';
 import 'package:empire_expert/services/authen_firebase_services/authentication.dart';
 import 'package:flutter/foundation.dart';
@@ -145,7 +146,9 @@ class _ProfileState extends State<Profile> {
                 children: [
                   InkWell(
                     onTap: () {
-                      //TODO
+                      Get.to(() => UpdateProfile(
+                        userId: _user!.id,
+                      ));
                     },
                     child: Row(
                       children: <Widget>[
