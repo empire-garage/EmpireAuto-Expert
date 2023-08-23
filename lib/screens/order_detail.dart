@@ -997,7 +997,7 @@ class _OrderDetailState extends State<OrderDetail> {
                                           title: "Hoàn thành công việc ?",
                                           body:
                                               "Vui lòng kiểm tra lại thông tin trước khi xác nhận. Quy trình này sẽ không được hoàn tác",
-                                          buttonTitle: "Hoàn thành",
+                                          buttonTitle: "Xác nhận",
                                           action: () async {
                                             showDialog(
                                               context: context,
