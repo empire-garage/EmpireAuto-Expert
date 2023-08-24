@@ -67,9 +67,11 @@ class _HomePageState extends State<HomePage> {
   _getMaxWorkloadPerDay() async {
     var response = await SystemServices().getMaxWorkloadPerDay();
     if (response != null) {
-      setState(() {
-        _maxWorkLoadPerDay = response;
-      });
+      if(mounted){
+        setState(() {
+          _maxWorkLoadPerDay = response;
+        });
+      }
     }
   }
 
